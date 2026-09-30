@@ -1,0 +1,28 @@
+# Android / Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.iml
+.idea/
+.kotlin/
+captures/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# ML data: raw data may contain personal messages and must never be committed
+ml/data/raw/*
+!ml/data/raw/.gitkeep
+
+# Dashboard (Phase 3)
+node_modules/
+.next/
+
+# Secrets and OS files
+.env
+.env.*
+.DS_Store
