@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="linda_background">#0B0F1A</color>
+    <color name="linda_card">#151B2E</color>
+    <color name="linda_cyan">#00E5FF</color>
+    <color name="linda_pink">#FF2E88</color>
+    <color name="linda_amber">#FFC940</color>
+</resources>

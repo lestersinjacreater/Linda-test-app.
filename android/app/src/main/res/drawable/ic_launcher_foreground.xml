@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Linda logo: a cyan shield with an "L" cut out of it. Drawn inside the 66dp
+     safe zone of the 108dp adaptive-icon canvas. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,24 L78,33 L78,54 C78,69 68,79 54,84 C40,79 30,69 30,54 L30,33 Z" />
+    <path
+        android:strokeColor="#0B0F1A"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M46,42 L46,64 L63,64" />
+</vector>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kiswahili translations. TODO: have a native speaker review before the demo. -->
+<resources>
+    <string name="app_name">Linda</string>
+
+    <string name="nav_home">Nyumbani</string>
+    <string name="nav_check">Kagua</string>
+    <string name="nav_history">Historia</string>
+    <string name="nav_settings">Mipangilio</string>
+
+    <string name="logo_description">Nembo ya ngao ya Linda</string>
+
+    <string name="home_status_title">Linda inakulinda</string>
+    <string name="home_caught_this_month">Ulaghai uliozuiwa mwezi huu</string>
+
+    <string name="checker_title">Je, huu ni ulaghai?</string>
+    <string name="checker_coming_soon">Bandika ujumbe hapa na Linda atauchunguza. Inakuja hivi karibuni.</string>
+
+    <string name="history_title">Ujumbe wenye shaka</string>
+    <string name="history_empty">Hakuna ujumbe wenye shaka bado. Linda ataorodhesha hapa.</string>
+
+    <string name="settings_title">Mipangilio</string>
+    <string name="settings_language_label">Lugha</string>
+    <string name="settings_language_value">Inafuata lugha ya simu yako (Kiingereza au Kiswahili).</string>
+</resources>

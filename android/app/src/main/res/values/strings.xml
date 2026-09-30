@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Every user-facing string lives here, with a Swahili version in values-sw/. -->
+<resources>
+    <string name="app_name">Linda</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_check">Check</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Symbols shown above the navigation labels. Not translated. -->
+    <string name="nav_glyph_home" translatable="false">🛡</string>
+    <string name="nav_glyph_check" translatable="false">🔎</string>
+    <string name="nav_glyph_history" translatable="false">🕘</string>
+    <string name="nav_glyph_settings" translatable="false">⚙</string>
+
+    <string name="logo_description">Linda shield logo</string>
+
+    <string name="home_status_title">Linda is protecting you</string>
+    <string name="home_caught_this_month">Scams caught this month</string>
+
+    <string name="checker_title">Is this a scam?</string>
+    <string name="checker_coming_soon">Paste a message here and Linda will check it. Coming soon.</string>
+
+    <string name="history_title">Flagged messages</string>
+    <string name="history_empty">No suspicious messages yet. Linda will list them here.</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_language_label">Language</string>
+    <string name="settings_language_value">Follows your phone language (English or Kiswahili).</string>
+</resources>
