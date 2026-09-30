@@ -1,0 +1,25 @@
+name: ML tests
+
+on:
+  push:
+    paths:
+      - "ml/**"
+      - "shared/**"
+      - ".github/workflows/ml-tests.yml"
+  pull_request:
+    paths:
+      - "ml/**"
+      - "shared/**"
+      - ".github/workflows/ml-tests.yml"
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r ml/requirements.txt
+      - run: python -m pytest ml/tests -v
