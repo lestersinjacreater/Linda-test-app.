@@ -1,5 +1,12 @@
 package com.linda.app.features.demo
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.linda.app.R
 import com.linda.app.core.ui.theme.LindaTheme
+import com.linda.app.core.ui.theme.Motion
 import com.linda.app.core.ui.theme.Radius
+import com.linda.app.core.ui.theme.rememberReduceMotion
 import com.linda.app.core.ui.theme.Spacing
 import com.linda.app.features.trace.LayerTraceView
 
@@ -43,6 +52,7 @@ import com.linda.app.features.trace.LayerTraceView
 fun DemoOverlayPanel(snapshot: DemoSnapshot?, onHide: () -> Unit, modifier: Modifier = Modifier) {
     val colors = LindaTheme.colors
     var folded by remember { mutableStateOf(false) }
+    val reduceMotion = rememberReduceMotion()
     val shape = RoundedCornerShape(topStart = Radius.large, topEnd = Radius.large)
 
     Column(
@@ -59,7 +69,12 @@ fun DemoOverlayPanel(snapshot: DemoSnapshot?, onHide: () -> Unit, modifier: Modi
             OverlayAction(stringResource(if (folded) R.string.overlay_unfold else R.string.overlay_fold)) { folded = !folded }
             OverlayAction(stringResource(R.string.overlay_hide), onClick = onHide)
         }
-        if (!folded) {
+        AnimatedVisibility(
+            visible = !folded,
+            enter = if (reduceMotion) EnterTransition.None else expandVertically(Motion.calmSpring()) + fadeIn(),
+            exit = if (reduceMotion) ExitTransition.None else shrinkVertically(Motion.calmSpring()) + fadeOut(),
+        ) {
+            Column {
             if (snapshot == null) {
                 Text(stringResource(R.string.overlay_waiting), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
             } else {
@@ -76,6 +91,7 @@ fun DemoOverlayPanel(snapshot: DemoSnapshot?, onHide: () -> Unit, modifier: Modi
                         }
                     }
                 }
+            }
             }
         }
     }

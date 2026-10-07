@@ -1,5 +1,7 @@
 package com.linda.app.features.detail
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,11 +17,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -29,7 +34,9 @@ import com.linda.app.core.ui.components.RiskIcon
 import com.linda.app.core.ui.components.levelLabel
 import com.linda.app.core.ui.theme.LargeShape
 import com.linda.app.core.ui.theme.LindaTheme
+import com.linda.app.core.ui.theme.Motion
 import com.linda.app.core.ui.theme.Spacing
+import com.linda.app.core.ui.theme.rememberReduceMotion
 import com.linda.app.core.ui.theme.scamRed
 import com.linda.app.features.trace.LayerResult
 import com.linda.app.features.trace.LayerTraceView
@@ -50,10 +57,19 @@ fun VerdictCard(
     reasons: List<String>,
     modifier: Modifier = Modifier,
     onTraceLanded: () -> Unit = {},
+    riseKey: Any? = null,
     actions: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = LindaTheme.colors
     val risk = colors.risk(level)
+    // The card rises 16dp and fades in (docs/design-system.md section 8). With "remove animations" on it only fades, no movement.
+    val reduceMotion = rememberReduceMotion()
+    val arrival = remember { Animatable(0f) }
+    LaunchedEffect(riseKey) {
+        arrival.snapTo(0f)
+        if (reduceMotion) arrival.animateTo(1f, tween(Motion.STANDARD_MS)) else arrival.animateTo(1f, Motion.calmSpring())
+    }
+    val riseDistance = with(LocalDensity.current) { 16.dp.toPx() }
     val glow = if (level == "SCAM") {
         Modifier.shadow(24.dp, LargeShape, ambientColor = scamRed.copy(alpha = 0.25f), spotColor = scamRed.copy(alpha = 0.25f))
     } else Modifier
@@ -61,6 +77,10 @@ fun VerdictCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .graphicsLayer {
+                alpha = arrival.value.coerceIn(0f, 1f)
+                translationY = if (reduceMotion) 0f else (1f - arrival.value) * riseDistance
+            }
             .then(glow)
             .clip(LargeShape)
             .background(risk.tint)

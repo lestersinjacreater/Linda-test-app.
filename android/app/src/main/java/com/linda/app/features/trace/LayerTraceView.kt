@@ -51,6 +51,7 @@ import com.linda.app.core.ui.theme.SmallShape
 import com.linda.app.core.ui.theme.Spacing
 import com.linda.app.core.ui.theme.SweepTiming
 import com.linda.app.core.ui.theme.rememberReduceMotion
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -65,7 +66,8 @@ private fun letterOnTint(index: Int): Color = if (index < 3) Color(Palette.TEXT_
  * message has been analysed. A layer that found a risk takes the verdict's colour and shakes slightly. Tap a letter to
  * read what that layer found. With "remove animations" on, it shows the finished state straight away.
  *
- * [results] must come from [LayerTraceBuilder.build]. [onLanded] runs once the sweep has finished (used for haptics).
+ * [results] must come from [LayerTraceBuilder.build]. [onLanded] runs at the moment the first flagged layer lands (used for the buzz;
+ * never called when nothing is flagged).
  * Change [replayKey] to play the sweep again for results that look the same as before.
  */
 @Composable
@@ -85,13 +87,18 @@ fun LayerTraceView(
     var expanded by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(results, animate, reduceMotion, replayKey) {
+        val buzzAt = HapticPlan.fireAtMs(results, level)
         if (animate && !reduceMotion) {
             elapsed.snapTo(0f)
-            elapsed.animateTo(finished, tween(SweepTiming.ANIMATION_MS, easing = LinearEasing))
+            coroutineScope {
+                launch { elapsed.animateTo(finished, tween(SweepTiming.ANIMATION_MS, easing = LinearEasing)) }
+                // The buzz starts as the first flagged layer lands, not after the whole sweep.
+                if (buzzAt != null) launch { delay(buzzAt.toLong()); onLanded() }
+            }
         } else {
             elapsed.snapTo(finished)
+            if (buzzAt != null) onLanded()
         }
-        onLanded()
     }
 
     Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {

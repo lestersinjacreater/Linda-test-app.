@@ -149,4 +149,20 @@ class TraceModelTest {
         assertEquals(1, HapticPlan.pulses("CAUTION"))
         assertEquals(2, HapticPlan.pulses("SCAM"))
     }
+
+    @Test
+    fun buzz_startsWhenTheFirstFlaggedLayerLands() {
+        // A scam flags L (disguise), I, N, D: the first flagged layer is L (index 0), which lands at 200ms.
+        val withDisguise = LayerTraceBuilder.build(input(body = "K1m@kosa tuma", codes = setOf("personal_number")))
+        assertEquals(SweepTiming.endMs(0), HapticPlan.fireAtMs(withDisguise, "SCAM"))
+        // No disguise: L is not flagged, so I (index 1) is the first.
+        val plain = LayerTraceBuilder.build(input(body = "Send it back please"))
+        assertEquals(SweepTiming.endMs(1), HapticPlan.fireAtMs(plain, "SCAM"))
+    }
+
+    @Test
+    fun buzz_neverFiresForASafeMessage() {
+        val safe = LayerTraceBuilder.build(input(level = "SAFE", score = 0.02f, category = "none", body = "See you at 5"))
+        assertEquals(null, HapticPlan.fireAtMs(safe, "SAFE"))
+    }
 }

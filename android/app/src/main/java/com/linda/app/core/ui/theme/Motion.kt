@@ -2,6 +2,8 @@ package com.linda.app.core.ui.theme
 
 import android.provider.Settings
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.SpringSpec
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
@@ -14,6 +16,12 @@ object Motion {
     const val BREATH_MS = 6000         // the home ring's slow breath
 
     val easeOut = CubicBezierEasing(0f, 0f, 0.2f, 1f)
+
+    /** The default for anything the person touches: a critically damped spring (no overshoot). Springs also start from the current value, so a new tap mid-motion never jumps. */
+    fun <T> calmSpring(): SpringSpec<T> = spring(SpringMath.CALM_DAMPING, SpringMath.stiffness(SpringMath.CALM_RESPONSE))
+
+    /** A spring with a little overshoot, reserved for motion that started with a flick. */
+    fun <T> bouncySpring(): SpringSpec<T> = spring(SpringMath.BOUNCY_DAMPING, SpringMath.stiffness(SpringMath.BOUNCY_RESPONSE))
 }
 
 /** True when the phone's "remove animations" setting is on. Screens then jump straight to the end state. */

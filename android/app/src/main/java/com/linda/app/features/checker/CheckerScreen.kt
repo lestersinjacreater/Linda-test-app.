@@ -107,6 +107,7 @@ fun CheckerScreen(sharedText: String?) {
                 trace = trace,
                 reasons = v.reasons.map { ReasonsJson.text(it, language) },
                 onTraceLanded = rememberVerdictHaptic(v.level.name),
+                riseKey = r,
             ) {
                 // A safe message gets a short, honest note; a warning explains itself in the reasons above.
                 if (v.level == RiskLevel.SAFE) {
