@@ -18,3 +18,17 @@ in one commit, with the message prefix `contract:`.
 each piece is hashed with FNV-1a 64 (offset 0xcbf29ce484222325, prime 0x100000001b3) over its ASCII bytes;
 bit b of the result is 1 when the sum over pieces of (+count if bit b is set, else -count) is positive.
 Text shorter than 3 characters is one piece; empty text gives `0000000000000000`. Output is 16 lowercase hex chars.
+
+## Model artifact details (5.8, implemented in ml/src/features/train/train.py and scoring/scorer.py)
+- `vectorizer`: `analyzer` `char_wb`, `ngram_range` [2,5], `sublinear_tf`, `norm` `l2`, `vocabulary` (n-gram to column), `idf`.
+  Scored on the NORMALISED text (no lowercasing inside the vectorizer).
+- `char_wb` n-grams: for each whitespace-separated word, pad one space on each side; for each n from 2 to 5 take every
+  window of n characters (a word shorter than n gives its padded form once, then longer n are skipped).
+- Weight of an n-gram in the vocabulary: `(1 + ln(count)) * idf`; then divide all weights by their L2 norm
+  (n-grams outside the vocabulary are ignored, and an empty vector stays empty).
+- `metadata_features`: ordered list of `{name, coef}` for five 0/1 features computed on the RAW text and sender
+  (`sender_verified`, `sender_personal_number`, `has_link`, `mpesa_style`, `fake_mpesa`; exact rules in
+  ml/src/features/scoring/metadata.py). `verified_senders` is embedded so every platform uses the same list.
+- score = sigmoid(intercept + sum(coef[i] * weight[i]) + sum(meta_coef * meta_value)). Kotlin must match to within 0.001.
+- Level: `scam` if score >= thresholds.scam (0.80), `caution` if >= thresholds.warn (0.55), else `safe`.
+- `shared/test-vectors.json` scores are computed WITH the vector's sender, because the sender is a model input.

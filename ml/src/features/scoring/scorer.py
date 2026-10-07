@@ -1,0 +1,76 @@
+"""Scores a message from a model JSON file, with no scikit-learn.
+
+This is the reference the Kotlin app and the simulator copy: it uses only the JSON
+(vocabulary, idf, coef, intercept) and plain arithmetic. Tests prove it equals
+scikit-learn's probability, and the Kotlin tests prove it equals this.
+"""
+import json
+import math
+from collections import Counter
+from pathlib import Path
+
+from src.features.normalize.normalize import normalize
+from src.features.scoring.metadata import metadata_features
+
+
+def char_wb_ngrams(text: str, ngram_range: tuple[int, int]) -> list[str]:
+    """Same n-grams scikit-learn's analyzer="char_wb" makes: each word padded with one space each side."""
+    lo, hi = ngram_range
+    grams = []
+    for word in text.split():
+        w = " " + word + " "
+        for n in range(lo, hi + 1):
+            offset = 0
+            grams.append(w[offset : offset + n])
+            while offset + n < len(w):
+                offset += 1
+                grams.append(w[offset : offset + n])
+            if offset == 0:  # the word is no longer than n: longer n-grams would repeat it
+                break
+    return grams
+
+
+class Scorer:
+    def __init__(self, model: dict):
+        self.model = model
+        vec = model["vectorizer"]
+        self.vocabulary: dict[str, int] = vec["vocabulary"]
+        self.idf: list[float] = vec["idf"]
+        self.ngram_range = tuple(vec["ngram_range"])
+        self.coef: list[float] = model["coef"]
+        self.intercept: float = model["intercept"]
+        self.meta_coef = {m["name"]: m["coef"] for m in model["metadata_features"]}
+        self.meta_order = [m["name"] for m in model["metadata_features"]]
+        self.verified = {s.upper() for s in model["verified_senders"]}
+        self.warn = model["thresholds"]["warn"]
+        self.scam = model["thresholds"]["scam"]
+        self.version = model["version"]
+
+    @classmethod
+    def from_file(cls, path: str | Path) -> "Scorer":
+        return cls(json.loads(Path(path).read_text(encoding="utf-8")))
+
+    def _tfidf(self, normalized: str) -> dict[int, float]:
+        counts = Counter(g for g in char_wb_ngrams(normalized, self.ngram_range) if g in self.vocabulary)
+        weights = {self.vocabulary[g]: (1.0 + math.log(c)) * self.idf[self.vocabulary[g]] for g, c in counts.items()}
+        norm = math.sqrt(sum(w * w for w in weights.values()))
+        return {i: w / norm for i, w in weights.items()} if norm > 0 else {}
+
+    def logit_parts(self, text: str, sender: str | None) -> tuple[dict[int, float], dict[str, float], float]:
+        normalized = normalize(text)
+        tfidf = self._tfidf(normalized)
+        values = metadata_features(text, sender, self.verified)
+        meta = dict(zip(self.meta_order, values))
+        z = self.intercept
+        z += sum(self.coef[i] * w for i, w in tfidf.items())
+        z += sum(self.meta_coef[n] * v for n, v in meta.items())
+        return tfidf, meta, z
+
+    def score(self, text: str, sender: str | None = None) -> float:
+        z = self.logit_parts(text, sender)[2]
+        return 1.0 / (1.0 + math.exp(-z)) if z >= 0 else math.exp(z) / (1.0 + math.exp(z))
+
+    def level(self, score: float) -> str:
+        if score >= self.scam:
+            return "SCAM"
+        return "CAUTION" if score >= self.warn else "SAFE"

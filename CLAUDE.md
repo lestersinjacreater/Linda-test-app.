@@ -114,6 +114,8 @@ If allowed, the demo payment screen triggers a Daraja **sandbox** STK Push via `
 `{ "version", "created_at", "normalizer_version", "vectorizer": {"analyzer","ngram_range","vocabulary","idf"},
   "classes", "coef", "intercept", "metadata_features", "thresholds": {"warn": 0.55, "scam": 0.80},
   "categories": {...}, "metrics": {...} }`
+`metadata_features` is an ordered list of `{name, coef}`; `verified_senders` is embedded; `training` records the data and seed.
+Exact scoring maths: `shared/contracts.md`.
 `make export-model` copies it to `android/app/src/main/assets/model.json` and
 `simulator/models/model.json`. Both must report the same `version`.
 

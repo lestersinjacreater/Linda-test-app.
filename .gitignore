@@ -33,3 +33,7 @@ node_modules/
 # Docker / Python envs
 *.egg-info/
 .env
+
+# regenerable synthetic training data and training output
+ml/data/processed/synthetic.csv
+ml/artifacts/

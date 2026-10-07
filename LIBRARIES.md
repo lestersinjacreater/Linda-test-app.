@@ -26,7 +26,9 @@ Not used, on purpose: Firebase, analytics, ads or tracking SDKs, and any network
 |---|---|---|---|
 | pytest | 8.3.4 | MIT | Runs the Python tests. |
 
-pandas, numpy and scikit-learn are added here when the training code (F3) lands.
+| scikit-learn | 1.5.2 | BSD-3 | `ml/` | Trains the TF-IDF + logistic regression baseline. The app does not ship it: only the exported JSON ships. |
+| NumPy | 2.1.3 | BSD-3 | `ml/` | Arrays for scikit-learn. |
+| SciPy | 1.14.1 | BSD-3 | `ml/` | Sparse matrices that join text features and context features. |
 
 ## Build and CI
 

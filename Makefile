@@ -8,13 +8,14 @@ setup:
 	@test -f dashboard/package.json && (cd dashboard && npm install) || echo "dashboard: not built yet"
 
 data:
-	@echo "ml dataset pipeline: not built yet (no data yet, see DATASETS.md)"
+	python -I ml/src/features/dataset/synthetic.py
 
-train:
-	@echo "ml training: not built yet"
+train: data
+	python -I ml/src/features/train/train.py
+	python -I ml/src/features/evaluate/evaluate.py
 
 export-model:
-	@echo "ml export: not built yet"
+	python -I ml/src/features/export/export.py
 
 test:
 	python -m pytest ml/tests -v
