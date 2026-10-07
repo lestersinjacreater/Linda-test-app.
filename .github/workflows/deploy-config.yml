@@ -1,0 +1,33 @@
+name: deploy config
+
+# The production files cannot be run in CI (they need a server), but they can be checked for mistakes:
+# the compose file must resolve, and Caddy must accept the Caddyfile.
+on:
+  push:
+    paths: ["docker-compose.prod.yml", "deploy/**", ".env.production.example", "scripts/smoke_prod.py", ".github/workflows/deploy-config.yml"]
+  pull_request:
+    paths: ["docker-compose.prod.yml", "deploy/**", ".env.production.example", "scripts/smoke_prod.py", ".github/workflows/deploy-config.yml"]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compose file resolves with example values
+        run: |
+          cp .env.production.example .env.production
+          docker compose -f docker-compose.prod.yml --env-file .env.production config -q
+      - name: Compose file refuses to start without the secrets
+        run: |
+          if docker compose -f docker-compose.prod.yml config -q 2>/dev/null; then
+            echo "compose should fail without POSTGRES_PASSWORD and the presenter password"; exit 1
+          fi
+      - name: Caddy accepts the Caddyfile
+        run: |
+          docker run --rm -v "$PWD/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            -e SITE_ADDRESS=linda.example.com -e PRESENTER_USER=presenter \
+            -e PRESENTER_HASH='$2a$14$abcdefghijklmnopqrstuuabcdefghijklmnopqrstuvwxyz0123456' \
+            caddy:2.8-alpine caddy validate --config /etc/caddy/Caddyfile
+      - name: Smoke-test script compiles
+        run: python3 -m py_compile scripts/smoke_prod.py

@@ -215,3 +215,17 @@ R reset, B blast, O rotating numbers, P attack test. Each scenario starts with a
 - No map library: the Kenya outline is a small hand-drawn shape, so there is no map server to fail on stage. It is simplified, not survey-accurate.
 - The radar logs a "possible poisoning" warning during the genuine demo blast too, because its phones are all first-time reporters. It only logs and never blocks; in real use phones would have a history.
 - `NEXT_PUBLIC_TELCO_API` / `NEXT_PUBLIC_TELCO_WS` are fixed at build time, and the BROWSER connects to them, so on a cloud server set them to the server's public address.
+
+## Production setup on one server (`docker-compose.prod.yml`, `deploy/Caddyfile`, `docs/DEPLOY.md`)
+
+### The idea
+One small VPS runs five containers: Postgres, the radar, the mock telco, the dashboard, and **Caddy**. Only Caddy has public ports (80 and 443). It gets a free HTTPS certificate by itself and forwards only an allow-list of paths: `/` to the dashboard, `/radar/*` to the radar (what phones use), and the simulator's read-only feeds. The simulator's internal calls (`/network/confirm`, `/deliveries`, `/history`) cannot be reached from outside, and starting or resetting a demo needs the presenter's password. So nobody on the internet can run a scam blast on your stage or fake a radar confirmation by calling the telco directly.
+
+### How the dashboard finds the server
+The browser connects to `https://DOMAIN/telco` and the live feed to `wss://DOMAIN/telco/events` (worked out from the same setting, `PUBLIC_URL`). That address is baked in when the dashboard image is built, so changing it means rebuilding (`make prod-up` does).
+
+### A bug that only the real database found
+Until now the radar was tested on SQLite. Running it on real Postgres, every report was rejected: the code inserted the report before the sender row it points to. SQLite does not enforce "foreign keys" unless asked, so every test passed; Postgres always enforces them. The fix is one `flush()` that writes the device and sender first, and the test database now switches foreign-key checking on, so this class of mistake fails in the tests from now on. Lesson for the judges' Q&A: we tested on the production database engine, and it found a real defect.
+
+### Checking a deployment
+`make prod-check` (`scripts/smoke_prod.py`) looks at the server from outside: pages load, private paths are closed, the password is enforced, then it plays one blast and confirms the radar and blocklist agree. We ran it here against real Postgres behind real Caddy: all 14 checks passed with the same headline numbers as the simulator alone (99.2% warned before reading, confirmed at 28.5 s).

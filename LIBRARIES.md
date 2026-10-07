@@ -72,3 +72,11 @@ Simulator (`simulator/`) uses FastAPI, Uvicorn, httpx and Pydantic at the same v
 
 No map library on purpose: the Kenya outline is a small hand-drawn SVG path (`features/radar-map/kenya.ts`), so there is no tile server to fail on stage.
 Africa's Talking and Daraja are **stubbed** for now (no SDK, no credentials).
+
+## Production server (docker images, not code we ship)
+
+| Image | Version | Licence | Why |
+|---|---|---|---|
+| Caddy | 2.8 | Apache 2.0 | The only public entry point: automatic HTTPS, an allow-list of paths, the presenter password, WebSocket proxying. |
+| PostgreSQL | 16 | PostgreSQL licence (BSD-style) | The radar's database in production (SQLite is used for tests and local runs). |
+| Python slim, Node alpine | 3.11, 22 | PSF, MIT | Base images for the radar/simulator and the dashboard. |

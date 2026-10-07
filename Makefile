@@ -1,5 +1,5 @@
 # One-word commands (root CLAUDE.md section 7). Targets for parts not built yet say so.
-.PHONY: setup data train export-model test test-e2e record-fallback up demo
+.PHONY: setup data train export-model test test-e2e record-fallback up demo prod-up prod-down prod-ps prod-logs prod-check
 
 setup:
 	pip install -r ml/requirements.txt
@@ -39,3 +39,23 @@ demo:
 	curl -s -X POST $(TELCO)/reset
 	@echo
 	curl -s -X POST "$(TELCO)/scenarios/blast?wait=true" | python3 -m json.tool
+
+# ---- Production on a VPS (docs/DEPLOY.md). Needs .env.production (copy .env.production.example) ----
+PROD = docker compose -f docker-compose.prod.yml --env-file .env.production
+
+prod-up:
+	$(PROD) up -d --build
+
+prod-down:
+	$(PROD) down
+
+prod-ps:
+	$(PROD) ps
+
+prod-logs:
+	$(PROD) logs -f --tail=100
+
+# Checks the live server from outside and plays one blast, so do NOT run it during a presentation.
+#   make prod-check BASE=https://linda.example.com PRESENTER_USER=presenter PRESENTER_PASS='the password'
+prod-check:
+	python3 scripts/smoke_prod.py "$(BASE)" "$(PRESENTER_USER)" "$(PRESENTER_PASS)"

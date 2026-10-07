@@ -1,0 +1,109 @@
+# Production setup for ONE small server (a VPS with Docker). Full steps: docs/DEPLOY.md
+#
+#   cp .env.production.example .env.production      # then edit it
+#   docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+#
+# Only Caddy publishes ports (80 and 443). The radar, simulator, dashboard and database are reachable
+# only inside the private docker network, through Caddy's allow-list (deploy/Caddyfile).
+name: linda
+
+x-restart: &restart
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }   # keep logs from filling a small disk
+
+services:
+  postgres:
+    <<: *restart
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: linda
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production}
+      POSTGRES_DB: linda
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U linda -d linda"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  radar:
+    <<: *restart
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://linda:${POSTGRES_PASSWORD}@postgres:5432/linda
+      TELCO_URL: http://telco:8000
+      RADAR_MIN_DEVICES: ${RADAR_MIN_DEVICES:-3}
+      RADAR_MIN_SCORE: ${RADAR_MIN_SCORE:-2.4}
+      RADAR_NO_TOKEN_TRUST_CAP: ${RADAR_NO_TOKEN_TRUST_CAP:-1.0}
+      # DEMO ONLY: simulator phones start with trust 0.8 (see docs/EXPLAINED.md, step 5). Set empty to switch off.
+      RADAR_DEMO_TRUSTED_PREFIX: ${RADAR_DEMO_TRUSTED_PREFIX-5111}
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  telco:
+    <<: *restart
+    build:
+      context: .
+      dockerfile: simulator/Dockerfile
+    environment:
+      RADAR_URL: http://radar:8001
+      SIM_SPEED: ${SIM_SPEED:-20}
+      SIM_SEED: ${SIM_SEED:-42}
+      SIM_DEVICE_PREFIX: ${SIM_DEVICE_PREFIX:-5111}
+    depends_on:
+      radar: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  dashboard:
+    <<: *restart
+    build:
+      context: ./dashboard
+      args:
+        # The BROWSER connects to this, through Caddy. The WebSocket address is worked out from it (https becomes wss).
+        NEXT_PUBLIC_TELCO_API: ${PUBLIC_URL:?set PUBLIC_URL in .env.production}/telco
+    depends_on:
+      telco: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  caddy:
+    <<: *restart
+    image: caddy:2.8-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?set SITE_ADDRESS in .env.production}
+      PRESENTER_USER: ${PRESENTER_USER:?set PRESENTER_USER in .env.production}
+      PRESENTER_HASH: ${PRESENTER_HASH:?set PRESENTER_HASH in .env.production}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data        # keeps the HTTPS certificate across restarts
+      - caddy_config:/config
+    depends_on:
+      dashboard: { condition: service_healthy }
+      radar: { condition: service_healthy }
+      telco: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

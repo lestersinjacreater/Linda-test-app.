@@ -40,3 +40,7 @@ ml/artifacts/
 
 # dashboard build output
 dashboard/tsconfig.tsbuildinfo
+
+# real server settings: never commit
+.env.production
+!.env.production.example

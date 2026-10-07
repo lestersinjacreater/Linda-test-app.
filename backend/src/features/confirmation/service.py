@@ -147,6 +147,9 @@ def submit_report(session: Session, settings: Settings, verified: set[str], repo
         session.add(sender)
     if sender.allowlisted:
         return ReportResult("allowlisted", 0)
+    # The device and the sender must exist in the database BEFORE the report that points to them.
+    # (Postgres enforces this; SQLite only does when foreign keys are switched on, see core/db.py.)
+    session.flush()
 
     session.add(Report(
         sender=report.sender, device_id=report.device_id, category=report.category,

@@ -1,5 +1,5 @@
 """Database tables (SQLAlchemy). SQLite for local dev and tests, Postgres in docker-compose."""
-from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, create_engine
+from sqlalchemy import Boolean, Float, ForeignKey, Integer, String, create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -62,6 +62,12 @@ def make_session_factory(database_url: str) -> sessionmaker:
             connect_args={"check_same_thread": False},
             poolclass=StaticPool if ":memory:" in database_url else None,
         )
+
+        @event.listens_for(engine, "connect")
+        def _enforce_foreign_keys(dbapi_connection, _):
+            # SQLite ignores foreign keys unless asked. Postgres (production) always enforces them, so
+            # tests must too, or a wrong insert order passes here and breaks on the server.
+            dbapi_connection.execute("PRAGMA foreign_keys=ON")
     else:
         engine = create_engine(database_url, pool_pre_ping=True)
     Base.metadata.create_all(engine)
