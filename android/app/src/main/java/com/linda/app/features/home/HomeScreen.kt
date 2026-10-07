@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -48,6 +49,8 @@ import com.linda.app.core.ui.theme.LindaTheme
 import com.linda.app.core.ui.theme.ShieldNotchShape
 import com.linda.app.core.ui.theme.Spacing
 import com.linda.app.core.ui.theme.green900
+import com.linda.app.features.demo.DemoOverlay
+import com.linda.app.features.demo.TapCounter
 
 /**
  * Home (docs/design-system.md 7.2): the five-arc shield ring, "LINDA is protecting you", and the month's count.
@@ -76,6 +79,7 @@ fun HomeScreen(onOpenInbox: () -> Unit, onOpenRecovery: () -> Unit, viewModel: H
     }
     val problem = ProtectionStatus.firstProblem(layers)
 
+    val taps = remember { TapCounter() }
     var asked by remember { mutableStateOf(setOf<Problem>()) }
     val ask = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { recheck++ }
     fun fix(p: Problem) {
@@ -110,7 +114,13 @@ fun HomeScreen(onOpenInbox: () -> Unit, onOpenRecovery: () -> Unit, viewModel: H
                 .background(colors.surface, hero)
                 .padding(Spacing.xl),
         ) {
-            ShieldRing(layers)
+            ShieldRing(layers, onLogoTap = {
+                if (taps.tap(System.currentTimeMillis())) {
+                    val turnOn = !DemoOverlay.isOn()
+                    DemoOverlay.setEnabled(context, turnOn)
+                    Toast.makeText(context, if (turnOn) R.string.overlay_toast_on else R.string.overlay_toast_off, Toast.LENGTH_SHORT).show()
+                }
+            })
             Spacer(Modifier.height(Spacing.lg))
             if (problem == null) {
                 Text(

@@ -312,4 +312,14 @@
 
     <string name="recovery_calm">Usiogope. Tuchukue hatua haraka.</string>
     <string name="recovery_chip">Kurudisha pesa hufanya kazi vizuri zaidi ndani ya dakika chache.</string>
+
+    <!-- Demo overlay for judges (docs/design-system.md 7.8). The raw lines inside it are log-style and not translated. -->
+    <string name="overlay_title">Hali ya onyesho: ufuatiliaji wa safu</string>
+    <string name="overlay_waiting">Inasubiri ujumbe. Tumia Hali ya onyesho au tuma ujumbe kwa simu hii.</string>
+    <string name="overlay_fold">Kunja</string>
+    <string name="overlay_unfold">Fungua</string>
+    <string name="overlay_hide">Ficha</string>
+    <string name="overlay_toast_on">Paneli ya onyesho imewashwa</string>
+    <string name="overlay_toast_off">Paneli ya onyesho imezimwa</string>
+    <string name="dev_demo_overlay">Onyesha paneli ya onyesho</string>
 </resources>

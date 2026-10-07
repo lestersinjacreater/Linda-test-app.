@@ -66,6 +66,7 @@ private fun letterOnTint(index: Int): Color = if (index < 3) Color(Palette.TEXT_
  * read what that layer found. With "remove animations" on, it shows the finished state straight away.
  *
  * [results] must come from [LayerTraceBuilder.build]. [onLanded] runs once the sweep has finished (used for haptics).
+ * Change [replayKey] to play the sweep again for results that look the same as before.
  */
 @Composable
 fun LayerTraceView(
@@ -73,6 +74,7 @@ fun LayerTraceView(
     level: String,
     modifier: Modifier = Modifier,
     animate: Boolean = true,
+    replayKey: Any? = null,
     onLanded: () -> Unit = {},
 ) {
     val colors = LindaTheme.colors
@@ -82,7 +84,7 @@ fun LayerTraceView(
     val elapsed = remember { Animatable(0f) }
     var expanded by remember { mutableStateOf<Int?>(null) }
 
-    LaunchedEffect(results, animate, reduceMotion) {
+    LaunchedEffect(results, animate, reduceMotion, replayKey) {
         if (animate && !reduceMotion) {
             elapsed.snapTo(0f)
             elapsed.animateTo(finished, tween(SweepTiming.ANIMATION_MS, easing = LinearEasing))

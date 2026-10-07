@@ -6,7 +6,10 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +37,7 @@ import com.linda.app.core.ui.theme.rememberReduceMotion
  * unless the phone's "remove animations" setting is on.
  */
 @Composable
-fun ShieldRing(layers: List<LayerHealth>, modifier: Modifier = Modifier, size: Dp = 200.dp) {
+fun ShieldRing(layers: List<LayerHealth>, modifier: Modifier = Modifier, size: Dp = 200.dp, onLogoTap: () -> Unit = {}) {
     val colors = LindaTheme.colors
     val reduceMotion = rememberReduceMotion()
     val breath = rememberInfiniteTransition(label = "breath")
@@ -69,6 +72,7 @@ fun ShieldRing(layers: List<LayerHealth>, modifier: Modifier = Modifier, size: D
                 )
             }
         }
-        LindaLogo(size = size * 0.4f)
+        // Tapping the mark 7 times switches the demo overlay (a hidden switch for the presenters).
+        LindaLogo(size = size * 0.4f, modifier = Modifier.clip(CircleShape).clickable(onClick = onLogoTap))
     }
 }

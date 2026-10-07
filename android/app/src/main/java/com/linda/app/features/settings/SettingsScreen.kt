@@ -46,6 +46,7 @@ import kotlinx.coroutines.launch
 import com.linda.app.core.util.Prefs
 import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.alerts.VoiceWarnings
+import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.sync.BlocklistSyncWorker
 import com.linda.app.core.ui.components.LindaButton
 import com.linda.app.core.ui.components.LindaTextField
@@ -179,6 +180,11 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(stringResource(R.string.dev_blocked, blocked), style = MaterialTheme.typography.bodyMedium)
+            val overlayOn by DemoOverlay.enabled.collectAsState()
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.dev_demo_overlay), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                Switch(checked = overlayOn, onCheckedChange = { DemoOverlay.setEnabled(context, it) })
+            }
             LindaButton(stringResource(R.string.dev_open_demo), onClick = onOpenDemo, modifier = Modifier.fillMaxWidth(), secondary = true)
         }
     }

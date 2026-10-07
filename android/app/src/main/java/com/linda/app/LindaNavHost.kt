@@ -1,6 +1,7 @@
 package com.linda.app
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -11,7 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.linda.app.features.demo.DemoOverlay
+import com.linda.app.features.demo.DemoOverlayPanel
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -89,10 +95,14 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
             }
         },
     ) { innerPadding ->
+        val overlayOn by DemoOverlay.enabled.collectAsStateWithLifecycle()
+        val overlayLatest by DemoOverlay.latest.collectAsStateWithLifecycle()
+        val context = LocalContext.current
+        Box(Modifier.padding(innerPadding)) {
         NavHost(
             navController = navController,
             startDestination = Destination.Home.route,
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier,
         ) {
             composable(Destination.Home.route) { HomeScreen(onOpenInbox = { navController.navigate("inbox") }, onOpenRecovery = { navController.navigate("recovery/-1") }) }
             composable(Destination.Checker.route) { CheckerScreen(sharedText) }
@@ -119,6 +129,10 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
             composable("recovery/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
                 RecoveryScreen(detectionId = entry.arguments?.getLong("id") ?: -1L, onBack = { navController.popBackStack() })
             }
+        }
+        if (overlayOn) {
+            DemoOverlayPanel(overlayLatest, onHide = { DemoOverlay.setEnabled(context, false) }, modifier = Modifier.align(Alignment.BottomCenter))
+        }
         }
     }
 }

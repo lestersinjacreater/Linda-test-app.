@@ -424,3 +424,23 @@ History, Inbox scan, the "Is this a scam?" checker, Recovery, Family Guardian, S
 
 ### Not done yet
 The demo overlay (step 5). Not yet seen on a real phone, and the Swahili for the new lines is unreviewed.
+
+## UI redesign, step 5: the demo overlay for judges (`android/.../features/demo`)
+
+### What it is
+A hidden panel for the demo. **Tap the Linda mark in the middle of the home ring seven times** (each tap within 1.5 seconds of the last) and a translucent panel slides up above the bottom bar; the same tap sequence turns it off again. (It can also be switched in Settings, in the developer section that opens when you tap the version number seven times.) Every time Linda analyses a message (a real text, a demo-mode message, or text pasted into the checker) the panel plays the five-layer sweep again and, under it, prints what each layer actually produced, in a monospaced font:
+- **L**: the cleaned-up text Linda read, and any disguised words it undid (for example `M-P3SA->mpesa`).
+- **I**: the score next to the two warning lines (`score=0.94 warn=0.55 scam=0.80`), the scam type and the wording the model leaned on.
+- **N**: the sender and the facts used: in your contacts, first message, verified sender, ordinary phone number, link, M-Pesa-style, fake M-Pesa, on the confirmed list.
+- **D**: the verdict and score.
+- **A**: what Linda did: `notified`, `voiced`, `guardian:sent` (or why it was skipped), `reported:queued`.
+It can be folded to a one-line bar, or hidden with Hide.
+
+### Privacy
+The overlay is **off by default**. While it is off, Linda keeps nothing about any message in memory for it. While it is on, the last analysed message's cleaned-up text is held in memory only so the panel can show it; it is never saved, never sent anywhere, and switching the overlay off throws it away. It only ever shows what is on this phone's own screen, so show it only on the demo phone. The key=value lines are log-style on purpose and are not translated; the title, the Hide and Fold buttons and the Layer Trace itself are in English and Kiswahili.
+
+### How it is tested
+The tap sequence rule (seven quick taps, a pause restarts it, slow tapping never triggers it) and the text of every line are plain code with 8 unit tests.
+
+### With this step the redesign is complete
+Foundation, Layer Trace and scan sweep, home ring, verdict card, full-screen alert, every other screen and the demo overlay are built and tested on GitHub's build. None of it has been seen on a real phone yet.
