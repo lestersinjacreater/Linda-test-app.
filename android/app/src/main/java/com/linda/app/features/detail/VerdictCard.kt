@@ -49,6 +49,7 @@ fun VerdictCard(
     trace: List<LayerResult>?,
     reasons: List<String>,
     modifier: Modifier = Modifier,
+    onTraceLanded: () -> Unit = {},
     actions: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = LindaTheme.colors
@@ -79,10 +80,12 @@ fun VerdictCard(
                 Text("$sender · $time", style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
             }
             if (fakeMpesa) FakeMpesaBadge()
-            trace?.let { LayerTraceView(it, level) }
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                Text(stringResource(R.string.detail_why), style = MaterialTheme.typography.titleMedium, color = colors.textPrimary)
-                reasons.forEach { Text(it, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary) }
+            trace?.let { LayerTraceView(it, level, onLanded = onTraceLanded) }
+            if (reasons.isNotEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                    Text(stringResource(R.string.detail_why), style = MaterialTheme.typography.titleMedium, color = colors.textPrimary)
+                    reasons.forEach { Text(it, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary) }
+                }
             }
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.md), content = actions)
         }

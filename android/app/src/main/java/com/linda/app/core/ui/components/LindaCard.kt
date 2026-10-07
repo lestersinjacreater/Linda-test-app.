@@ -2,6 +2,7 @@ package com.linda.app.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
@@ -20,7 +21,12 @@ import com.linda.app.core.ui.theme.green900
  * Light mode gets a soft green-tinted shadow; dark mode relies on the lighter surface instead.
  */
 @Composable
-fun LindaCard(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, content: @Composable ColumnScope.() -> Unit) {
+fun LindaCard(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(Spacing.sm),
+    content: @Composable ColumnScope.() -> Unit,
+) {
     val colors = LindaTheme.colors
     val lift = if (colors.isDark) Modifier else Modifier.shadow(
         elevation = 4.dp, shape = MediumShape, ambientColor = green900.copy(alpha = 0.10f), spotColor = green900.copy(alpha = 0.10f),
@@ -29,6 +35,7 @@ fun LindaCard(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, cont
         modifier = modifier.then(lift)
             .then(if (onClick != null) Modifier.clip(MediumShape).clickable(onClick = onClick) else Modifier)
             .background(colors.surface, MediumShape).padding(Spacing.cardPadding),
+        verticalArrangement = verticalArrangement,
         content = content,
     )
 }

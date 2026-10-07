@@ -404,3 +404,23 @@ When you tap a warning notification for a confident scam, the first thing you se
 
 ### Not done yet
 Restyling History, Inbox, Checker, Recovery, Guardian, Settings, Onboarding and Demo (step 4); the demo overlay (step 5). Not yet seen on a real phone.
+
+## UI redesign, step 4: every other screen in the new look
+
+### What changed
+History, Inbox scan, the "Is this a scam?" checker, Recovery, Family Guardian, Settings, Onboarding, Demo and the bottom bar now use the same kit as Home and the warning screen: one button style (`LindaButton`: a filled deep-green main button, outlined secondary buttons), one card style with a soft green shadow, one text-field style (raised fill, green focus border), the shared type sizes and spacing. The leftover purple from Material's default colours is gone, so filter chips, switches and the selected bottom-bar item are all green.
+
+### Screens with real design changes
+- **Checker**: the answer is now the same Verdict Card as on the warning screen (icon and words, the five-layer trace, the reasons), for safe messages too, with a short note when the message looks fine.
+- **Recovery**: the checklist is a vertical stepper. Each step is a numbered dot on a line; ticking a step turns its dot into a tick; the first unticked step has a ring that pulses gently (still when animations are off). If you sent the money in the last day, the top shows "Don't panic. Let's act fast." and a chip "Reversals work best within minutes." The "which step is current" rule is plain code with a test. The numbers and phone codes in the steps did not change and are still marked "verify before demo" in `RecoveryConfig.kt`.
+- **Family Guardian**: the log of alerts that were sent shows each one as an amber Caution-style card, so the protected person sees what their guardian was told. The design file describes a card on the *guardian's* phone; we did not build that because the guardian receives a plain text message, not the app.
+- **Onboarding** starts with the Linda mark. **Bottom bar** uses the green selected indicator.
+
+### Rules we kept and where we bent them
+- Red is only for verdicts. Messages like "permission was denied" are now normal dark text, not red. The one exception is the code field on the Recovery form, which still shows Material's red outline when the transaction code is invalid.
+- Every spacing now uses the 4/8/12/16/24/32 scale; the old 14, 10, 6 and 20 dp values were moved to the nearest allowed one.
+- Text fields keep Material's 56 dp minimum height (the design file says 52 dp) so they stay easy to tap.
+- Some screens still have more than one filled main button (Onboarding has "Allow" and "Done", Settings has a few switches' worth of actions). Those are setup screens, not warnings.
+
+### Not done yet
+The demo overlay (step 5). Not yet seen on a real phone, and the Swahili for the new lines is unreviewed.

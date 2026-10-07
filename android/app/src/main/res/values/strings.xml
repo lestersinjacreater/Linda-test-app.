@@ -315,4 +315,7 @@
     <string name="takeover_headline">Stop. This looks like a scam.</string>
     <string name="takeover_continue">OK, show me why</string>
     <string name="badge_fake_mpesa">Not from M-PESA. You have not received any money.</string>
+
+    <string name="recovery_calm">Don\'t panic. Let\'s act fast.</string>
+    <string name="recovery_chip">Reversals work best within minutes.</string>
 </resources>

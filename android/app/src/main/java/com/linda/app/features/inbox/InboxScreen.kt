@@ -35,6 +35,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.linda.app.R
 import com.linda.app.core.ui.components.LevelChip
 import com.linda.app.core.util.formatDateTime
+import com.linda.app.core.ui.components.LindaButton
+import com.linda.app.core.ui.components.LindaCard
+import com.linda.app.core.ui.theme.LindaTheme
 
 /**
  * "Scan my inbox" (F8). Reads the last 90 days of texts ON THE PHONE, checks each one like a live message, and lists
@@ -56,18 +59,18 @@ fun InboxScreen(onOpenDetail: (Long) -> Unit, onBack: () -> Unit, viewModel: Inb
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(stringResource(R.string.inbox_title), style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.inbox_title), style = MaterialTheme.typography.titleLarge)
 
         when (val s = state) {
             is InboxState.Idle, is InboxState.Failed -> {
                 Text(stringResource(R.string.inbox_intro), style = MaterialTheme.typography.bodyLarge)
                 Text(stringResource(R.string.inbox_privacy), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                if (s is InboxState.Failed) Text(stringResource(R.string.inbox_failed), color = MaterialTheme.colorScheme.error)
-                if (denied) Text(stringResource(R.string.inbox_permission_denied), color = MaterialTheme.colorScheme.error)
-                Button(onClick = { scanClicked() }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.inbox_scan_button)) }
+                if (s is InboxState.Failed) Text(stringResource(R.string.inbox_failed), color = LindaTheme.colors.textPrimary)
+                if (denied) Text(stringResource(R.string.inbox_permission_denied), color = LindaTheme.colors.textPrimary)
+                LindaButton(stringResource(R.string.inbox_scan_button), onClick = { scanClicked() }, modifier = Modifier.fillMaxWidth())
             }
 
             is InboxState.Scanning -> {
@@ -78,14 +81,14 @@ fun InboxScreen(onOpenDetail: (Long) -> Unit, onBack: () -> Unit, viewModel: Inb
                 )
                 Text(stringResource(R.string.inbox_progress, s.checked, s.total), style = MaterialTheme.typography.bodyLarge)
                 Text(plural(R.plurals.inbox_found_so_far, s.flagged), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.primary)
-                OutlinedButton(onClick = { viewModel.cancel() }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.inbox_cancel)) }
+                LindaButton(stringResource(R.string.inbox_cancel), onClick = { viewModel.cancel() }, modifier = Modifier.fillMaxWidth(), secondary = true)
             }
 
             is InboxState.Done -> {
                 Text(
                     if (s.flaggedCount == 0) stringResource(R.string.inbox_none) else plural(R.plurals.inbox_found, s.flaggedCount),
                     style = MaterialTheme.typography.titleLarge,
-                    color = if (s.flaggedCount == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                    color = if (s.flaggedCount == 0) MaterialTheme.colorScheme.primary else LindaTheme.colors.scam.text,
                 )
                 Text(
                     stringResource(R.string.inbox_summary, s.scanned, "%.1f".format(java.util.Locale.US, s.seconds)) +
@@ -93,12 +96,7 @@ fun InboxScreen(onOpenDetail: (Long) -> Unit, onBack: () -> Unit, viewModel: Inb
                     style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 s.groups.forEach { g ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().clickable { onOpenDetail(g.newestId) },
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    LindaCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpenDetail(g.newestId) }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 LevelChip(g.worst.name)
                                 Text(g.sender ?: stringResource(R.string.inbox_unknown_sender), style = MaterialTheme.typography.bodyLarge)
@@ -107,13 +105,12 @@ fun InboxScreen(onOpenDetail: (Long) -> Unit, onBack: () -> Unit, viewModel: Inb
                             Text(g.preview, maxLines = 2, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(formatDateTime(g.newestDate), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                    }
                 }
                 if (s.flaggedCount > 0) Text(stringResource(R.string.inbox_saved_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Button(onClick = { scanClicked() }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.inbox_again)) }
+                LindaButton(stringResource(R.string.inbox_again), onClick = { scanClicked() }, modifier = Modifier.fillMaxWidth())
             }
         }
-        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_back)) }
+        LindaButton(stringResource(R.string.action_back), onClick = onBack, modifier = Modifier.fillMaxWidth(), secondary = true)
     }
 }
 

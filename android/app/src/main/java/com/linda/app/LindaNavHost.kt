@@ -76,11 +76,13 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
                             }
                         },
                         icon = { Text(text = stringResource(destination.glyph), fontSize = 22.sp) },
-                        label = { Text(text = stringResource(destination.label)) },
+                        label = { Text(text = stringResource(destination.label), style = MaterialTheme.typography.labelMedium) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedTextColor = MaterialTheme.colorScheme.primary,
                             unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+                            indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                            selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         ),
                     )
                 }

@@ -309,4 +309,7 @@
     <string name="takeover_headline">Simama. Huu unaonekana kuwa ulaghai.</string>
     <string name="takeover_continue">Sawa, nionyeshe kwa nini</string>
     <string name="badge_fake_mpesa">Haukutoka M-PESA. Hujapokea pesa yoyote.</string>
+
+    <string name="recovery_calm">Usiogope. Tuchukue hatua haraka.</string>
+    <string name="recovery_chip">Kurudisha pesa hufanya kazi vizuri zaidi ndani ya dakika chache.</string>
 </resources>

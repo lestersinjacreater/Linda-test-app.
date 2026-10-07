@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.linda.app.R
 import com.linda.app.core.util.Prefs
 import com.linda.app.features.reporting.ConsentCard
+import com.linda.app.core.ui.components.LindaButton
+import com.linda.app.core.ui.components.LindaLogo
 
 /**
  * First run: ask for the permissions Linda needs, and explain how to stop the phone from putting
@@ -44,27 +46,21 @@ fun OnboardingScreen(onDone: () -> Unit) {
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(stringResource(R.string.onboarding_title), style = MaterialTheme.typography.headlineMedium)
+        LindaLogo(size = 72.dp, description = stringResource(R.string.logo_description))
+        Text(stringResource(R.string.onboarding_title), style = MaterialTheme.typography.titleLarge)
         Text(stringResource(R.string.onboarding_intro), style = MaterialTheme.typography.bodyLarge)
 
         Text(stringResource(R.string.onboarding_permissions_title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.onboarding_permissions_body), style = MaterialTheme.typography.bodyLarge)
-        Button(onClick = { askPermissions.launch(permissions) }, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.onboarding_allow))
-        }
+        LindaButton(stringResource(R.string.onboarding_allow), onClick = { askPermissions.launch(permissions) }, modifier = Modifier.fillMaxWidth())
 
         Text(stringResource(R.string.onboarding_battery_title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(brandInstructions()), style = MaterialTheme.typography.bodyLarge)
-        OutlinedButton(
-            onClick = { context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) },
-            modifier = Modifier.fillMaxWidth(),
-        ) { Text(stringResource(R.string.onboarding_open_battery)) }
+        LindaButton(stringResource(R.string.onboarding_open_battery), onClick = { context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) }, modifier = Modifier.fillMaxWidth(), secondary = true)
 
         ConsentCard(onAnswered = { agreed -> Prefs.setReportingConsent(context, agreed) })
 
-        Button(onClick = onDone, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            Text(stringResource(R.string.onboarding_done))
-        }
+        LindaButton(stringResource(R.string.onboarding_done), onClick = onDone, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
     }
 }
 
