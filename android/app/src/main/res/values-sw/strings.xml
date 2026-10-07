@@ -111,4 +111,57 @@
     <string name="demo_call_recent">Onyo la simu limeonyeshwa: alituma ujumbe wa ulaghai dakika %1$d zilizopita.</string>
     <string name="demo_call_reported">Onyo la simu limeonyeshwa: nambari iliyoripotiwa.</string>
     <string name="demo_call_none">Hakuna onyo la simu (pokea ujumbe wa M-Pesa wa kughushi kwanza).</string>
+
+    <string name="recovery_title">Tayari nimetuma pesa</string>
+    <string name="recovery_intro_urgent">Chukua hatua haraka. Dakika za kwanza ndizo muhimu zaidi. Fanya hatua hizi kwa mpangilio.</string>
+    <string name="recovery_intro_late">Muda umepita, lakini bado unaweza kuripoti hili na kuwalinda watu wengine.</string>
+    <string name="recovery_form_title">Mwambie Linda kilichotokea (si lazima)</string>
+    <string name="recovery_form_help">Hii hufanya hatua na maandishi ya ripoti kuwa sahihi zaidi. Inabaki kwenye simu yako.</string>
+    <string name="recovery_amount">Ulituma kiasi gani? (Ksh)</string>
+    <string name="recovery_when_title">Ulituma lini?</string>
+    <string name="recovery_when_now">Sasa hivi</string>
+    <string name="recovery_when_24h">Ndani ya saa 24 zilizopita</string>
+    <string name="recovery_when_over">Zaidi ya saa 24 zilizopita</string>
+    <string name="recovery_paid_to">Nambari uliyotumia pesa</string>
+    <string name="recovery_code">Msimbo wa muamala wa M-PESA (herufi na nambari 10, kutoka ujumbe wa malipo YAKO)</string>
+    <string name="recovery_code_invalid">Hii haionekani kama msimbo wa muamala. Angalia ujumbe unaothibitisha malipo yako.</string>
+    <string name="recovery_bank">Nililipa kutoka akaunti ya benki au kadi</string>
+    <string name="recovery_include_message">Jumuisha ujumbe wa ulaghai kwenye maandishi ya ripoti</string>
+    <string name="recovery_steps_title">Cha kufanya sasa</string>
+    <string name="recovery_done">Imekamilika</string>
+    <string name="recovery_call">Piga %1$s</string>
+    <string name="recovery_open_sms">Fungua jumbe kwenda %1$s</string>
+    <string name="recovery_action_note">Linda hufungua tu programu ya simu yako. Wewe mwenyewe unabonyeza kutuma au kupiga.</string>
+
+    <string name="step_stop_title">Simama. Usitume zaidi.</string>
+    <string name="step_stop_body">Usijibu tapeli wala kutuma pesa zaidi, hata wakiahidi kuzirudisha au kusema lazima ulipe ada kwanza.</string>
+    <string name="step_evidence_title">Hifadhi ushahidi</string>
+    <string name="step_evidence_body">Hifadhi ujumbe wa ulaghai na ujumbe wa M-PESA unaothibitisha malipo YAKO. Usiufute. Piga picha za skrini.</string>
+    <string name="step_reversal_title">Omba kurudishiwa pesa sasa</string>
+    <string name="step_reversal_body">Tuma ujumbe wa M-PESA unaothibitisha malipo yako kwenda %1$s. Ni bure na inafanya kazi ndani ya saa %2$d tu tangu malipo. Safaricom hukagua ombi, na huenda lisifanikiwe ikiwa pesa tayari zimetolewa.</string>
+    <string name="step_care_title">Piga huduma kwa wateja ya Safaricom</string>
+    <string name="step_care_body">Piga %1$s (malipo ya kabla) au %2$s (malipo ya baada). Sema wazi kuwa ulikuwa mwathirika wa ulaghai wa M-PESA na uwaombe wazuie nambari ya tapeli.</string>
+    <string name="step_care_late_title">Piga huduma kwa wateja ya Safaricom</string>
+    <string name="step_care_late_body">Muda wa saa %1$d wa kurudisha pesa umepita, kwa hivyo pesa zilizotolewa huenda zisirudi. Bado piga %2$s (malipo ya kabla) au %3$s (malipo ya baada), eleza kilichotokea na uwaombe wazuie nambari.</string>
+    <string name="step_report_title">Ripoti ujumbe wa ulaghai</string>
+    <string name="step_report_body">Tuma ujumbe wa ulaghai kwenda %1$s (bure). Safaricom hukagua na kuzuia nambari za ulaghai, jambo linalowalinda watu wengine.</string>
+    <string name="step_bank_title">Piga benki yako</string>
+    <string name="step_bank_body">Ulilipa kutoka akaunti ya benki au kadi. Piga benki yako mara moja kwa nambari iliyo nyuma ya kadi yako, waambie ni ulaghai na uwaombe wazuie au warudishe malipo.</string>
+    <string name="step_police_title">Ripoti kwa polisi</string>
+    <string name="step_police_body">Ripoti kwa polisi na uombe nambari ya OB (kitabu cha matukio). Unaweza pia kupiga simu ya bure ya DCI %1$s. Safaricom au benki yako wanaweza kuomba nambari hiyo. Ukiwa hatarini, piga %2$s au %3$s.</string>
+    <string name="step_police_optional_title">Fikiria kuripoti kwa polisi</string>
+    <string name="step_police_optional_body">Kwa kiasi kidogo ni uamuzi wako, lakini kuripoti kunasaidia. Simu ya bure ya DCI ni %1$s.</string>
+    <string name="step_beware_title">Jihadhari na ulaghai wa \"kurudisha pesa\"</string>
+    <string name="step_beware_body">Matapeli mara nyingi hupiga tena wakijifanya wasaidizi wanaoweza kukurudishia pesa kwa ada. Hakuna mtu halali anayekutoza ili kurudisha pesa, na hakuna atakayekuomba PIN yako.</string>
+
+    <string name="recovery_report_title_en">Maandishi ya ripoti (Kiingereza)</string>
+    <string name="recovery_report_title_sw">Maandishi ya ripoti (Kiswahili)</string>
+    <string name="recovery_report_note">Nakili haya na ubandike kwenye ujumbe, fomu ya benki au taarifa ya polisi. Yanabaki kwenye simu yako: Linda haitumi popote.</string>
+    <string name="recovery_copy">Nakili</string>
+    <string name="recovery_copied">Imenakiliwa. Bandika unapohitaji.</string>
+    <string name="recovery_disclaimer">Nambari na hatua zinafuata ushauri uliochapishwa na Safaricom, lakini Linda haiwezi kukurudishia pesa. Kurudi kwa pesa kunategemea Safaricom, benki yako na kama zilishatolewa.</string>
+
+    <string name="action_i_sent_money">Tayari nimetuma pesa →</string>
+    <string name="home_recovery_title">Nimetapeliwa. Nifanye nini?</string>
+    <string name="home_recovery_body">Pata mwongozo wa hatua kwa hatua wa kujaribu kurudisha pesa zako.</string>
 </resources>

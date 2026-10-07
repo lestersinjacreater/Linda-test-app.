@@ -117,4 +117,57 @@
     <string name="demo_call_recent">Call warning shown: sent you a scam message %1$d minutes ago.</string>
     <string name="demo_call_reported">Call warning shown: reported number.</string>
     <string name="demo_call_none">No call warning (receive the fake M-Pesa message first).</string>
+
+    <string name="recovery_title">I already sent money</string>
+    <string name="recovery_intro_urgent">Act fast. The first minutes matter most. Do these steps in order.</string>
+    <string name="recovery_intro_late">Some time has passed, but you can still report this and protect other people.</string>
+    <string name="recovery_form_title">Tell Linda what happened (optional)</string>
+    <string name="recovery_form_help">This only makes the steps and the report text more exact. It stays on your phone.</string>
+    <string name="recovery_amount">How much did you send? (Ksh)</string>
+    <string name="recovery_when_title">When did you send it?</string>
+    <string name="recovery_when_now">Just now</string>
+    <string name="recovery_when_24h">In the last 24 hours</string>
+    <string name="recovery_when_over">More than 24 hours ago</string>
+    <string name="recovery_paid_to">Number you sent the money to</string>
+    <string name="recovery_code">M-PESA transaction code (10 letters and numbers, from YOUR payment message)</string>
+    <string name="recovery_code_invalid">That does not look like a transaction code. Check the message that confirms your payment.</string>
+    <string name="recovery_bank">I paid from a bank account or card</string>
+    <string name="recovery_include_message">Include the scam message in the report text</string>
+    <string name="recovery_steps_title">What to do now</string>
+    <string name="recovery_done">Done</string>
+    <string name="recovery_call">Call %1$s</string>
+    <string name="recovery_open_sms">Open messages to %1$s</string>
+    <string name="recovery_action_note">Linda only opens your phone app. You press send or call yourself.</string>
+
+    <string name="step_stop_title">Stop. Do not send more.</string>
+    <string name="step_stop_body">Do not reply to the scammer and do not send any more money, even if they promise to return it or say you must pay a fee first.</string>
+    <string name="step_evidence_title">Keep the evidence</string>
+    <string name="step_evidence_body">Keep the scam message and the M-PESA message that confirms YOUR payment. Do not delete them. Take screenshots.</string>
+    <string name="step_reversal_title">Ask for a reversal now</string>
+    <string name="step_reversal_body">Forward the M-PESA message that confirms your payment to %1$s. It is free and only works within %2$d hours of the payment. Safaricom checks the request, and it may not work if the money has already been withdrawn.</string>
+    <string name="step_care_title">Call Safaricom customer care</string>
+    <string name="step_care_body">Call %1$s (prepaid) or %2$s (postpaid). Say clearly that you were a victim of M-PESA fraud and ask them to block the scammer\'s number.</string>
+    <string name="step_care_late_title">Call Safaricom customer care</string>
+    <string name="step_care_late_body">The %1$d-hour reversal window has passed, so money that was already withdrawn may not come back. Still call %2$s (prepaid) or %3$s (postpaid), explain what happened and ask them to block the number.</string>
+    <string name="step_report_title">Report the scam message</string>
+    <string name="step_report_body">Forward the scam message to %1$s (free). Safaricom checks and blocks fraud numbers, which protects other people.</string>
+    <string name="step_bank_title">Call your bank</string>
+    <string name="step_bank_body">You paid from a bank account or card. Call your bank right away on the number on the back of your card, tell them it was fraud and ask them to stop or recall the payment.</string>
+    <string name="step_police_title">Report to the police</string>
+    <string name="step_police_body">Report to the police and ask for an OB (occurrence book) number. You can also call the DCI toll-free hotline %1$s. Safaricom or your bank may ask for that number. If you are in danger, call %2$s or %3$s.</string>
+    <string name="step_police_optional_title">Consider reporting to the police</string>
+    <string name="step_police_optional_body">For a small amount it is your choice, but reporting helps. The DCI toll-free hotline is %1$s.</string>
+    <string name="step_beware_title">Watch out for \"recovery\" scams</string>
+    <string name="step_beware_body">Scammers often call again, pretending to be helpers who can get your money back for a fee. Nobody genuine charges you to recover money, and nobody will ever ask for your PIN.</string>
+
+    <string name="recovery_report_title_en">Report text (English)</string>
+    <string name="recovery_report_title_sw">Report text (Kiswahili)</string>
+    <string name="recovery_report_note">Copy this and paste it into a message, a bank form or a police statement. It stays on your phone: Linda never sends it anywhere.</string>
+    <string name="recovery_copy">Copy</string>
+    <string name="recovery_copied">Copied. Paste it where you need it.</string>
+    <string name="recovery_disclaimer">The numbers and steps follow Safaricom\'s published advice, but Linda cannot reverse money for you. Whether money comes back depends on Safaricom, your bank and whether it was already withdrawn.</string>
+
+    <string name="action_i_sent_money">I already sent money →</string>
+    <string name="home_recovery_title">I have been scammed. What now?</string>
+    <string name="home_recovery_body">Get a step-by-step guide to try to get your money back.</string>
 </resources>

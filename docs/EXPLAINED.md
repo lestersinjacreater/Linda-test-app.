@@ -229,3 +229,22 @@ Until now the radar was tested on SQLite. Running it on real Postgres, every rep
 
 ### Checking a deployment
 `make prod-check` (`scripts/smoke_prod.py`) looks at the server from outside: pages load, private paths are closed, the password is enforced, then it plays one blast and confirms the radar and blocklist agree. We ran it here against real Postgres behind real Caddy: all 14 checks passed with the same headline numbers as the simulator alone (99.2% warned before reading, confirmed at 28.5 s).
+
+## Recovery mode (`features/recovery`)
+
+### What it is
+The screen for someone who has **already sent money** to a scammer ("I've been scammed, what now?"). It opens from the warning screen ("I already sent money →", with the scammer's number and date already filled in) and from a card on the Home screen. It needs no network and no server, and it sends nothing anywhere.
+
+### What it does
+1. Asks a few optional questions: when the money was sent (just now, in the last 24 hours, longer ago), how much, the number it went to, the M-PESA transaction code, whether it was paid from a bank or card.
+2. Shows a checklist, in order, that changes with the answers (`RecoveryPlan`, a pure function with unit tests): stop and send no more; keep the evidence; **ask for a reversal by forwarding your payment confirmation to the reversal short code, only while the 24-hour window is open**; call customer care; forward the scam message to the fraud short code; call your bank (only if you paid from a bank); report to the police for large amounts (optional for small ones); and a warning that scammers come back pretending to help recover money for a fee.
+3. Buttons next to steps **open the phone's dialer or messages app** with the number filled in. Linda never calls or sends for the person: they press the button themselves.
+4. Writes a ready-made report in English and in Kiswahili (`ReportText`) with the scammer's number, amount, transaction code, date and what the scam looked like, with a Copy button, to paste into an SMS, a bank form or a police statement. The scam message itself is included only if the person switches that on. If a fact is missing it says "(not provided)" rather than leaving a blank or inventing one.
+
+### Where the official numbers live, and how sure we are
+Every number, the 24-hour window and the "large amount" threshold are in **one file**, `RecoveryConfig.kt`, each marked `// VERIFY BEFORE DEMO`, and the file lists how each was checked. **Be straight with judges and teammates about this:** Safaricom's own website could not be opened from our build environment, so none of the numbers is confirmed on an official Safaricom page yet. 456, 333, 100 and 200 agree across several Kenyan news and explainer sources; the DCI hotline agrees across news reports quoting the DCI; 999 / 112 are the well-known emergency numbers but our search did not confirm them; the Ksh 10,000 "large amount" line is our own decision. A teammate must check them on Safaricom's pages or in the M-PESA app and then remove the markers.
+
+### Honest limits
+- Linda cannot reverse money. The screen says so. Whether money comes back depends on Safaricom, the bank, and whether the scammer already withdrew it.
+- The reversal request in the guide is Safaricom's published self-service route; in a fraud case Safaricom may handle it differently, which is why customer care and the fraud report are also steps.
+- The Swahili text is unreviewed.

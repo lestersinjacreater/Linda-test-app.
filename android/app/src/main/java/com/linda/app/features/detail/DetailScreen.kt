@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +38,7 @@ import kotlinx.coroutines.launch
 
 /** What opens when the user taps a warning: the message, the verdict, every reason, and what to do next (F6). */
 @Composable
-fun DetailScreen(detectionId: Long, onBack: () -> Unit) {
+fun DetailScreen(detectionId: Long, onOpenRecovery: (Long) -> Unit, onBack: () -> Unit) {
     val context = LocalContext.current
     val app = context.applicationContext as LindaApp
     val language = Prefs.effectiveLanguage(context)
@@ -95,6 +96,12 @@ fun DetailScreen(detectionId: Long, onBack: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
             ) { Text(stringResource(R.string.action_mark_safe)) }
         }
+        // The way into Recovery mode for someone who already acted on the scam (F6).
+        Button(
+            onClick = { onOpenRecovery(d.id) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+        ) { Text(stringResource(R.string.action_i_sent_money)) }
         OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_back)) }
     }
 }

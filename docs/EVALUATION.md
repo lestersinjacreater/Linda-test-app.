@@ -43,7 +43,10 @@ Run on at least one Tecno/Infinix/Itel phone and one Samsung.
 - [ ] Looks good on a 5.5-inch, 720p screen
 - [ ] Battery-optimisation instructions are correct for Tecno, Infinix, Itel, Samsung, Xiaomi
 - [ ] Swahili text reviewed by a native speaker
-- [ ] Recovery-mode phone numbers and steps verified against official Safaricom sources (Recovery mode is not built yet)
+- [ ] **Recovery mode numbers and steps verified on Safaricom's OFFICIAL pages / the M-PESA app** (456 reversal and its 24-hour window, 333 fraud report, 100 / 200 customer care, DCI hotline 0800 722 203, 999 / 112). Today they are only corroborated by news reports because Safaricom's site could not be opened from the build environment. Table of what was checked: `RecoveryConfig.kt`. Then delete the `// VERIFY BEFORE DEMO` comments you have confirmed.
+- [ ] Recovery mode: from a warning, "I already sent money" opens it with the scammer's number and date filled in; from Home it opens empty; "Just now" shows the reversal step and "More than 24 hours ago" does not; the call and message buttons open the phone's own dialer and messages app and never send anything themselves; the copied report text pastes correctly
+- [ ] Recovery mode works with airplane mode on (no network needed)
+- [ ] Swahili recovery text reviewed by a native speaker (it tells people where to send money-related reports, so wrong wording matters)
 - [ ] Consent screen: reports stay OFF until Agree is tapped; Settings switch turns them off again
 - [ ] With the radar address set in the developer screen (tap version 7 times): a demo fake M-Pesa message does NOT create a report (demo is never reported), a real one from a normal number does
 - [ ] Airplane mode: a scam SMS still warns, the report waits in the queue ("Reports waiting") and sends after reconnecting

@@ -26,6 +26,7 @@ import com.linda.app.features.demo.DemoScreen
 import com.linda.app.features.detail.DetailScreen
 import com.linda.app.features.history.HistoryScreen
 import com.linda.app.features.home.HomeScreen
+import com.linda.app.features.recovery.RecoveryScreen
 import com.linda.app.features.settings.SettingsScreen
 
 /** The screens reachable from the bottom navigation bar. */
@@ -88,13 +89,21 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
             startDestination = Destination.Home.route,
             modifier = Modifier.padding(innerPadding),
         ) {
-            composable(Destination.Home.route) { HomeScreen() }
+            composable(Destination.Home.route) { HomeScreen(onOpenRecovery = { navController.navigate("recovery/-1") }) }
             composable(Destination.Checker.route) { CheckerScreen(sharedText) }
             composable(Destination.History.route) { HistoryScreen(onOpen = { navController.navigate("detail/$it") }) }
             composable(Destination.Settings.route) { SettingsScreen(onOpenDemo = { navController.navigate("demo") }) }
             composable("demo") { DemoScreen(onBack = { navController.popBackStack() }) }
             composable("detail/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
-                DetailScreen(detectionId = entry.arguments?.getLong("id") ?: -1L, onBack = { navController.popBackStack() })
+                DetailScreen(
+                    detectionId = entry.arguments?.getLong("id") ?: -1L,
+                    onOpenRecovery = { navController.navigate("recovery/$it") },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+            // The guide for someone who already sent money. id = the warning they are reacting to, or -1 from Home.
+            composable("recovery/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
+                RecoveryScreen(detectionId = entry.arguments?.getLong("id") ?: -1L, onBack = { navController.popBackStack() })
             }
         }
     }
