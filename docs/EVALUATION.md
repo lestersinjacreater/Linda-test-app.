@@ -52,4 +52,5 @@ Run on at least one Tecno/Infinix/Itel phone and one Samsung.
 - [ ] Airplane mode: a scam SMS still warns, the report waits in the queue ("Reports waiting") and sends after reconnecting
 - [ ] Call warning: grant the call-screening role in Settings, then call from a number that just sent a scam SMS (or one on the blocklist); the call still rings, with a warning on top
 - [ ] Demo mode: all seven buttons behave as labelled, and the real M-Pesa and chat samples do NOT warn
+- [ ] Family Guardian: off by default; switching it on asks for the SMS permission; a test alert reaches a second phone; a demo-mode fake M-Pesa message sends the guardian ONE alert and sending it again within 6 hours does not send another (and the log shows it); a real M-Pesa message and a pasted message send nothing; switching it off stops alerts; the alert fits in one SMS
 - [ ] Sender IDs COOPBANK and KRA confirmed as the real IDs those organisations use

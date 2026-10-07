@@ -76,3 +76,19 @@ interface BlockedNumberDao {
     @Query("SELECT COUNT(*) FROM blocked_numbers")
     fun observeCount(): Flow<Int>
 }
+
+@Dao
+interface GuardianAlertDao {
+    @Insert
+    suspend fun insert(alert: GuardianAlertEntity): Long
+
+    /** When the guardian was last told about this scammer. Failed sends and tests do not count against the limit. */
+    @Query("SELECT MAX(sentAt) FROM guardian_alerts WHERE senderKey = :senderKey AND status = 'sent' AND isTest = 0")
+    suspend fun lastSentAt(senderKey: String): Long?
+
+    @Query("SELECT * FROM guardian_alerts ORDER BY sentAt DESC LIMIT :limit")
+    fun observeRecent(limit: Int): Flow<List<GuardianAlertEntity>>
+
+    @Query("DELETE FROM guardian_alerts")
+    suspend fun clearAll()
+}

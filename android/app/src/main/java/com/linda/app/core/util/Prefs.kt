@@ -30,6 +30,15 @@ object Prefs {
     fun serverUrl(ctx: Context): String = p(ctx).getString("server_url", "") ?: ""
     fun setServerUrl(ctx: Context, value: String) = p(ctx).edit().putString("server_url", value.trim().trimEnd('/')).apply()
 
+    /** Family Guardian: OFF until the protected person turns it on. The guardian's number never leaves this phone except as an SMS recipient. */
+    fun guardianEnabled(ctx: Context) = p(ctx).getBoolean("guardian_enabled", false)
+    fun setGuardianEnabled(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("guardian_enabled", value).apply()
+    fun guardianNumber(ctx: Context): String = p(ctx).getString("guardian_number", "") ?: ""
+    fun setGuardianNumber(ctx: Context, value: String) = p(ctx).edit().putString("guardian_number", value).apply()
+    /** What the guardian calls this person in the alert, e.g. "Mum". */
+    fun protectedName(ctx: Context): String = p(ctx).getString("protected_name", "") ?: ""
+    fun setProtectedName(ctx: Context, value: String) = p(ctx).edit().putString("protected_name", value).apply()
+
     /** The hidden developer screen (tap the version 7 times). */
     fun devMode(ctx: Context) = p(ctx).getBoolean("dev_mode", false)
     fun setDevMode(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("dev_mode", value).apply()

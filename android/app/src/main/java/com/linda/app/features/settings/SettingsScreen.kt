@@ -46,7 +46,7 @@ import com.linda.app.features.sync.BlocklistSyncWorker
  * developer section: radar server address, sync status, model version and demo mode.
  */
 @Composable
-fun SettingsScreen(onOpenDemo: () -> Unit) {
+fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
     val context = LocalContext.current
     val app = context.applicationContext as LindaApp
     var language by remember { mutableStateOf(Prefs.language(context)) }
@@ -82,6 +82,11 @@ fun SettingsScreen(onOpenDemo: () -> Unit) {
                 Text(stringResource(label), style = MaterialTheme.typography.bodyLarge)
             }
         }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+        Text(stringResource(R.string.settings_guardian_title), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_guardian_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        OutlinedButton(onClick = onOpenGuardian, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_guardian_open)) }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
         Text(stringResource(R.string.settings_calls_title), style = MaterialTheme.typography.titleMedium)

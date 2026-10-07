@@ -17,3 +17,7 @@ fun startOfMonthMillis(now: Long = System.currentTimeMillis()): Long {
 /** For example "12 Oct, 4:12 PM". */
 fun formatDateTime(millis: Long): String =
     java.text.SimpleDateFormat("d MMM, h:mm a", java.util.Locale.getDefault()).format(java.util.Date(millis))
+
+/** For example "4:12 PM". Fixed to English digits and AM/PM so the guardian's SMS reads the same on every phone. */
+fun formatTimeOfDay(millis: Long): String =
+    java.text.SimpleDateFormat("h:mm a", java.util.Locale.US).format(java.util.Date(millis))

@@ -51,3 +51,17 @@ data class ReportQueueEntity(
 /** A number the radar confirmed as a scammer (contract 5.3). Kept on the phone so call warnings work offline. */
 @Entity(tableName = "blocked_numbers")
 data class BlockedNumberEntity(@PrimaryKey val msisdn: String, val category: String)
+
+/**
+ * One alert sent (or attempted) to the guardian. Kept so the protected person can SEE what was sent, and so the
+ * 6-hour limit per scammer number survives app restarts. It stores no message text and no guardian number.
+ */
+@Entity(tableName = "guardian_alerts")
+data class GuardianAlertEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val senderKey: String,      // the scammer's number (or sender name) the rate limit is counted per
+    val category: String,
+    val sentAt: Long,
+    val status: String,         // "sent" (handed to the phone's SMS system) or "failed"
+    val isTest: Boolean = false,
+)

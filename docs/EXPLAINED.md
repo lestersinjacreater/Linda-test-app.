@@ -248,3 +248,26 @@ Every number, the 24-hour window and the "large amount" threshold are in **one f
 - Linda cannot reverse money. The screen says so. Whether money comes back depends on Safaricom, the bank, and whether the scammer already withdrew it.
 - The reversal request in the guide is Safaricom's published self-service route; in a fraud case Safaricom may handle it differently, which is why customer care and the fraud report are also steps.
 - The Swahili text is unreviewed.
+
+## Family Guardian (`features/guardian`)
+
+### What it is
+A parent (or anyone) names a **guardian**, such as a son or daughter. When the parent's phone receives a message Linda is sure is a scam, Linda sends the guardian **one short SMS**: "Linda alert: Mum received a suspected "sent by mistake" scam at 4:12 PM. Consider calling them." The guardian can phone and talk the parent out of sending money. It needs no server: the SMS goes straight from phone to phone.
+
+### The rules that protect the person it protects
+- **Opt-in, off by default.** Nothing is sent until the protected person fills in the guardian's number and their own name, and turns the switch on. The SMS permission is asked for only at that moment.
+- **They see everything.** The screen shows the exact wording that will be sent and a log of every alert sent. They can send a test alert, and switch it off at any time.
+- **Only what the alert needs.** The SMS has the person's name, the kind of scam and the time. It never contains the scam message, the scammer's number, contacts or balance. A unit test checks this.
+- **No spam.** At most **one alert per scammer number every 6 hours** (`GuardianRules.RATE_LIMIT_MS`). The limit is kept in the database, so restarting the phone does not reset it. Failed sends and tests do not use it up.
+- **Only real signals.** Only SCAM-level verdicts, never CAUTION; never for pasted text (the person checked that themselves) and never for verified senders.
+- **It fits in one SMS.** Names are shortened to 20 characters, and a test checks every alert in English and Kiswahili stays under 160 characters.
+- The English wording avoids he/she/her/him ("Consider calling them"). Kiswahili has no gendered pronoun.
+
+### How it connects
+`MessageProcessor` calls `GuardianService.maybeAlert` after saving a SCAM, for real SMS and for demo mode (so demo step 2, "the guardian's phone receives the alert", works with no network of ours; it uses the phone's normal SMS). `GuardianPolicy.decide` returns Send or the exact reason for skipping, and the unit tests cover every reason.
+
+### Honest limits
+- "Sent" means the alert was **handed to the phone's SMS system**. The carrier can still fail to deliver it, and Android does not tell us. That is why there is a test button.
+- It uses the person's own SMS balance and the SEND_SMS permission, which is fine for a sideloaded APK but is exactly the kind of permission the Play Store restricts (we do not publish there).
+- The alert tells the guardian a scam arrived, which is a deliberate disclosure the person agreed to. Explain this plainly if a judge asks about privacy.
+- Voice warnings (F12) "on by default for guardian-protected users" are not built yet.

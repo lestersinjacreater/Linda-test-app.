@@ -25,6 +25,7 @@ import com.linda.app.features.checker.CheckerScreen
 import com.linda.app.features.demo.DemoScreen
 import com.linda.app.features.detail.DetailScreen
 import com.linda.app.features.history.HistoryScreen
+import com.linda.app.features.guardian.GuardianScreen
 import com.linda.app.features.home.HomeScreen
 import com.linda.app.features.recovery.RecoveryScreen
 import com.linda.app.features.settings.SettingsScreen
@@ -92,7 +93,8 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
             composable(Destination.Home.route) { HomeScreen(onOpenRecovery = { navController.navigate("recovery/-1") }) }
             composable(Destination.Checker.route) { CheckerScreen(sharedText) }
             composable(Destination.History.route) { HistoryScreen(onOpen = { navController.navigate("detail/$it") }) }
-            composable(Destination.Settings.route) { SettingsScreen(onOpenDemo = { navController.navigate("demo") }) }
+            composable(Destination.Settings.route) { SettingsScreen(onOpenDemo = { navController.navigate("demo") }, onOpenGuardian = { navController.navigate("guardian") }) }
+            composable("guardian") { GuardianScreen(onBack = { navController.popBackStack() }) }
             composable("demo") { DemoScreen(onBack = { navController.popBackStack() }) }
             composable("detail/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
                 DetailScreen(

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />          <!-- score new messages -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />        <!-- is the sender in my contacts? Never uploaded -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />   <!-- show warnings (Android 13+) -->
+    <uses-permission android:name="android.permission.SEND_SMS" />             <!-- Family Guardian only: the short alert to the guardian, after the person opts in -->
     <uses-permission android:name="android.permission.INTERNET" />             <!-- ONLY for reports (no text) and the blocklist; the app works without it -->
 
     <!-- usesCleartextTraffic: the laptop backup radar on demo day is plain http. The cloud radar should be https. -->
