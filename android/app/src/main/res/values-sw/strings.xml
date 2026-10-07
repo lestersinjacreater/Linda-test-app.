@@ -28,9 +28,9 @@
     <string name="channel_scam">Maonyo ya ulaghai</string>
     <string name="channel_caution">Tahadhari</string>
 
-    <string name="level_scam">ULAGHAI</string>
-    <string name="level_caution">TAHADHARI</string>
-    <string name="level_safe">SALAMA</string>
+    <string name="level_scam">Huenda ni ulaghai</string>
+    <string name="level_caution">Kuwa mwangalifu</string>
+    <string name="level_safe">Inaonekana salama</string>
     <string name="filter_all">Zote</string>
     <string name="history_search">Tafuta ujumbe au watumaji</string>
     <string name="sender_pasted">Maandishi yaliyobandikwa</string>

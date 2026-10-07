@@ -5,6 +5,7 @@
 > - Old section 4 (repo layout) and section 7 phases are replaced by root sections 3 and 8.
 > - Old `shared/test-vectors.json` schema (`expected_level`) is replaced by root section 5.9.
 > - `dashboard/` is now the live demo dashboard (root section 6), not a Supabase campaign radar.
+> - Section 10 (UI and design direction) is **replaced** by `docs/design-system.md` (Safaricom green, light by default, the five-layer trace).
 
 # CLAUDE.md — Linda: On-Device Scam Shield
 
@@ -345,7 +346,7 @@ The Kotlin implementation must reproduce scikit-learn's probabilities to within 
 
 ## 10. UI and design direction
 
-- **Dark, vivid, confident.** Near-black background (`#0B0F1A`), card surfaces (`#151B2E`), electric cyan accent (`#00E5FF`), hot pink for danger (`#FF2E88`), amber for caution (`#FFC940`).
+- **Superseded: see `docs/design-system.md`** (Safaricom green, light mode by default, dark follows the phone). The old dark cyan/pink palette is gone.
 - Home screen shows a large **protection status** ("Linda is protecting you" + count of scams caught this month) rather than a boring list.
 - The scam warning screen should feel urgent but calm: big verdict, plain reasons, one clear next action.
 - **Every user-facing string lives in `strings.xml` with a Swahili translation in `values-sw/strings.xml`.** No hardcoded UI text.

@@ -1,36 +1,45 @@
 package com.linda.app.core.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.linda.app.R
-import com.linda.app.core.ui.theme.LindaColors
+import com.linda.app.core.ui.theme.FullShape
+import com.linda.app.core.ui.theme.LindaTheme
+import com.linda.app.core.ui.theme.Spacing
 
-/** A small coloured label for a risk level: pink SCAM, amber CAUTION. [level] is the RiskLevel name. */
+/**
+ * A pill for a risk level: icon + words + tint, never colour alone (docs/design-system.md 3.3 and 7.9).
+ * [level] is the RiskLevel name ("SAFE", "CAUTION" or "SCAM").
+ */
 @Composable
 fun LevelChip(level: String, modifier: Modifier = Modifier) {
-    val (label, color) = when (level) {
-        "SCAM" -> R.string.level_scam to LindaColors.Pink
-        "CAUTION" -> R.string.level_caution to LindaColors.Amber
-        else -> R.string.level_safe to LindaColors.Cyan
+    val style = LindaTheme.colors.risk(level)
+    val label = when (level) {
+        "SCAM" -> R.string.level_scam
+        "CAUTION" -> R.string.level_caution
+        else -> R.string.level_safe
     }
-    Text(
-        text = stringResource(label),
-        color = Color(0xFF0B0F1A),
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Bold,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         modifier = modifier
-            .clip(RoundedCornerShape(50))
-            .background(color)
-            .padding(horizontal = 12.dp, vertical = 4.dp),
-    )
+            .heightIn(min = 32.dp)
+            .clip(FullShape)
+            .background(style.tint)
+            .padding(horizontal = Spacing.md),
+    ) {
+        RiskIcon(level, size = 16.dp)
+        Text(stringResource(label), color = style.text, style = MaterialTheme.typography.labelMedium)
+    }
 }

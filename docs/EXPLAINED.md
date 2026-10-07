@@ -347,3 +347,22 @@ The APK was published only from a branch literally named `main`, so merging into
 
 ### Honest limits
 We have not seen it served from github.io yet (Pages needs the owner to switch it on). The repository name ends in a dot, which is unusual and could confuse some links. It cannot count downloads.
+
+## UI redesign, step 1: the design foundation (`android/.../core/ui/theme`, `core/ui/components`)
+
+### What changed and why
+The app used a dark cyan-and-pink look. We replaced it with the design in `docs/design-system.md`: Safaricom green, light by default (readable in sunlight), dark mode that follows the phone's setting, Poppins for headings and Inter for text. Nothing about detection changed. This step only builds the "kit" the other screens will use, and every existing screen picks up the new colours and fonts automatically.
+
+### The kit
+- **Palette.kt**: every colour as a plain number. **Color.kt**: the named tokens (`green500`, `scamRed`, `layerL`...) plus `LindaTheme.colors`, which gives the right shade for light or dark.
+- **Type.kt, Shape.kt, Spacing.kt, Motion.kt**: the size table, the corner radii (8/16/24dp), the only allowed spacings, the animation timings, and the "shield notch" shape (a card with its bottom-right corner cut off like a shield point).
+- **Components**: `LindaButton` (52dp, one primary per screen), `LindaCard` (soft green shadow in light mode), `LevelChip` and `RiskIcon` (icon plus words plus colour, never colour alone).
+
+### A deliberate difference from the design file
+Two colour pairs written in the design file fail its own 4.5:1 reading rule: green `#00A651` words on the mint Safe background (2.9:1) and red `#E4002B` words on the pink Scam background (4.1:1). So *words* use deep green `#007A3D` and a slightly deeper red `#D0002A`, while icons, borders and big fills keep the exact brand colours. A unit test (`PaletteContrastTest`) checks every text pair in light and dark mode, so a future colour change that makes text hard to read fails the build.
+
+### Fonts
+Poppins and Inter are bundled inside the app (both free under the SIL Open Font License; listed in `LIBRARIES.md`), so nothing is downloaded and the app still works offline. They add about 1.5 MB to the APK.
+
+### Not done yet (later steps)
+The Layer Trace and scan animation (step 2), the home ring and verdict card (step 3), restyling the other screens (step 4), and the demo overlay (step 5). Until then the old screens look green and clean but keep their old layouts. Not yet seen on a real phone.

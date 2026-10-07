@@ -22,6 +22,15 @@ Required by the hackathon rules. Update this file **whenever a dependency is add
 
 Not used, on purpose: Firebase, analytics, ads or tracking SDKs, and any network library (the app uses the platform's own `HttpURLConnection`, only for reports without text and the blocklist; the core app works fully offline).
 
+### Fonts (bundled in `android/app/src/main/res/font`, no run-time download)
+
+| Font | Files | Licence | Why |
+|---|---|---|---|
+| Poppins (SemiBold, Bold) | `poppins_semibold.ttf`, `poppins_bold.ttf` | SIL Open Font License 1.1 (The Poppins Project Authors) | Headings, the LINDA wordmark and the layer letters (docs/design-system.md section 4). Source: github.com/google/fonts, `ofl/poppins`. |
+| Inter (Regular, Medium) | `inter_regular.otf`, `inter_medium.otf` | SIL Open Font License 1.1 (The Inter Project Authors) | Body text, labels and tabular numbers. Source: Inter 4.0 (Debian package `fonts-inter`). |
+
+The licence lets us bundle and ship the fonts in the app; it does not allow selling the fonts on their own.
+
 ## ML (Python 3.11)
 
 | Library | Version | Licence | Why we use it |

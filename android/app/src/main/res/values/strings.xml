@@ -34,9 +34,9 @@
     <string name="channel_scam">Scam warnings</string>
     <string name="channel_caution">Caution notices</string>
 
-    <string name="level_scam">SCAM</string>
-    <string name="level_caution">CAUTION</string>
-    <string name="level_safe">SAFE</string>
+    <string name="level_scam">Likely scam</string>
+    <string name="level_caution">Be careful</string>
+    <string name="level_safe">Looks safe</string>
     <string name="filter_all">All</string>
     <string name="history_search">Search messages or senders</string>
     <string name="sender_pasted">Pasted text</string>
