@@ -1,7 +1,7 @@
 name: Build APK
 
 # Builds and tests the Android app on every push and pull request.
-# On main (or when run by hand) it also publishes the debug APK to the
+# On the default branch (or when run by hand) it also publishes the debug APK to the
 # "latest-build" pre-release, so teammates can download it onto their phones.
 
 on:
@@ -56,7 +56,8 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Publish to the latest-build pre-release
-        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        # Publish from the repository's DEFAULT branch, whatever it is called, or when run by hand.
+        if: github.ref_name == github.event.repository.default_branch || github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

@@ -330,3 +330,20 @@ Through the same offline queue as automatic reports: saved first, sent when the 
 
 ### Consent withdrawn
 If the person later switches automatic reporting off, any **automatic** reports still waiting in the queue are **deleted, not sent**. Reports they confirmed one by one stay, because those were their own explicit decision.
+
+## The download page (`site/`, `docs/DOWNLOAD.md`)
+
+### What it is and why it is built this way
+A single HTML page, hosted free on GitHub Pages, where a person downloads and installs Linda. We chose a plain page with no framework, no libraries and no outside fonts or scripts: it loads fast on a cheap phone and a slow connection, cannot be broken by someone else's website going down, and a test fails if it ever loads anything from another site. The only outside call is to GitHub's API, to show when the newest build was made; if that fails the download button still works, because it is an ordinary link.
+
+### The download button never goes stale
+Every build deletes and recreates the `latest-build` release with the same file name, so one link always means "the newest app". The page therefore never needs editing when the app changes.
+
+### Honest by design
+It says plainly that Linda is a hackathon prototype outside the Play Store (which is why Android warns), lists every permission with its reason, and states that message text is never sent. A test compares the permission table with the app's real manifest, so adding a permission without explaining it on the page fails the build.
+
+### Fix made at the same time
+The APK was published only from a branch literally named `main`, so merging into our default branch left a stale download. It now publishes from whichever branch is the repository's default.
+
+### Honest limits
+We have not seen it served from github.io yet (Pages needs the owner to switch it on). The repository name ends in a dot, which is unusual and could confuse some links. It cannot count downloads.

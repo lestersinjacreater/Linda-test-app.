@@ -11,7 +11,7 @@ Entry for the Safaricom interns' *Intelligence Unleashed* hackathon (Finance tra
 
 ## Get the app
 
-APKs are built by GitHub Actions. Open **Releases**, download `linda-debug.apk` from the `latest-build` pre-release, and install it.
+APKs are built by GitHub Actions. People download it from the **download page** (`site/`, see [`docs/DOWNLOAD.md`](docs/DOWNLOAD.md)), or straight from **Releases**: `linda-debug.apk` in the `latest-build` pre-release.
 
 ## Layout
 
