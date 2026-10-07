@@ -51,3 +51,23 @@ Android only lets you update an installed app if the new version is signed with 
 - `expected_normalised` is empty (`null`) for now. It gets filled in when the text normaliser (F1) is built, because that is when we define exactly how disguises are undone.
 - Some legitimate templates (reversal, Fuliza, Safaricom notices, bank sender IDs) are **approximations** of the real wording and are marked in each vector's `note`. Replace them with verified real templates before we quote any accuracy numbers.
 - `ml/tests/test_vectors_schema.py` checks the file is well formed and covers everything the spec requires.
+
+
+## System rebuild, step 2: normaliser, fingerprint and shared test vectors
+
+### The normaliser (`ml/src/features/normalize/normalize.py`)
+- **What:** turns "K1m@kosa", "M-P3SA", "t u m a" back into "kimakosa", "mpesa", "tuma" so the model and rules see plain words.
+- **Careful part:** `3 0 1 4 5 @ $` are only swapped back inside a word, so money amounts like `Ksh3,140` stay numbers. M-Pesa transaction codes (10 capitals and digits) are left alone for the same reason.
+- **Known limit:** a disguised digit at the end of a word is only fixed when it is a single character ("tum4" works, "f33" does not). We chose this over mangling amounts.
+- **Why Python and Kotlin must match:** the model was trained on Python's output; if the phone normalised differently, scores would silently drift. The shared test vectors catch that.
+- Plain ASCII only, on purpose: Python and Kotlin disagree about lowercasing exotic Unicode.
+
+### The SimHash fingerprint (`ml/src/features/fingerprint/simhash.py`)
+- **What:** a 64-bit "similarity fingerprint" of a message. Two messages from the same scam campaign differ by only a few bits, so the radar can say "this new number is sending a known campaign" without ever seeing the text.
+- **How:** chop the normalised text into overlapping 3-letter pieces, hash each piece (FNV-1a, a very simple hash), and let every piece vote on each of the 64 bits.
+- **Privacy:** a fingerprint cannot be turned back into the message.
+
+### The shared test vectors (`shared/test-vectors.json`)
+- 63 messages: real-format M-Pesa/bank/KPLC/KRA messages that must be SAFE, every scam campaign, fake M-Pesa from a personal number, obfuscated, Swahili, Sheng, mixed, and everyday chat.
+- All data here is **synthetic**, with placeholder phone numbers (see `DATASETS.md`). Real collected data is still to come.
+- Score ranges are provisional until the model exists.
