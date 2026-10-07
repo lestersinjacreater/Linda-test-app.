@@ -444,3 +444,26 @@ The tap sequence rule (seven quick taps, a pause restarts it, slow tapping never
 
 ### With this step the redesign is complete
 Foundation, Layer Trace and scan sweep, home ring, verdict card, full-screen alert, every other screen and the demo overlay are built and tested on GitHub's build. None of it has been seen on a real phone yet.
+
+## Motion polish (apple-design skill), part A: the Android app
+
+### What changed
+We read the third-party `apple-design` guidance (kept in `.claude/skills/apple-design/`, MIT) and applied the parts that fit a phone app, without adding any new "show-off" animation:
+- **Springs instead of fixed-time animations.** Anything you touch now settles with a *critically damped spring* (no bounce): buttons shrink to 97% the instant you press and settle back; tappable cards do the same. A spring starts from wherever the thing currently is, so tapping again mid-motion never jumps. The numbers come from Apple's two designer-friendly settings (damping 1.0, response 0.35 seconds), converted to Compose's stiffness by one formula (`SpringMath`, unit tested).
+- **The verdict card now rises 16 dp and fades in** when a warning opens or a checker result appears (this was in the design file but had never been wired up). With "remove animations" on, it only fades.
+- **The buzz now matches the sweep.** Before, the phone buzzed after the whole 480 ms sweep. Now it buzzes the moment the first flagged layer lands, so what you see and what you feel happen together. A safe message never buzzes.
+- **The demo overlay folds and unfolds with a spring** (instantly when animations are off).
+- **Tighter letter spacing on big titles** (the larger the text, the tighter; body text unchanged), as Apple does.
+
+### What we deliberately did not do
+Dragging, flicking, rubber-banding and momentum: nothing in Linda is draggable, and inventing gestures would add things to explain and break. We also kept Poppins/Inter instead of the system font, and the design file's rule that the scan sweep is the only show-off animation.
+
+### How to judge it
+Spring feel can only be judged by touching a real phone. If it feels too slow or too quick, there is one number to change: `SpringMath.CALM_RESPONSE` (smaller = quicker).
+
+## Motion polish (apple-design skill), part B: the dashboard and the download page
+
+- **Less motion on request.** People whose device says "reduce motion" no longer get the pulsing dots and colour fades on the dashboard map (the colours still change, so nothing is lost), and the download page and dashboard buttons stop shrinking when pressed.
+- **Instant press feedback.** The dashboard's control buttons and the page's Download and language buttons shrink to 97% the moment a finger or mouse goes down (100 ms), not when it is released.
+- **Tighter type where it is big.** The page headline and the dashboard's big numbers get slightly tighter letter spacing; small text is unchanged.
+- **Guarded by tests.** The page tests (now 13) fail if the page ever gains a transition or animation without a reduced-motion rule, and if the Download button loses its press feedback. The dashboard still passes its type check, its 13 tests and its production build.

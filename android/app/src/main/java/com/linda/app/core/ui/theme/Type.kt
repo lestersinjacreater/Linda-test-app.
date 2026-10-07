@@ -24,11 +24,12 @@ val Inter = FontFamily(
  * Display = headlineLarge, Title = titleLarge, Heading = titleMedium, Body Large = bodyLarge,
  * Body = bodyMedium, Label = labelMedium, Caption = bodySmall. labelLarge is the 16sp button text.
  * Swahili runs about 30% longer: never fix text widths.
+ * Tracking is size-specific (apple-design): tighter as text gets larger, none for body text.
  */
 val LindaTypography = Typography(
-    headlineLarge = TextStyle(fontFamily = Poppins, fontSize = 32.sp, lineHeight = 40.sp, fontWeight = FontWeight.Bold),
-    titleLarge = TextStyle(fontFamily = Poppins, fontSize = 24.sp, lineHeight = 30.sp, fontWeight = FontWeight.SemiBold),
-    titleMedium = TextStyle(fontFamily = Poppins, fontSize = 20.sp, lineHeight = 26.sp, fontWeight = FontWeight.SemiBold),
+    headlineLarge = TextStyle(fontFamily = Poppins, fontSize = 32.sp, lineHeight = 40.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.02).em),
+    titleLarge = TextStyle(fontFamily = Poppins, fontSize = 24.sp, lineHeight = 30.sp, fontWeight = FontWeight.SemiBold, letterSpacing = (-0.015).em),
+    titleMedium = TextStyle(fontFamily = Poppins, fontSize = 20.sp, lineHeight = 26.sp, fontWeight = FontWeight.SemiBold, letterSpacing = (-0.01).em),
     titleSmall = TextStyle(fontFamily = Inter, fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Medium),
     bodyLarge = TextStyle(fontFamily = Inter, fontSize = 18.sp, lineHeight = 26.sp, fontWeight = FontWeight.Normal),
     bodyMedium = TextStyle(fontFamily = Inter, fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Normal),
@@ -44,7 +45,7 @@ object LindaText {
     val number = TextStyle(fontFamily = Inter, fontSize = 16.sp, lineHeight = 22.sp, fontWeight = FontWeight.Medium, fontFeatureSettings = "tnum")
 
     /** The big counter on the home screen ("12 scams stopped"). */
-    val bigNumber = TextStyle(fontFamily = Inter, fontSize = 32.sp, lineHeight = 40.sp, fontWeight = FontWeight.Bold, fontFeatureSettings = "tnum")
+    val bigNumber = TextStyle(fontFamily = Inter, fontSize = 32.sp, lineHeight = 40.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.01).em, fontFeatureSettings = "tnum")
 
     /** The layer letters L I N D A: Poppins Bold, +8% letter spacing. Always 18sp or larger so white-on-green still passes contrast. */
     val layerLetter = TextStyle(fontFamily = Poppins, fontSize = 20.sp, lineHeight = 24.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.08.em)

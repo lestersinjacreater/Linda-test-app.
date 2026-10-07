@@ -26,7 +26,7 @@ export function Controls({ live }: { live: boolean }) {
     <div className="flex flex-wrap gap-3">
       {BUTTONS.map((b) => (
         <button key={b.key} disabled={!live} onClick={() => void b.run()}
-          className="rounded-2xl px-5 py-3 text-lg font-bold text-bg transition disabled:cursor-not-allowed disabled:opacity-30"
+          className="rounded-2xl px-5 py-3 text-lg font-bold text-bg transition-transform duration-100 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-30"
           style={{ background: b.color }}>
           {b.label} <span className="ml-1 rounded bg-black/20 px-1.5 text-sm">{b.key.toUpperCase()}</span>
         </button>

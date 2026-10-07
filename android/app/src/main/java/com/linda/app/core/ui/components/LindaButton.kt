@@ -1,7 +1,6 @@
 package com.linda.app.core.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -41,7 +40,7 @@ fun LindaButton(
     val colors = LindaTheme.colors
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
-    val scale by animateFloatAsState(if (pressed) 0.97f else 1f, tween(Motion.STANDARD_MS), label = "press")
+    val scale by animateFloatAsState(if (pressed) 0.97f else 1f, Motion.calmSpring(), label = "press")
     val sized = modifier
         .heightIn(min = 52.dp)
         .graphicsLayer { scaleX = scale; scaleY = scale }

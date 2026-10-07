@@ -31,6 +31,12 @@ Not used, on purpose: Firebase, analytics, ads or tracking SDKs, and any network
 
 The licence lets us bundle and ship the fonts in the app; it does not allow selling the fonts on their own.
 
+### Design guidance (not code that ships)
+
+| Resource | Version | Licence | Why |
+|---|---|---|---|
+| `apple-design` skill by Emil Kowalski (github.com/emilkowalski/skills) | main, copied 2026-10-07 | MIT | Guidance for Claude Code on fluid motion, reduced motion and typography. Kept in `.claude/skills/apple-design/` with its licence. No code is copied from it into the app. |
+
 ## ML (Python 3.11)
 
 | Library | Version | Licence | Why we use it |

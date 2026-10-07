@@ -9,3 +9,9 @@ body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
 @keyframes pop { 0% { r: 3; opacity: .4; } 60% { r: 9; opacity: 1; } 100% { r: 5; } }
 .dot { transition: fill .35s ease; }
 .dot-hot { animation: pop .6s ease-out; }
+
+/* People who ask their device for less motion get no pulse and no fades (the colours still change, so nothing is lost). */
+@media (prefers-reduced-motion: reduce) {
+  .dot { transition: none; }
+  .dot-hot { animation: none; }
+}

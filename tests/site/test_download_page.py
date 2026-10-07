@@ -92,6 +92,18 @@ class DownloadPage(unittest.TestCase):
         self.assertRegex(HTML, r"min-height:\s*64px")
         self.assertRegex(HTML, r"font:\s*18px")
 
+    def test_any_motion_on_the_page_is_switched_off_for_people_who_ask_for_less_motion(self):
+        css = re.search(r"<style>(.*?)</style>", HTML, re.S).group(1)
+        moves = bool(re.search(r"\btransition\s*:|\banimation\s*:|@keyframes", css.split("@media (prefers-reduced-motion")[0]))
+        if moves:
+            self.assertIn("@media (prefers-reduced-motion: reduce)", css)
+            reduced = css.split("@media (prefers-reduced-motion: reduce)")[1]
+            self.assertIn("transition: none", reduced)
+            self.assertIn("transform: none", reduced)
+
+    def test_the_download_button_reacts_the_instant_it_is_pressed(self):
+        self.assertRegex(HTML, r"\.btn:active[^{]*\{[^}]*transform:\s*scale\(\.97\)")
+
 
 if __name__ == "__main__":
     unittest.main()

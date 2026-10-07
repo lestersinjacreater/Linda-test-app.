@@ -15,7 +15,7 @@ export function ProtectionClock({ state }: { state: DashboardState }) {
   return (
     <div className="flex items-baseline gap-4 rounded-2xl bg-card px-5 py-3">
       <div className="text-base text-muted">Time since the scam started</div>
-      <div className="text-5xl font-extrabold tabular-nums text-amber">{elapsed.toFixed(0)}s</div>
+      <div className="text-5xl font-extrabold tracking-tight tabular-nums text-amber">{elapsed.toFixed(0)}s</div>
       <div className="ml-auto text-xl font-bold" style={{ color: confirmed === null ? "#6D7899" : "#00E5FF" }}>
         {confirmed === null ? (state.running ? "radar listening…" : "waiting") : `radar confirmed at ${confirmed.toFixed(0)}s`}
       </div>
