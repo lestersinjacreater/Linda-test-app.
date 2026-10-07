@@ -44,7 +44,7 @@ def build_population(seed: int, run: int, linda: int, smart: int, feature: int, 
             device_id = device_prefix + digest[: 16 - len(device_prefix)]
         phones.append(Phone(
             id=i, msisdn=f"254700{100000 + i}", kind=kind, town=name,
-            lat=round(lat + rng.uniform(-0.12, 0.12), 4), lon=round(lon + rng.uniform(-0.12, 0.12), 4),
+            lat=round(lat + rng.uniform(-0.45, 0.45), 4), lon=round(lon + rng.uniform(-0.45, 0.45), 4),  # about 50 km around the town: far enough apart to see on the map
             device_id=device_id,
             read_delay_s=round(min(1800.0, rng.lognormvariate(math.log(90), 0.9)), 1),  # median 90 s
         ))

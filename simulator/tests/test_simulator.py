@@ -122,3 +122,35 @@ def test_events_websocket_streams_new_events(make_app):
     with TestClient(app) as client, client.websocket_connect("/events") as ws:
         client.post("/reset")
         assert ws.receive_json()["type"] == "reset"
+
+
+async def test_population_and_history_endpoints(make_app, client_for):
+    app, radar = make_app()
+    async with client_for(app) as c:
+        phones = (await c.get("/population")).json()
+        assert len(phones) == 300 and {p["kind"] for p in phones} == {"linda", "smart", "feature"}
+        assert all(set(p) == {"phone", "kind", "town", "lat", "lon"} for p in phones)
+        assert phones == (await c.get("/population")).json()  # same every time
+        assert (await c.get("/history")).json() == []
+        await c.post("/scenarios/blast", params={"wait": "true"})
+        history = (await c.get("/history")).json()
+        assert [history[0]["type"], history[1]["type"]] == ["reset", "blast_started"] and history[-1]["type"] == "blast_finished"
+        # idle phones are the same phones the events talk about
+        assert {e["phone"] for e in history if "phone" in e} <= {p["phone"] for p in phones}
+
+
+async def test_browser_calls_are_allowed_by_cors(make_app, client_for):
+    app, radar = make_app()
+    async with client_for(app) as c:
+        r = await c.options("/scenarios/blast", headers={"Origin": "http://localhost:3000", "Access-Control-Request-Method": "POST"})
+        assert r.headers["access-control-allow-origin"] == "*"
+
+
+async def test_each_scenario_starts_with_a_reset_and_a_clean_history(make_app):
+    app, radar = make_app()
+    engine = app.state.engine
+    for _ in range(2):
+        engine.start("blast")
+        await engine.wait()
+        types = [e["type"] for e in app.state.bus.history]
+        assert types[0] == "reset" and types.count("reset") == 1  # the previous run's events are gone

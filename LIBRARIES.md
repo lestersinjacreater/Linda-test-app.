@@ -58,5 +58,17 @@ Simulator (`simulator/`) uses FastAPI, Uvicorn, httpx and Pydantic at the same v
 | websockets | 14.1 | BSD-3 | Lets Uvicorn serve the `/events` WebSocket the dashboard listens to. |
 | pytest-asyncio | 0.25.0 | Apache 2.0 | Runs the simulator's async tests (test-only). |
 
-Planned (not added yet): Next.js, React, Tailwind (dashboard).
+## Dashboard (`dashboard/`)
+
+| Library | Version | Licence | Why |
+|---|---|---|---|
+| Next.js | 15.5.27 | MIT | The web framework (App Router) for the demo screen. |
+| React / React DOM | 19.3.0 | MIT | The UI library Next.js is built on. |
+| Tailwind CSS | 3.4.19 | MIT | Styling with the Linda palette. |
+| PostCSS, Autoprefixer | 8.5.29, 10.6.1 | MIT | Required by Tailwind. |
+| TypeScript | 5.9.3 | Apache 2.0 | Typed code. |
+| Vitest | 3.2.7 | MIT | Tests for the event reducer and replay (dev only). |
+| @types/node, @types/react, @types/react-dom | 22.20.5, 19.3.0, 19.3.0 | MIT | Type definitions (dev only). |
+
+No map library on purpose: the Kenya outline is a small hand-drawn SVG path (`features/radar-map/kenya.ts`), so there is no tile server to fail on stage.
 Africa's Talking and Daraja are **stubbed** for now (no SDK, no credentials).

@@ -32,3 +32,9 @@ Text shorter than 3 characters is one piece; empty text gives `0000000000000000`
 - score = sigmoid(intercept + sum(coef[i] * weight[i]) + sum(meta_coef * meta_value)). Kotlin must match to within 0.001.
 - Level: `scam` if score >= thresholds.scam (0.80), `caution` if >= thresholds.warn (0.55), else `safe`.
 - `shared/test-vectors.json` scores are computed WITH the vector's sender, because the sender is a model input.
+
+## Simulator to dashboard additions (5.5)
+- `GET /population` returns `[{phone, kind, town, lat, lon}]` for every simulated phone (same in every run), so idle phones can be drawn before anything happens.
+- `GET /history` returns every event of the current run (used to record the dashboard's offline replay: `make record-fallback`).
+- Every scenario starts with a `reset` event and a cleared history, so a dashboard that sees `reset` clears its map and counters.
+- Events carry no message text. Browser calls are allowed from any origin (CORS `*`): the simulator is demo infrastructure with no user data.

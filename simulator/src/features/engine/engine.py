@@ -84,7 +84,9 @@ class Engine:
         if self.running:
             raise RuntimeError("a scenario is already running")
         self._reset_state()
+        self.bus.clear()  # every scenario is its own act: the dashboard clears its map when it sees "reset"
         self.run_number += 1
+        self.emit("reset")
         s = self.settings
         self.phones = build_population(s.sim_seed, self.run_number, s.linda_phones, s.smartphones, s.feature_phones, s.device_prefix)
         senders = [f"254700{900000 + 10 * self.run_number + k}" for k in range(3)]  # fresh numbers every run
@@ -159,7 +161,7 @@ class Engine:
             at = start + i * step + rng.uniform(0, step)
             text = self._fill(template, rng)
             self.push(at, self._deliver(sender, phone, text, rng.uniform(0.2, 1.5)))
-        self.push(start + self.settings.blast_duration_s + 400.0, finish)  # after the stragglers
+        self.push(start + self.settings.blast_duration_s + 20.0, finish)  # warnings land within about 10 s of confirmation
 
     def _deliver(self, sender: str, phone: Phone, text: str, detect_latency: float) -> Callable[[], Awaitable[None]]:
         async def fn() -> None:
@@ -278,6 +280,12 @@ class Engine:
 
     def recipients_since(self, sender: str, since: float) -> list[str]:
         return [p.msisdn for p, t in self.deliveries.get(sender, []) if t >= since]
+
+    def population_view(self) -> list[dict[str, Any]]:
+        """Every phone with its town and position, for the dashboard map. Same in every run (the seed fixes it)."""
+        s = self.settings
+        phones = self.phones or build_population(s.sim_seed, 0, s.linda_phones, s.smartphones, s.feature_phones, s.device_prefix)
+        return [{"phone": p.id, "kind": p.kind, "town": p.town, "lat": p.lat, "lon": p.lon} for p in phones]
 
     # ------------------------------------------------------------------ metrics
     def metrics(self, sender: Optional[str] = None) -> dict[str, Any]:

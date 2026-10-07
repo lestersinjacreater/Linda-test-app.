@@ -1,5 +1,5 @@
 # One-word commands (root CLAUDE.md section 7). Targets for parts not built yet say so.
-.PHONY: setup data train export-model test test-e2e up demo
+.PHONY: setup data train export-model test test-e2e record-fallback up demo
 
 setup:
 	pip install -r ml/requirements.txt
@@ -21,9 +21,14 @@ test:
 	python -m pytest ml/tests -v
 	@test -d backend/tests && ls backend/tests/test_*.py >/dev/null 2>&1 && python -m pytest backend/tests -v || echo "backend tests: none yet"
 	@test -d simulator/tests && ls simulator/tests/test_*.py >/dev/null 2>&1 && python -m pytest simulator/tests -v || echo "simulator tests: none yet"
+	@test -d dashboard/node_modules && (cd dashboard && npm test) || echo "dashboard tests: run make setup first"
 
 test-e2e:
 	python -m pytest tests/e2e -v
+
+# Re-record the dashboard's offline replay from a real run (do this after changing the model or the simulator).
+record-fallback:
+	python scripts/record_fallback.py
 
 up:
 	docker compose up --build

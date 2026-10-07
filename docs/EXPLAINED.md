@@ -192,3 +192,26 @@ Seven buttons "receive" a scripted message instantly: fake M-Pesa from a normal 
 
 ### Known gaps in the Android app
 Recovery mode (F10), Family Guardian (F11), voice warnings (F12), "Scan my inbox" (F8) and the "Report" button on the detail screen are not built; they are Phase 2 items in the older spec. Swahili text is unreviewed.
+
+## System rebuild, step 7: the dashboard (`dashboard/`)
+
+### What the audience sees
+One screen, built to be read from the back of a room. Left: a map of Kenya with a dot for each of 300 simulated phones. Grey = quiet, amber = just received the scam, red = a Linda phone caught it on the device, green = warned. Cyan-ringed circles are Linda phones, squares are basic phones, plain circles are smartphones without Linda. Right: a clock ("time since the scam started"), four big numbers (warned before reading, basic phones warned first, time for the first phone to catch it, time for the radar to confirm), the scam numbers the radar knows about, the result of the attack test, and a plain-English feed.
+
+### How it stays correct: one pure function
+Every number and colour is rebuilt from the stream of events by a single function (`lib/state.ts`, `reduce`). A phone's colour only moves forward (grey, amber, red, green), so a late event cannot un-warn someone. Live mode and replay mode use the same function, so they cannot disagree. 13 tests cover it, including: replaying the recorded run gives exactly the headline numbers the simulator reported.
+
+### The 5-second safety net
+The dashboard keeps a WebSocket open to the simulator and reconnects automatically. If it has been down for 5 seconds, it replays `lib/fallback/demo-events.json`, a **real run recorded from the real radar and simulator** (`make record-fallback`), and shows an amber "REPLAY" badge so the team knows. When the connection returns it switches back to live. We tested it by killing the simulator while the page was open: "CONNECTING..." after 2 s, "REPLAY" after 7 s. Controls are disabled in replay because there is nothing to command.
+
+### Where the numbers come from
+Live, the four big numbers come from the simulator's `/metrics` (the single source of the headline numbers). In replay they are computed from the recorded events.
+
+### Presenter controls
+R reset, B blast, O rotating numbers, P attack test. Each scenario starts with a clean map. The attack test shows "blocked. The innocent number was NOT confirmed." (or a red warning if it ever were).
+
+### Safety and limits
+- The dashboard only receives simulator events. They contain no message text, and a test checks the recorded file for `text`, `body` and `message` fields.
+- No map library: the Kenya outline is a small hand-drawn shape, so there is no map server to fail on stage. It is simplified, not survey-accurate.
+- The radar logs a "possible poisoning" warning during the genuine demo blast too, because its phones are all first-time reporters. It only logs and never blocks; in real use phones would have a history.
+- `NEXT_PUBLIC_TELCO_API` / `NEXT_PUBLIC_TELCO_WS` are fixed at build time, and the BROWSER connects to them, so on a cloud server set them to the server's public address.

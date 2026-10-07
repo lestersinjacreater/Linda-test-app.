@@ -49,6 +49,18 @@ def metrics(request: Request, sender: Optional[str] = None) -> dict:
     return request.app.state.engine.metrics(sender)
 
 
+@router.get("/population")
+def population(request: Request) -> list:
+    """The phones on the map (id, kind, town, lat, lon). Lets the dashboard draw idle phones before anything happens."""
+    return request.app.state.engine.population_view()
+
+
+@router.get("/history")
+def history(request: Request) -> list:
+    """Every event of the current run, in order. Used to record the dashboard's offline replay."""
+    return list(request.app.state.bus.history)
+
+
 @router.websocket("/events")
 async def events(ws: WebSocket) -> None:
     bus = ws.app.state.bus

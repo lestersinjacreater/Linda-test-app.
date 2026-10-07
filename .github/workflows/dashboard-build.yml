@@ -2,9 +2,9 @@ name: dashboard build
 
 on:
   push:
-    paths: ["dashboard/**", ".github/workflows/dashboard-build.yml"]
+    paths: ["dashboard/**", "scripts/**", ".github/workflows/dashboard-build.yml"]
   pull_request:
-    paths: ["dashboard/**", ".github/workflows/dashboard-build.yml"]
+    paths: ["dashboard/**", "scripts/**", ".github/workflows/dashboard-build.yml"]
   workflow_dispatch:
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - name: Build (skipped until the dashboard exists)
         run: |
           if [ -f dashboard/package.json ]; then
-            cd dashboard && npm ci && npm run build
+            cd dashboard && npm ci && npm run typecheck && npm test && npm run build
           else
             echo "No dashboard yet."
           fi
