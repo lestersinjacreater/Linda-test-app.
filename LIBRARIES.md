@@ -37,6 +37,15 @@ pandas, numpy and scikit-learn are added here when the training code (F3) lands.
 
 ## Backend, simulator, dashboard
 
-None yet. Each library is added here (name, version, licence, why) in the same commit that adds it.
-Planned: FastAPI, uvicorn, SQLAlchemy, httpx, pytest (backend/simulator); Next.js, React, Tailwind (dashboard).
+| Library | Version | Licence | Used in | Why |
+|---|---|---|---|---|
+| FastAPI | 0.115.6 | MIT | backend | The web framework for the radar endpoints. |
+| Uvicorn | 0.34.0 | BSD-3 | backend | Runs the FastAPI app. |
+| SQLAlchemy | 2.0.36 | MIT | backend | Talks to SQLite (dev/tests) and Postgres (docker) with the same code. |
+| psycopg2-binary | 2.9.10 | LGPL-3.0 (with exceptions) | backend | Postgres driver, used only in docker-compose. |
+| httpx | 0.28.1 | BSD-3 | backend | Calls the telco `/network/confirm` endpoint. |
+| Pydantic | 2.12.5 | MIT | backend | Validates report fields and rejects unknown ones (so message text cannot slip in). |
+| pytest | 8.3.4 | MIT | backend | Tests. |
+
+Planned (not added yet): Next.js, React, Tailwind (dashboard); simulator libraries.
 Africa's Talking and Daraja are **stubbed** for now (no SDK, no credentials).

@@ -71,3 +71,28 @@ Android only lets you update an installed app if the new version is signed with 
 - 63 messages: real-format M-Pesa/bank/KPLC/KRA messages that must be SAFE, every scam campaign, fake M-Pesa from a personal number, obfuscated, Swahili, Sheng, mixed, and everyday chat.
 - All data here is **synthetic**, with placeholder phone numbers (see `DATASETS.md`). Real collected data is still to come.
 - Score ranges are provisional until the model exists.
+
+## System rebuild, step 3: the radar (`backend/`)
+
+### What it does
+Phones send a tiny report ("this sender looks like a fake M-Pesa, I'm 93% sure") with **no message text**. When enough independent phones agree, the radar marks the sender **confirmed**, tells the network, and answers "is this number dangerous?" lookups. Today: `POST /v1/reports`, `GET /v1/numbers/{msisdn}/risk`, `GET /v1/blocklist`. USSD and payment precheck come later.
+
+### The confirmation rule (`features/confirmation/service.py`)
+- One vote per phone per sender in the last 30 minutes. A phone reporting ten times is still one vote.
+- A vote is worth **trust x confidence**. Every phone starts at trust 0.3.
+- Confirmed when **3 or more phones** voted and the votes add up to **2.4 or more**.
+- Trust goes up (+0.1) when a phone's report ends up confirmed and down (-0.05) when the report's window ends without confirmation.
+- **Why trust?** Otherwise anyone could run a script that pretends to be 50 phones and get an innocent shop's number blocked.
+- **Our addition to the spec's numbers:** all "unproven" phones (trust 0.3 or less) together can add at most 1.2 to the score. Without it, 20 fake new phones would score 20 x 0.3 x 1.0 = 6.0 and confirm an innocent number. With it, they cannot reach 2.4 alone; a confirmation needs established phones. A test (`test_poisoning_...`) proves this, and it fails if the cap is removed.
+- Phones that send no integrity token are capped at trust 0.3 (spec). **Consequence:** in the hackathon nobody has a token, so nobody can become trusted, so nothing confirms. See the open question in the step 3 summary.
+
+### Other protections
+- Verified senders (`shared/verified_senders.json`: MPESA, KPLC, banks...) are never stored, reported or confirmed.
+- Max 30 reports per phone per hour (HTTP 429 after that).
+- A burst of 10+ first-time phones on one number within a minute is written to the `security_events` table and logged.
+- Reports containing any extra field (such as `text`) are rejected (HTTP 422), so message text can never be stored by accident.
+- A new number whose fingerprint is within 6 bits of a confirmed campaign becomes **suspected** immediately, but is never confirmed on the fingerprint alone.
+- Telling the network (`POST {TELCO_URL}/network/confirm`) retries 3 times with growing waits; a failure never un-confirms the sender.
+
+### Why it's built this way
+Time and the telco call are injected, so the tests need no network and can fast-forward time. The radar's clock decides the window, never the phone's `sent_at`.
