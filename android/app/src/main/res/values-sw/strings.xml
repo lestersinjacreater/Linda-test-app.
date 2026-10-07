@@ -10,8 +10,8 @@
 
     <string name="logo_description">Nembo ya ngao ya Linda</string>
 
-    <string name="home_status_title">Linda inakulinda</string>
-    <string name="home_caught_this_month">Ulaghai uliozuiwa mwezi huu</string>
+    <string name="home_status_title">LINDA inakulinda.</string>
+    <string name="home_caught_this_month">ulaghai uliozuiwa mwezi huu</string>
 
     <string name="checker_title">Je, huu ni ulaghai?</string>
     <string name="checker_coming_soon">Bandika ujumbe hapa na Linda atauchunguza. Inakuja hivi karibuni.</string>
@@ -38,7 +38,7 @@
     <string name="detail_not_found">Ujumbe huu haupo tena kwenye historia.</string>
     <string name="detail_headline_scam">Usijibu na usitume pesa</string>
     <string name="detail_headline_caution">Kuwa mwangalifu na ujumbe huu</string>
-    <string name="detail_why">Kwa nini Linda imekuonya</string>
+    <string name="detail_why">Kwa nini LINDA imeonya</string>
     <string name="detail_marked_safe">Umemweka mtumaji huyu kuwa salama. Linda itaacha kukagua jumbe zake.</string>
     <string name="action_mark_safe">Weka kuwa salama</string>
     <string name="action_back">Rudi</string>
@@ -295,4 +295,18 @@
     <string name="trace_a_reported">Nambari imeripotiwa</string>
     <string name="trace_a_guardian">Mlezi amearifiwa</string>
     <string name="trace_a_nothing">Hakuna onyo linalohitajika</string>
+
+    <!-- Home ring, verdict card, scam alert (docs/design-system.md 7.2 to 7.7). Swahili unreviewed by a native speaker. -->
+    <string name="home_partial_title">Baadhi ya ulinzi wa LINDA umezimwa</string>
+    <string name="home_ring_description">Ulinzi wa LINDA: safu %1$d kati ya 5 zinafanya kazi</string>
+    <string name="home_empty">Hakuna ulaghai bado. LINDA inalinda.</string>
+    <string name="home_fix_button">Rekebisha</string>
+    <string name="home_fix_read_messages">Ruhusu LINDA ipokee jumbe zako ili iweze kuzikagua.</string>
+    <string name="home_fix_contacts">Ruhusu anwani, ili LINDA ijue unaowafahamu.</string>
+    <string name="home_fix_notifications">Washa arifa, ili LINDA iweze kukuonya.</string>
+    <string name="verdict_primary_scam">Usitume pesa</string>
+    <string name="verdict_primary_caution">Nitakuwa mwangalifu</string>
+    <string name="takeover_headline">Simama. Huu unaonekana kuwa ulaghai.</string>
+    <string name="takeover_continue">Sawa, nionyeshe kwa nini</string>
+    <string name="badge_fake_mpesa">Haukutoka M-PESA. Hujapokea pesa yoyote.</string>
 </resources>

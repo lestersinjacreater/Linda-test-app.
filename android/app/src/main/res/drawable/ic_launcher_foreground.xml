@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Linda logo: a white shield with an "L" cut out of it, on Safaricom green. Drawn inside the 66dp
-     safe zone of the 108dp adaptive-icon canvas. -->
+<!-- Linda mark: a shield cut into five segments, one per layer (L I N D A), in the layer tints.
+     Drawn inside the 66dp safe zone of the 108dp adaptive-icon canvas. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,24 L78,33 L78,54 C78,69 68,79 54,84 C40,79 30,69 30,54 L30,33 Z" />
-    <path
-        android:strokeColor="#007A3D"
-        android:strokeWidth="6"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M46,42 L46,64 L63,64" />
+    <group>
+        <clip-path android:pathData="M54,24 L78,33 L78,54 C78,69 68,79 54,84 C40,79 30,69 30,54 L30,33 Z" />
+        <path android:fillColor="#B7E4C7" android:pathData="M30.0,20 H38.8 V90 H30.0 Z" />
+        <path android:fillColor="#74C69D" android:pathData="M39.6,20 H48.4 V90 H39.6 Z" />
+        <path android:fillColor="#2DBE6C" android:pathData="M49.2,20 H58.0 V90 H49.2 Z" />
+        <path android:fillColor="#00A651" android:pathData="M58.8,20 H67.6 V90 H58.8 Z" />
+        <path android:fillColor="#007A3D" android:pathData="M68.4,20 H77.2 V90 H68.4 Z" />
+    </group>
 </vector>

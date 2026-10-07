@@ -25,11 +25,6 @@ import com.linda.app.core.ui.theme.Spacing
 @Composable
 fun LevelChip(level: String, modifier: Modifier = Modifier) {
     val style = LindaTheme.colors.risk(level)
-    val label = when (level) {
-        "SCAM" -> R.string.level_scam
-        "CAUTION" -> R.string.level_caution
-        else -> R.string.level_safe
-    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
@@ -40,6 +35,16 @@ fun LevelChip(level: String, modifier: Modifier = Modifier) {
             .padding(horizontal = Spacing.md),
     ) {
         RiskIcon(level, size = 16.dp)
-        Text(stringResource(label), color = style.text, style = MaterialTheme.typography.labelMedium)
+        Text(levelLabel(level), color = style.text, style = MaterialTheme.typography.labelMedium)
     }
 }
+
+/** "Likely scam", "Be careful" or "Looks safe" in the app language. */
+@Composable
+fun levelLabel(level: String): String = stringResource(
+    when (level) {
+        "SCAM" -> R.string.level_scam
+        "CAUTION" -> R.string.level_caution
+        else -> R.string.level_safe
+    },
+)

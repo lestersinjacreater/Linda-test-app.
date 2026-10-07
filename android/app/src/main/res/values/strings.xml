@@ -16,8 +16,8 @@
 
     <string name="logo_description">Linda shield logo</string>
 
-    <string name="home_status_title">Linda is protecting you</string>
-    <string name="home_caught_this_month">Scams caught this month</string>
+    <string name="home_status_title">LINDA is protecting you.</string>
+    <string name="home_caught_this_month">scams stopped this month</string>
 
     <string name="checker_title">Is this a scam?</string>
     <string name="checker_coming_soon">Paste a message here and Linda will check it. Coming soon.</string>
@@ -44,7 +44,7 @@
     <string name="detail_not_found">This message is no longer in the history.</string>
     <string name="detail_headline_scam">Do not reply and do not send money</string>
     <string name="detail_headline_caution">Be careful with this message</string>
-    <string name="detail_why">Why Linda warned you</string>
+    <string name="detail_why">Why LINDA flagged this</string>
     <string name="detail_marked_safe">You marked this sender as safe. Linda will stop checking their messages.</string>
     <string name="action_mark_safe">Mark as safe</string>
     <string name="action_back">Back</string>
@@ -301,4 +301,18 @@
     <string name="trace_a_reported">Number reported</string>
     <string name="trace_a_guardian">Guardian alerted</string>
     <string name="trace_a_nothing">No warning needed</string>
+
+    <!-- Home ring, verdict card, scam alert (docs/design-system.md 7.2 to 7.7). Swahili unreviewed by a native speaker. -->
+    <string name="home_partial_title">Some of LINDA\'s protection is off</string>
+    <string name="home_ring_description">LINDA protection: %1$d of 5 layers working</string>
+    <string name="home_empty">No scams yet. LINDA is watching.</string>
+    <string name="home_fix_button">Fix this</string>
+    <string name="home_fix_read_messages">Allow LINDA to receive your texts, so it can check them.</string>
+    <string name="home_fix_contacts">Allow contacts, so LINDA knows who you know.</string>
+    <string name="home_fix_notifications">Turn on notifications, so LINDA can warn you.</string>
+    <string name="verdict_primary_scam">Don\'t send money</string>
+    <string name="verdict_primary_caution">I\'ll be careful</string>
+    <string name="takeover_headline">Stop. This looks like a scam.</string>
+    <string name="takeover_continue">OK, show me why</string>
+    <string name="badge_fake_mpesa">Not from M-PESA. You have not received any money.</string>
 </resources>

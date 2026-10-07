@@ -2,6 +2,6 @@
 <resources>
     <!-- Window background shown before Compose draws: matches docs/design-system.md 3.2 so there is no flash. -->
     <color name="linda_background">#F6F8F7</color>
-    <!-- Launcher icon background: Safaricom green (green500). -->
-    <color name="linda_launcher_background">#00A651</color>
+    <!-- Launcher icon background: Forest green (green900), so the five pale-to-deep segments stand out. -->
+    <color name="linda_launcher_background">#00602F</color>
 </resources>

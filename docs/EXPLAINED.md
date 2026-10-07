@@ -386,3 +386,21 @@ On the warning screen (when you open a saved warning) and in the "Is this a scam
 
 ### How it is tested
 The logic that decides which layer flags what (and the 480 ms timing, and the buzz pattern) is plain Kotlin with 17 unit tests, including: a verified sender is never flagged, amounts are not "disguises", and the sweep always finishes under 600 ms. The drawing itself is not yet seen on a real phone.
+
+## UI redesign, step 3: home ring, verdict card, full-screen scam alert
+
+### The home ring (`features/home`)
+The home screen is now a ring of five arcs, one for each layer (L I N D A), around the Linda mark (a shield cut into five coloured segments, which is also the new app icon). All five bright means "LINDA is protecting you." If something is switched off, only the arc that needs it fades, and one button fixes it:
+- **L** needs permission to receive texts, **N** needs contacts access, **A** needs notifications on. **I** (the model) and **D** (the decision) live inside the app, so they never fade.
+- The fix button asks for the permission; if the phone will not ask again, it opens the app's settings page. The check runs again every time you come back to the app.
+- Below the ring: how many scams were stopped this month in big numbers, or "No scams yet. LINDA is watching." The ring "breathes" (grows 2%) once every 6 seconds, unless the phone's remove-animations setting is on. The card has the "shield notch", a bottom-right corner cut like a shield point, used only here.
+The rules for which arc fades are plain code with their own unit tests.
+
+### The verdict card (`features/detail`)
+Opening a warning now shows one card tinted for its risk (amber for Caution, red for Scam, green for Safe) with a bar of that colour on its left edge: icon and words, a three-line preview of the message, the Layer Trace, the reasons as separate lines, and the buttons. Only Scam cards glow red. There is **one main button**: "Don't send money" for a Scam (or "I'll be careful" for Caution), which closes the screen. Under it, smaller: "I already sent money" (opens Recovery), "Mark as safe" and "Report this number". A message that imitates M-PESA but did not come from M-PESA also gets a crossed-out-receipt badge: "Not from M-PESA. You have not received any money."
+
+### The full-screen scam alert (`ScamTakeover`)
+When you tap a warning notification for a confident scam, the first thing you see is a big alert: a large octagon, "Stop. This looks like a scam.", the top reason, two short buzzes, and two buttons ("OK, show me why" and "I already sent money"). If voice warnings are on, it reads **exactly** the headline and the reason shown on screen; a unit test checks that the spoken headline equals the text in `strings.xml` in both languages. It does not repeat the voice if the text just arrived and was already read aloud (30-second rule). Opening an old warning from History goes straight to the verdict card, so it does not shout every time. The alert fills the content area; the bottom navigation bar is still visible under it.
+
+### Not done yet
+Restyling History, Inbox, Checker, Recovery, Guardian, Settings, Onboarding and Demo (step 4); the demo overlay (step 5). Not yet seen on a real phone.

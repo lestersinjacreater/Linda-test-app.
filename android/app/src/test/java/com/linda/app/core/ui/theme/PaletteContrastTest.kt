@@ -84,4 +84,17 @@ class PaletteContrastTest {
         assertText("letter D (large bold)", WHITE, LAYER_D, minimum = 3.0)
         assertText("letter A", WHITE, LAYER_A)
     }
+
+    @Test
+    fun bodyText_passesOnEveryRiskTint() = with(Palette) {
+        // The verdict card writes the message and reasons in the normal text colours on top of the risk tint.
+        for (tint in listOf(GREEN_50, CAUTION_TINT_LIGHT, SCAM_TINT_LIGHT)) {
+            assertText("primary text on light tint ${tint.toString(16)}", TEXT_PRIMARY_LIGHT, tint)
+            assertText("secondary text on light tint ${tint.toString(16)}", TEXT_SECONDARY_LIGHT, tint)
+        }
+        for (tint in listOf(SAFE_TINT_DARK, CAUTION_TINT_DARK, SCAM_TINT_DARK)) {
+            assertText("primary text on dark tint ${tint.toString(16)}", TEXT_PRIMARY_DARK, tint)
+            assertText("secondary text on dark tint ${tint.toString(16)}", TEXT_SECONDARY_DARK, tint)
+        }
+    }
 }

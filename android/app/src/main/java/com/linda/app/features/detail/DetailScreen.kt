@@ -31,7 +31,10 @@ import com.linda.app.LindaApp
 import com.linda.app.R
 import com.linda.app.core.data.AllowedSenderEntity
 import com.linda.app.core.data.DetectionEntity
-import com.linda.app.core.ui.components.LevelChip
+import com.linda.app.core.ui.components.LindaButton
+import com.linda.app.core.ui.theme.LindaTheme
+import com.linda.app.core.ui.theme.Spacing
+import com.linda.app.features.alerts.VoiceWarnings
 import com.linda.app.core.util.Prefs
 import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.detection.ReasonsJson
@@ -48,12 +51,14 @@ import kotlinx.coroutines.launch
 
 /** What opens when the user taps a warning: the message, the verdict, every reason, and what to do next (F6). */
 @Composable
-fun DetailScreen(detectionId: Long, onOpenRecovery: (Long) -> Unit, onBack: () -> Unit) {
+fun DetailScreen(detectionId: Long, takeover: Boolean = false, onOpenRecovery: (Long) -> Unit, onBack: () -> Unit) {
     val context = LocalContext.current
     val app = context.applicationContext as LindaApp
     val language = Prefs.effectiveLanguage(context)
     val scope = rememberCoroutineScope()
     var refresh by remember { mutableStateOf(0) }
+    // The full-screen alert only when the person opened this from a warning notification, and only for a confident scam.
+    var showTakeover by remember(detectionId) { mutableStateOf(takeover) }
     val detection: DetectionEntity? by produceState<DetectionEntity?>(null, detectionId, refresh) {
         value = app.database.detectionDao().getById(detectionId)
     }
@@ -87,64 +92,58 @@ fun DetailScreen(detectionId: Long, onOpenRecovery: (Long) -> Unit, onBack: () -
     var showReportDialog by remember { mutableStateOf(false) }
     var reportNote by remember { mutableStateOf<String?>(null) }
 
+    if (showTakeover && d.level == "SCAM" && !d.markedSafe) {
+        ScamTakeover(
+            reason = reasons.firstOrNull()?.let { ReasonsJson.text(it, language) },
+            onContinue = { showTakeover = false },
+            onAlreadySent = { onOpenRecovery(d.id) },
+            onShown = { VoiceWarnings.speakTakeover(context, reasons.firstOrNull()) },
+        )
+        return
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Spacing.screenPadding),
+        verticalArrangement = Arrangement.spacedBy(Spacing.lg),
     ) {
-        LevelChip(d.level)
-        Text(
-            text = stringResource(if (d.level == "SCAM") R.string.detail_headline_scam else R.string.detail_headline_caution),
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        Text(
-            text = (d.sender ?: stringResource(R.string.sender_pasted)) + " · " + formatDateTime(d.receivedAt),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        VerdictCard(
+            level = d.level,
+            sender = d.sender ?: stringResource(R.string.sender_pasted),
+            time = formatDateTime(d.receivedAt),
+            body = d.body,
+            fakeMpesa = d.category == "fake_mpesa",
+            trace = trace,
+            reasons = reasons.map { ReasonsJson.text(it, language) },
         ) {
-            Text(d.body, modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.bodyLarge)
+            // One primary action: the answer to "what do I do now?". Everything else is secondary.
+            LindaButton(
+                stringResource(if (d.level == "SCAM") R.string.verdict_primary_scam else R.string.verdict_primary_caution),
+                onClick = onBack, modifier = Modifier.fillMaxWidth(),
+            )
+            LindaButton(stringResource(R.string.action_i_sent_money), onClick = { onOpenRecovery(d.id) }, secondary = true, modifier = Modifier.fillMaxWidth())
+            if (d.markedSafe) {
+                Text(stringResource(R.string.detail_marked_safe), style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary)
+            } else {
+                LindaButton(
+                    stringResource(R.string.action_mark_safe),
+                    onClick = {
+                        scope.launch {
+                            app.database.detectionDao().markSafe(d.id)
+                            d.sender?.let { app.database.senderDao().allow(AllowedSenderEntity(it)) } // stop scoring this sender
+                            refresh++
+                        }
+                    },
+                    secondary = true, modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            // Report (F6): the person reports this number to the radar so others can be warned. Needs their confirmation each time.
+            if (cannotReport == null && !d.markedSafe) {
+                LindaButton(stringResource(R.string.action_report), onClick = { showReportDialog = true }, secondary = true, modifier = Modifier.fillMaxWidth())
+            } else if (cannotReport == CannotReport.ALREADY_REPORTED) {
+                Text(stringResource(R.string.report_done), style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary)
+            }
+            reportNote?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary) }
         }
-
-        trace?.let { LayerTraceView(it, d.level) }
-
-        Text(stringResource(R.string.detail_why), style = MaterialTheme.typography.titleMedium)
-        reasons.forEach { reason ->
-            Text("• " + ReasonsJson.text(reason, language), style = MaterialTheme.typography.bodyLarge)
-        }
-
-        if (d.markedSafe) {
-            Text(stringResource(R.string.detail_marked_safe), color = MaterialTheme.colorScheme.primary)
-        } else {
-            Button(
-                onClick = {
-                    scope.launch {
-                        app.database.detectionDao().markSafe(d.id)
-                        d.sender?.let { app.database.senderDao().allow(AllowedSenderEntity(it)) } // stop scoring this sender
-                        refresh++
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text(stringResource(R.string.action_mark_safe)) }
-        }
-        // Report (F6): the person reports this number to the radar so others can be warned. Needs their confirmation each time.
-        if (cannotReport == null && !d.markedSafe) {
-            OutlinedButton(onClick = { showReportDialog = true }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_report)) }
-        } else if (cannotReport == CannotReport.ALREADY_REPORTED) {
-            Text(stringResource(R.string.report_done), color = MaterialTheme.colorScheme.primary)
-        }
-        reportNote?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary) }
-
-        // The way into Recovery mode for someone who already acted on the scam (F6).
-        Button(
-            onClick = { onOpenRecovery(d.id) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-        ) { Text(stringResource(R.string.action_i_sent_money)) }
-        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_back)) }
     }
 
     if (showReportDialog) {

@@ -51,7 +51,8 @@ private enum class Destination(
 fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
     val navController = rememberNavController()
     LaunchedEffect(openDetectionId) {
-        if (openDetectionId != null && openDetectionId >= 0) navController.navigate("detail/$openDetectionId")
+        // Opened from a warning notification: a confident scam gets the full-screen alert first.
+        if (openDetectionId != null && openDetectionId >= 0) navController.navigate("detail/$openDetectionId?takeover=true")
     }
     LaunchedEffect(sharedText) {
         if (!sharedText.isNullOrBlank()) navController.navigate(Destination.Checker.route)
@@ -98,9 +99,16 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
             composable("inbox") { InboxScreen(onOpenDetail = { navController.navigate("detail/$it") }, onBack = { navController.popBackStack() }) }
             composable("guardian") { GuardianScreen(onBack = { navController.popBackStack() }) }
             composable("demo") { DemoScreen(onBack = { navController.popBackStack() }) }
-            composable("detail/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
+            composable(
+                "detail/{id}?takeover={takeover}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.LongType },
+                    navArgument("takeover") { type = NavType.BoolType; defaultValue = false },
+                ),
+            ) { entry ->
                 DetailScreen(
                     detectionId = entry.arguments?.getLong("id") ?: -1L,
+                    takeover = entry.arguments?.getBoolean("takeover") ?: false,
                     onOpenRecovery = { navController.navigate("recovery/$it") },
                     onBack = { navController.popBackStack() },
                 )
