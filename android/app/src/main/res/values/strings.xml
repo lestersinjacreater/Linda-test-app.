@@ -249,4 +249,20 @@
     </plurals>
     <string name="home_inbox_title">Scan my inbox</string>
     <string name="home_inbox_body">Find scams already hiding in your last 90 days of messages.</string>
+
+    <string name="action_report">Report this number</string>
+    <string name="report_done">Reported. Thank you for helping protect others.</string>
+    <string name="report_dialog_title">Report this number?</string>
+    <string name="report_dialog_intro">This is exactly what will be sent to the Linda radar so other people can be warned:</string>
+    <string name="report_field_number">• The sender\'s number: %1$s</string>
+    <string name="report_field_type">• Type of scam: %1$s</string>
+    <string name="report_field_sure">• How sure Linda is: %1$d%%</string>
+    <string name="report_field_fingerprint">• A scrambled code of the message: %1$s (the message cannot be read from it)</string>
+    <string name="report_field_device">• Your anonymous device code: %1$s</string>
+    <string name="report_never">Never sent: the message itself, your contacts, or your own phone number.</string>
+    <string name="report_no_server">No radar address is set on this phone yet, so the report will wait until one is set and you are online.</string>
+    <string name="report_send">Send report</string>
+    <string name="report_cancel">Cancel</string>
+    <string name="report_queued">Report queued. It is sent when you are online.</string>
+    <string name="report_saved_waiting">Report saved. It will be sent once a radar address is set and you are online.</string>
 </resources>

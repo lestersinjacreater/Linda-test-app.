@@ -25,6 +25,7 @@ data class DetectionEntity(
     val receivedAt: Long,
     val source: String,         // "sms", "checker" or "demo"
     val markedSafe: Boolean = false,
+    val reportedAt: Long? = null, // set when a report for this message was queued (automatically or by the Report button)
 )
 
 /** A sender the user marked as safe. Linda stops scoring messages from it. */
@@ -46,6 +47,8 @@ data class ReportQueueEntity(
     val modelVersion: String,
     val sentAt: Long,
     val attempts: Int = 0,
+    /** true = the person confirmed THIS report on the Report screen. Such a report is sent even if automatic reporting is off. */
+    val userConfirmed: Boolean = false,
 )
 
 /** A number the radar confirmed as a scammer (contract 5.3). Kept on the phone so call warnings work offline. */

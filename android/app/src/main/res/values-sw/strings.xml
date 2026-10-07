@@ -243,4 +243,20 @@
     </plurals>
     <string name="home_inbox_title">Kagua kikasha changu</string>
     <string name="home_inbox_body">Tafuta ulaghai ambao tayari umejificha kwenye jumbe zako za siku 90 zilizopita.</string>
+
+    <string name="action_report">Ripoti nambari hii</string>
+    <string name="report_done">Imeripotiwa. Asante kwa kusaidia kulinda wengine.</string>
+    <string name="report_dialog_title">Ripoti nambari hii?</string>
+    <string name="report_dialog_intro">Hiki ndicho hasa kitakachotumwa kwa rada ya Linda ili watu wengine waonywe:</string>
+    <string name="report_field_number">• Nambari ya mtumaji: %1$s</string>
+    <string name="report_field_type">• Aina ya ulaghai: %1$s</string>
+    <string name="report_field_sure">• Kiwango cha uhakika wa Linda: %1$d%%</string>
+    <string name="report_field_fingerprint">• Msimbo uliochanganywa wa ujumbe: %1$s (ujumbe hauwezi kusomwa kutoka kwake)</string>
+    <string name="report_field_device">• Msimbo wako wa kifaa usiotambulisha mtu: %1$s</string>
+    <string name="report_never">Hakitumwi kamwe: ujumbe wenyewe, anwani zako, wala nambari yako ya simu.</string>
+    <string name="report_no_server">Hakuna anwani ya rada kwenye simu hii bado, kwa hivyo ripoti itasubiri hadi iwekwe na uwe mtandaoni.</string>
+    <string name="report_send">Tuma ripoti</string>
+    <string name="report_cancel">Ghairi</string>
+    <string name="report_queued">Ripoti imewekwa kwenye foleni. Itatumwa ukiwa mtandaoni.</string>
+    <string name="report_saved_waiting">Ripoti imehifadhiwa. Itatumwa mara anwani ya rada ikiwekwa na ukiwa mtandaoni.</string>
 </resources>

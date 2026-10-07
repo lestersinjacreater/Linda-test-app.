@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.linda.app.LindaApp
 import com.linda.app.R
+import com.linda.app.core.ui.components.categoryLabel
 import com.linda.app.core.util.PhoneNumbers
 import com.linda.app.core.util.Prefs
 import com.linda.app.core.util.formatDateTime
@@ -159,21 +160,3 @@ fun GuardianScreen(onBack: () -> Unit) {
         OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_back)) }
     }
 }
-
-/** A scam type in plain words, in the app language. */
-@Composable
-private fun categoryLabel(category: String): String = stringResource(
-    when (category) {
-        "test" -> R.string.cat_test
-        "fake_mpesa" -> R.string.cat_fake_mpesa
-        "sent_by_mistake" -> R.string.cat_sent_by_mistake
-        "prize" -> R.string.cat_prize
-        "fuliza_upgrade" -> R.string.cat_fuliza_upgrade
-        "kra_refund" -> R.string.cat_kra_refund
-        "job_fee" -> R.string.cat_job_fee
-        "loan_fee" -> R.string.cat_loan_fee
-        "pin_request" -> R.string.cat_pin_request
-        "phishing_link" -> R.string.cat_phishing_link
-        else -> R.string.cat_other
-    },
-)

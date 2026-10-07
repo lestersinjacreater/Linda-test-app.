@@ -55,7 +55,7 @@ class MessageProcessor(private val context: Context) {
             if (notify) AlertNotifier.show(context, id, verdict)
             // Family Guardian: tells a family member (only if the person opted in) about a SCAM from a real or demo text, never a pasted one.
             if (verdict.level == RiskLevel.SCAM && (source == "sms" || source == "demo")) GuardianService.maybeAlert(context, verdict, sender, receivedAt)
-            if (source == "sms") ReportingService.maybeEnqueue(context, verdict, sender, receivedAt) // only real texts are reported, never pasted or demo ones
+            if (source == "sms") ReportingService.maybeEnqueue(context, verdict, sender, receivedAt, id) // only real texts are reported, never pasted or demo ones
             // Voice warning (F12): only if the rules allow it (opted in, phone not silent or on a call, not repeated within 30 s).
             val speech = VoiceWarnings.speak(context, verdict, source)
             ProcessResult(verdict, id, speech)

@@ -22,10 +22,12 @@ import java.util.concurrent.TimeUnit
  */
 class ReportWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
+        val queue = (applicationContext as LindaApp).database.reportQueueDao()
+        // The person switched automatic reporting off: automatic reports still waiting are dropped, never sent.
+        // Reports they confirmed one by one on the Report screen are their own decision and stay.
+        if (!Prefs.reportingConsent(applicationContext)) queue.deleteUnconfirmed()
         val server = Prefs.serverUrl(applicationContext)
         if (server.isBlank()) return Result.success() // nowhere to send yet; reports stay queued
-        if (!Prefs.reportingConsent(applicationContext)) return Result.success() // user turned reporting off
-        val queue = (applicationContext as LindaApp).database.reportQueueDao()
 
         for (item in queue.pending(50)) {
             val response = Http.postJson("$server/v1/reports", item.toPayload(Prefs.deviceId(applicationContext)).toJson())

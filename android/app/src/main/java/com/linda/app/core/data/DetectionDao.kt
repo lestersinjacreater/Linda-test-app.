@@ -21,6 +21,9 @@ interface DetectionDao {
     @Query("SELECT id FROM detections WHERE receivedAt = :receivedAt AND sender IS :sender LIMIT 1")
     suspend fun findId(receivedAt: Long, sender: String?): Long?
 
+    @Query("UPDATE detections SET reportedAt = :at WHERE id = :id")
+    suspend fun markReported(id: Long, at: Long)
+
     @Query("UPDATE detections SET markedSafe = 1 WHERE id = :id")
     suspend fun markSafe(id: Long)
 
@@ -58,6 +61,10 @@ interface ReportQueueDao {
 
     @Query("SELECT * FROM report_queue ORDER BY id LIMIT :limit")
     suspend fun pending(limit: Int): List<ReportQueueEntity>
+
+    /** Automatic reports waiting when the person switches reporting off are dropped, not sent. Reports they confirmed by hand stay. */
+    @Query("DELETE FROM report_queue WHERE userConfirmed = 0")
+    suspend fun deleteUnconfirmed()
 
     @Query("DELETE FROM report_queue WHERE id = :id")
     suspend fun delete(id: Long)

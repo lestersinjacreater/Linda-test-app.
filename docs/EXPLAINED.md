@@ -310,3 +310,23 @@ Reads the last **90 days** of text messages **on the phone**, checks each one wi
 ### Speed (the spec asks for 2,000 messages in under 20 seconds on a low-end phone)
 - Measured on a development machine, **2,000 messages are scored in about 0.5 seconds** (a test set that is half scams, which is far more scams than a real inbox). A cheap phone is many times slower, so **this is NOT yet proof of the 20-second target.** The result screen shows "Checked N messages in X seconds", so the first teammate to run it on a Tecno/Infinix/Itel phone gets the real number; scale it to 2,000.
 - To leave room, harmless messages (the vast majority) now skip extra work: no sorting of explanation data and no fingerprint unless the message is flagged. A test fails if scoring 2,000 messages ever takes more than 15 seconds on the build machine.
+
+## The Report button (`features/reporting/ManualReport.kt`, warning screen)
+
+### What it is
+On a warning screen, **"Report this number"** lets the person tell the Linda radar about a scammer by hand, so others can be warned. Automatic reporting (for people who agreed on the consent screen) already exists; this is for choosing to report one specific message, including when automatic reporting is off, or for a CAUTION-level message Linda would not report by itself.
+
+### Privacy: the person sees exactly what is sent, every time
+Tapping the button does not send anything. It opens a confirmation listing the fields: the sender's number, the type of scam, how sure Linda is, the scrambled fingerprint of the message ("the message cannot be read from it") and the anonymous device code, followed by "Never sent: the message itself, your contacts, or your own phone number". Only **Send report** queues it. That confirmation is the person's consent for *this one report*, so it works even if the global reporting switch is off, and it can never send more than the automatic report does: the same `ReportPayload` with the same seven fields (a test checks the keys, and that no text field exists to leak).
+
+### Rules (unit tested in `ManualReport`)
+- Allowed for SCAM and CAUTION messages from a real phone number.
+- **Never** for verified senders (M-Pesa, banks, KPLC, KRA), never for pasted text or a sender name with no number, and never twice for the same message: the button turns into "Reported. Thank you for helping protect others."
+- Hidden if the person marked the sender as safe.
+- If the message has no fingerprint, no report is built, so no junk is sent.
+
+### How it is sent
+Through the same offline queue as automatic reports: saved first, sent when the phone is online, retried with growing delays. If no radar address is set yet, the dialog says so and the report waits. Automatic reports mark the message as "reported" too, so the button never offers a duplicate.
+
+### Consent withdrawn
+If the person later switches automatic reporting off, any **automatic** reports still waiting in the queue are **deleted, not sent**. Reports they confirmed one by one stay, because those were their own explicit decision.

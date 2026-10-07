@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [DetectionEntity::class, AllowedSenderEntity::class, SeenSenderEntity::class, ReportQueueEntity::class, BlockedNumberEntity::class, GuardianAlertEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = false,
 )
 abstract class LindaDatabase : RoomDatabase() {
