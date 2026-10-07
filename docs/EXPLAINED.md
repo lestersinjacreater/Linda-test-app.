@@ -147,3 +147,12 @@ Unit tests use a fake radar; `tests/e2e` starts the real radar and simulator as 
 
 ### Honest limits
 Population behaviour (reading delays, detection latency, how many phones run Linda) is invented. The numbers show how the mechanism works, not what Safaricom's network would measure.
+
+## System rebuild, step 6a: the detector on the phone (`android/.../features/detection/`)
+
+- **Same maths, second language.** `Normalizer`, `SimHash`, `ModelScorer`, `MetadataFeatures` and `Categories` are line-by-line Kotlin versions of the Python in `ml/`. The Kotlin tests read the same `shared/test-vectors.json` and require: identical normalised text, identical fingerprints, and scores within the stored range (plus or minus 0.001) for all 63 messages. If someone changes one side, the other side's tests fail.
+- **No ML library on the phone.** `ModelScorer` reads `assets/model.json` and does arithmetic: chop text into 2 to 5 letter pieces, look each up in a table, add up weights, squash to 0..1. About 360 KB, a few milliseconds.
+- **`LindaDetector` = the one place that scores.** `ScamDetector.analyse(MessageInput)` returns a `Verdict`: level (SAFE, CAUTION, SCAM), score, reasons in English and Swahili, category, and the SimHash fingerprint for reports. Nothing else in the app may score a message.
+- **Context signals** (sender not in contacts + first message: +0.10; sender in contacts: -0.15) nudge a borderline score. They never apply to verified senders, and they cannot turn an innocent message into a SCAM. All numbers sit in `FusionConfig`.
+- **Every warning explains itself.** `ReasonCatalogue` holds the plain-language reason per scam type, plus "typical scam wording" built from the n-grams that raised the score most. **The Swahili has not been checked by a native speaker.**
+- **Safety tests:** no SAFE vector may ever be warned on, real `MPESA` messages stay SAFE even with unknown-sender context, and the same confirmation text flips from SAFE to SCAM when only the sender changes.

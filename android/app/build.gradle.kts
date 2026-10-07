@@ -66,4 +66,6 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
 
     testImplementation("junit:junit:4.13.2")
+    // Android's built-in org.json is only a stub in JVM unit tests, so tests bring the real one.
+    testImplementation("org.json:json:20240303")
 }
