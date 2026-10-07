@@ -10,8 +10,8 @@
 
     <string name="logo_description">Nembo ya ngao ya Linda</string>
 
-    <string name="home_status_title">Linda inakulinda</string>
-    <string name="home_caught_this_month">Ulaghai uliozuiwa mwezi huu</string>
+    <string name="home_status_title">LINDA inakulinda.</string>
+    <string name="home_caught_this_month">ulaghai uliozuiwa mwezi huu</string>
 
     <string name="checker_title">Je, huu ni ulaghai?</string>
     <string name="checker_coming_soon">Bandika ujumbe hapa na Linda atauchunguza. Inakuja hivi karibuni.</string>
@@ -28,9 +28,9 @@
     <string name="channel_scam">Maonyo ya ulaghai</string>
     <string name="channel_caution">Tahadhari</string>
 
-    <string name="level_scam">ULAGHAI</string>
-    <string name="level_caution">TAHADHARI</string>
-    <string name="level_safe">SALAMA</string>
+    <string name="level_scam">Huenda ni ulaghai</string>
+    <string name="level_caution">Kuwa mwangalifu</string>
+    <string name="level_safe">Inaonekana salama</string>
     <string name="filter_all">Zote</string>
     <string name="history_search">Tafuta ujumbe au watumaji</string>
     <string name="sender_pasted">Maandishi yaliyobandikwa</string>
@@ -38,7 +38,7 @@
     <string name="detail_not_found">Ujumbe huu haupo tena kwenye historia.</string>
     <string name="detail_headline_scam">Usijibu na usitume pesa</string>
     <string name="detail_headline_caution">Kuwa mwangalifu na ujumbe huu</string>
-    <string name="detail_why">Kwa nini Linda imekuonya</string>
+    <string name="detail_why">Kwa nini LINDA imeonya</string>
     <string name="detail_marked_safe">Umemweka mtumaji huyu kuwa salama. Linda itaacha kukagua jumbe zake.</string>
     <string name="action_mark_safe">Weka kuwa salama</string>
     <string name="action_back">Rudi</string>
@@ -259,4 +259,67 @@
     <string name="report_cancel">Ghairi</string>
     <string name="report_queued">Ripoti imewekwa kwenye foleni. Itatumwa ukiwa mtandaoni.</string>
     <string name="report_saved_waiting">Ripoti imehifadhiwa. Itatumwa mara anwani ya rada ikiwekwa na ukiwa mtandaoni.</string>
+
+    <!-- Layer Trace (docs/design-system.md sections 6 and 7.1). Swahili unreviewed by a native speaker. -->
+    <string name="trace_layer_l">Lugha</string>
+    <string name="trace_layer_i">Akili</string>
+    <string name="trace_layer_n">Mtandao</string>
+    <string name="trace_layer_d">Uamuzi</string>
+    <string name="trace_layer_a">Tahadhari</string>
+    <string name="trace_explain_l">Imesoma ujumbe kwa Kiingereza, Kiswahili au Sheng</string>
+    <string name="trace_explain_i">Imeulinganisha na maelfu ya ulaghai unaojulikana</string>
+    <string name="trace_explain_n">Imechunguza aliyeutuma na jinsi ulivyotumwa</string>
+    <string name="trace_explain_d">Imepima kila kitu pamoja</string>
+    <string name="trace_explain_a">Imekulinda</string>
+    <string name="trace_tap_hint">Gusa herufi uone kila safu ilipata nini.</string>
+    <string name="trace_state_idle">inasubiri</string>
+    <string name="trace_state_scanning">inakagua</string>
+    <string name="trace_state_passed">hakuna kilichopatikana</string>
+    <string name="trace_state_flagged">imepata hatari</string>
+    <string name="trace_l_clean">Hakuna kilichofichwa. Imesomwa kama ilivyoandikwa.</string>
+    <string name="trace_l_disguise">Imefumbua kificho: \"%1$s\" → \"%2$s\"</string>
+    <string name="trace_i_category">Inafanana na ulaghai unaojulikana: %1$s</string>
+    <string name="trace_i_words">Maneno ya ulaghai: %1$s</string>
+    <string name="trace_i_score">Linda ina uhakika wa %1$s%%</string>
+    <string name="trace_i_none">Hakuna kinachofanana na ulaghai anaoujua Linda.</string>
+    <string name="trace_n_verified">Mtumaji aliyethibitishwa (M-Pesa, benki, KPLC au KRA)</string>
+    <string name="trace_n_fake_mpesa">Unajifanya kuwa M-Pesa</string>
+    <string name="trace_n_personal">Umetoka kwa nambari ya kawaida ya simu</string>
+    <string name="trace_n_unknown">Hayuko kwenye anwani zako, na huu ni ujumbe wa kwanza</string>
+    <string name="trace_n_link">Una kiungo</string>
+    <string name="trace_n_blocklist">Nambari hii imethibitishwa kuwa ya tapeli na simu zingine za Linda</string>
+    <string name="trace_n_pasted">Maandishi yaliyobandikwa: hakuna mtumaji wa kukagua</string>
+    <string name="trace_n_none">Hakuna jambo lisilo la kawaida kuhusu mtumaji</string>
+    <string name="trace_d_verdict">Uamuzi: %1$s</string>
+    <string name="trace_a_warned">Onyo limeonyeshwa</string>
+    <string name="trace_a_reported">Nambari imeripotiwa</string>
+    <string name="trace_a_guardian">Mlezi amearifiwa</string>
+    <string name="trace_a_nothing">Hakuna onyo linalohitajika</string>
+
+    <!-- Home ring, verdict card, scam alert (docs/design-system.md 7.2 to 7.7). Swahili unreviewed by a native speaker. -->
+    <string name="home_partial_title">Baadhi ya ulinzi wa LINDA umezimwa</string>
+    <string name="home_ring_description">Ulinzi wa LINDA: safu %1$d kati ya 5 zinafanya kazi</string>
+    <string name="home_empty">Hakuna ulaghai bado. LINDA inalinda.</string>
+    <string name="home_fix_button">Rekebisha</string>
+    <string name="home_fix_read_messages">Ruhusu LINDA ipokee jumbe zako ili iweze kuzikagua.</string>
+    <string name="home_fix_contacts">Ruhusu anwani, ili LINDA ijue unaowafahamu.</string>
+    <string name="home_fix_notifications">Washa arifa, ili LINDA iweze kukuonya.</string>
+    <string name="verdict_primary_scam">Usitume pesa</string>
+    <string name="verdict_primary_caution">Nitakuwa mwangalifu</string>
+    <string name="takeover_headline">Simama. Huu unaonekana kuwa ulaghai.</string>
+    <string name="takeover_continue">Sawa, nionyeshe kwa nini</string>
+    <string name="badge_fake_mpesa">Haukutoka M-PESA. Hujapokea pesa yoyote.</string>
+
+    <string name="recovery_calm">Usiogope. Tuchukue hatua haraka.</string>
+    <string name="recovery_chip">Kurudisha pesa hufanya kazi vizuri zaidi ndani ya dakika chache.</string>
+
+    <!-- Demo overlay for judges (docs/design-system.md 7.8). The raw lines inside it are log-style and not translated. -->
+    <string name="overlay_title">Hali ya onyesho: ufuatiliaji wa safu</string>
+    <string name="overlay_waiting">Inasubiri ujumbe. Tumia Hali ya onyesho au tuma ujumbe kwa simu hii.</string>
+    <string name="overlay_fold">Kunja</string>
+    <string name="overlay_unfold">Fungua</string>
+    <string name="overlay_hide">Ficha</string>
+    <string name="overlay_toast_on">Paneli ya onyesho imewashwa</string>
+    <string name="overlay_toast_off">Paneli ya onyesho imezimwa</string>
+    <string name="dev_demo_overlay">Onyesha paneli ya onyesho</string>
 </resources>

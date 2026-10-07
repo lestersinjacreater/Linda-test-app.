@@ -3,6 +3,7 @@ package com.linda.app.features.guardian
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import com.linda.app.core.ui.components.RiskIcon
+import com.linda.app.core.ui.theme.MediumShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -41,6 +45,10 @@ import com.linda.app.core.util.PhoneNumbers
 import com.linda.app.core.util.Prefs
 import com.linda.app.core.util.formatDateTime
 import kotlinx.coroutines.launch
+import com.linda.app.core.ui.components.LindaButton
+import com.linda.app.core.ui.components.LindaCard
+import com.linda.app.core.ui.components.LindaTextField
+import com.linda.app.core.ui.theme.LindaTheme
 
 /**
  * Family Guardian setup (F11). The protected person decides everything here: who the guardian is, what name the alert
@@ -75,29 +83,24 @@ fun GuardianScreen(onBack: () -> Unit) {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text(stringResource(R.string.guardian_title), style = MaterialTheme.typography.headlineMedium)
+        Text(stringResource(R.string.guardian_title), style = MaterialTheme.typography.titleLarge)
         Text(stringResource(R.string.guardian_intro), style = MaterialTheme.typography.bodyLarge)
 
-        Card(
-            modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        ) {
-            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        LindaCard(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stringResource(R.string.guardian_what_title), style = MaterialTheme.typography.titleMedium)
                 Text(stringResource(R.string.guardian_what_body), style = MaterialTheme.typography.bodyMedium)
                 Text(stringResource(R.string.guardian_rules), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-        }
 
-        OutlinedTextField(
+        LindaTextField(
             value = number, onValueChange = { number = it; Prefs.setGuardianNumber(context, it) },
             label = { Text(stringResource(R.string.guardian_number_label)) }, singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), modifier = Modifier.fillMaxWidth(),
         )
-        OutlinedTextField(
+        LindaTextField(
             value = name, onValueChange = { name = it.take(GuardianRules.MAX_NAME_LENGTH); Prefs.setProtectedName(context, name) },
             label = { Text(stringResource(R.string.guardian_name_label)) }, singleLine = true, modifier = Modifier.fillMaxWidth(),
         )
@@ -126,37 +129,41 @@ fun GuardianScreen(onBack: () -> Unit) {
             color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (enabled && !GuardianService.hasSmsPermission(context)) {
-            Text(stringResource(R.string.guardian_permission_removed), color = MaterialTheme.colorScheme.error)
+            Text(stringResource(R.string.guardian_permission_removed), color = LindaTheme.colors.textPrimary)
         }
-        note?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+        note?.let { Text(it, color = LindaTheme.colors.textPrimary) }
 
-        OutlinedButton(
-            enabled = fieldsOk && permissionGranted,
-            onClick = {
+        LindaButton(stringResource(R.string.guardian_test_button), onClick = {
                 scope.launch {
                     note = context.getString(if (GuardianService.sendTest(context)) R.string.guardian_test_ok else R.string.guardian_test_failed)
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
-        ) { Text(stringResource(R.string.guardian_test_button)) }
+            }, modifier = Modifier.fillMaxWidth(), secondary = true, enabled = fieldsOk && permissionGranted)
 
         Text(stringResource(R.string.guardian_log_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
         if (alerts.isEmpty()) {
             Text(stringResource(R.string.guardian_log_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
+            // Each alert that was sent, as a Caution-style card (docs/design-system.md 7.5), so the person can see exactly what their guardian was told.
             alerts.forEach { a ->
-                Text(
-                    stringResource(R.string.guardian_log_row, formatDateTime(a.sentAt), categoryLabel(a.category), stringResource(if (a.status == "sent") R.string.guardian_status_sent else R.string.guardian_status_failed)),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                val caution = LindaTheme.colors.caution
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth().clip(MediumShape).background(caution.tint).padding(12.dp),
+                ) {
+                    RiskIcon("CAUTION", size = 24.dp)
+                    Text(
+                        stringResource(R.string.guardian_log_row, formatDateTime(a.sentAt), categoryLabel(a.category), stringResource(if (a.status == "sent") R.string.guardian_status_sent else R.string.guardian_status_failed)),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LindaTheme.colors.textPrimary,
+                    )
+                }
             }
         }
 
         if (Prefs.devMode(context)) {
-            OutlinedButton(onClick = { scope.launch { dao.clearAll() } }, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.guardian_reset_limits))
-            }
+            LindaButton(stringResource(R.string.guardian_reset_limits), onClick = { scope.launch { dao.clearAll() } }, modifier = Modifier.fillMaxWidth(), secondary = true)
         }
-        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_back)) }
+        LindaButton(stringResource(R.string.action_back), onClick = onBack, modifier = Modifier.fillMaxWidth(), secondary = true)
     }
 }

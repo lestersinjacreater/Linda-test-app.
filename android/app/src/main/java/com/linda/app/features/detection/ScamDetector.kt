@@ -13,6 +13,10 @@ interface ScamDetector {
 
     /** Version of the model file in use (shown in the developer screen). */
     val modelVersion: String
+
+    /** The score lines from the model file (contract 5.8): from [warnThreshold] a message is CAUTION, from [scamThreshold] SCAM. */
+    val warnThreshold: Double
+    val scamThreshold: Double
 }
 
 data class MessageInput(

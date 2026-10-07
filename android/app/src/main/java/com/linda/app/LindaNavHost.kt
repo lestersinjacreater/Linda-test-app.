@@ -1,6 +1,7 @@
 package com.linda.app
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -11,7 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.linda.app.features.demo.DemoOverlay
+import com.linda.app.features.demo.DemoOverlayPanel
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -51,7 +57,8 @@ private enum class Destination(
 fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
     val navController = rememberNavController()
     LaunchedEffect(openDetectionId) {
-        if (openDetectionId != null && openDetectionId >= 0) navController.navigate("detail/$openDetectionId")
+        // Opened from a warning notification: a confident scam gets the full-screen alert first.
+        if (openDetectionId != null && openDetectionId >= 0) navController.navigate("detail/$openDetectionId?takeover=true")
     }
     LaunchedEffect(sharedText) {
         if (!sharedText.isNullOrBlank()) navController.navigate(Destination.Checker.route)
@@ -75,21 +82,27 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
                             }
                         },
                         icon = { Text(text = stringResource(destination.glyph), fontSize = 22.sp) },
-                        label = { Text(text = stringResource(destination.label)) },
+                        label = { Text(text = stringResource(destination.label), style = MaterialTheme.typography.labelMedium) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedTextColor = MaterialTheme.colorScheme.primary,
                             unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+                            indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                            selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         ),
                     )
                 }
             }
         },
     ) { innerPadding ->
+        val overlayOn by DemoOverlay.enabled.collectAsStateWithLifecycle()
+        val overlayLatest by DemoOverlay.latest.collectAsStateWithLifecycle()
+        val context = LocalContext.current
+        Box(Modifier.padding(innerPadding)) {
         NavHost(
             navController = navController,
             startDestination = Destination.Home.route,
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier,
         ) {
             composable(Destination.Home.route) { HomeScreen(onOpenInbox = { navController.navigate("inbox") }, onOpenRecovery = { navController.navigate("recovery/-1") }) }
             composable(Destination.Checker.route) { CheckerScreen(sharedText) }
@@ -98,9 +111,16 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
             composable("inbox") { InboxScreen(onOpenDetail = { navController.navigate("detail/$it") }, onBack = { navController.popBackStack() }) }
             composable("guardian") { GuardianScreen(onBack = { navController.popBackStack() }) }
             composable("demo") { DemoScreen(onBack = { navController.popBackStack() }) }
-            composable("detail/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
+            composable(
+                "detail/{id}?takeover={takeover}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.LongType },
+                    navArgument("takeover") { type = NavType.BoolType; defaultValue = false },
+                ),
+            ) { entry ->
                 DetailScreen(
                     detectionId = entry.arguments?.getLong("id") ?: -1L,
+                    takeover = entry.arguments?.getBoolean("takeover") ?: false,
                     onOpenRecovery = { navController.navigate("recovery/$it") },
                     onBack = { navController.popBackStack() },
                 )
@@ -109,6 +129,10 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
             composable("recovery/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
                 RecoveryScreen(detectionId = entry.arguments?.getLong("id") ?: -1L, onBack = { navController.popBackStack() })
             }
+        }
+        if (overlayOn) {
+            DemoOverlayPanel(overlayLatest, onHide = { DemoOverlay.setEnabled(context, false) }, modifier = Modifier.align(Alignment.BottomCenter))
+        }
         }
     }
 }

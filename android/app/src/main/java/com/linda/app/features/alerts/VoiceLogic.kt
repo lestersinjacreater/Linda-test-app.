@@ -51,6 +51,17 @@ object VoiceScript {
         else "Linda warning. This message is probably a scam. ${why}Do not send money and do not share your PIN."
     }
 
+    /** The headline of the full-screen scam alert. Must match strings.xml `takeover_headline` exactly (a test checks): the voice reads what the screen shows. */
+    const val TAKEOVER_HEADLINE_EN = "Stop. This looks like a scam."
+    const val TAKEOVER_HEADLINE_SW = "Simama. Huu unaonekana kuwa ulaghai."
+
+    /** What the full-screen alert says aloud: its headline and then the top reason, word for word as shown. */
+    fun takeover(language: String, reason: String?): String {
+        val headline = if (language == "sw") TAKEOVER_HEADLINE_SW else TAKEOVER_HEADLINE_EN
+        val why = reason?.trim()?.takeIf { it.isNotEmpty() }
+        return if (why == null) headline else "$headline $why"
+    }
+
     fun test(language: String): String =
         if (language == "sw") "Huu ni mtihani wa sauti ya Linda. Ukisikia hili, maonyo yatasomwa kwa sauti."
         else "This is a test of Linda's voice. If you can hear this, warnings will be read aloud."

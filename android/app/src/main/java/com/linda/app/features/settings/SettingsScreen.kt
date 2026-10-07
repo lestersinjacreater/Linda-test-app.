@@ -46,7 +46,10 @@ import kotlinx.coroutines.launch
 import com.linda.app.core.util.Prefs
 import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.alerts.VoiceWarnings
+import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.sync.BlocklistSyncWorker
+import com.linda.app.core.ui.components.LindaButton
+import com.linda.app.core.ui.components.LindaTextField
 
 /**
  * Settings: language, call warnings, anonymous reports. Tapping the version number 7 times opens the hidden
@@ -74,7 +77,7 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
     val screeningOn = screeningAvailable && roleManager?.isRoleHeld(RoleManager.ROLE_CALL_SCREENING) == true
 
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.titleLarge)
@@ -97,7 +100,7 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
         Text(stringResource(R.string.settings_guardian_title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.settings_guardian_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        OutlinedButton(onClick = onOpenGuardian, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_guardian_open)) }
+        LindaButton(stringResource(R.string.settings_guardian_open), onClick = onOpenGuardian, modifier = Modifier.fillMaxWidth(), secondary = true)
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -120,15 +123,9 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (swahiliVoice == false) {
-            OutlinedButton(
-                onClick = { try { context.startActivity(Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)) } catch (e: ActivityNotFoundException) { voiceNote = context.getString(R.string.voice_install_unavailable) } },
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text(stringResource(R.string.voice_install)) }
+            LindaButton(stringResource(R.string.voice_install), onClick = { try { context.startActivity(Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)) } catch (e: ActivityNotFoundException) { voiceNote = context.getString(R.string.voice_install_unavailable) } }, modifier = Modifier.fillMaxWidth(), secondary = true)
         }
-        OutlinedButton(
-            onClick = { scope.launch { voiceNote = context.getString(if (VoiceWarnings.speakTest(context)) R.string.voice_test_ok else R.string.voice_test_failed) } },
-            modifier = Modifier.fillMaxWidth(),
-        ) { Text(stringResource(R.string.voice_test)) }
+        LindaButton(stringResource(R.string.voice_test), onClick = { scope.launch { voiceNote = context.getString(if (VoiceWarnings.speakTest(context)) R.string.voice_test_ok else R.string.voice_test_failed) } }, modifier = Modifier.fillMaxWidth(), secondary = true)
         voiceNote?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
@@ -137,10 +134,7 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
         when {
             !screeningAvailable -> Text(stringResource(R.string.settings_calls_unavailable), style = MaterialTheme.typography.bodyMedium)
             screeningOn -> Text(stringResource(R.string.settings_calls_on), color = MaterialTheme.colorScheme.primary)
-            else -> Button(
-                onClick = { roleLauncher.launch(roleManager!!.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)) },
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text(stringResource(R.string.settings_calls_enable)) }
+            else -> LindaButton(stringResource(R.string.settings_calls_enable), onClick = { roleLauncher.launch(roleManager!!.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)) }, modifier = Modifier.fillMaxWidth())
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
@@ -171,16 +165,14 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
         if (devMode) {
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
             Text(stringResource(R.string.dev_title), style = MaterialTheme.typography.titleMedium)
-            OutlinedTextField(
+            LindaTextField(
                 value = serverUrl,
                 onValueChange = { serverUrl = it },
                 label = { Text(stringResource(R.string.dev_server)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Button(onClick = { Prefs.setServerUrl(context, serverUrl); Prefs.clearLastSync(context); BlocklistSyncWorker.syncNow(context) }, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.dev_save_sync))
-            }
+            LindaButton(stringResource(R.string.dev_save_sync), onClick = { Prefs.setServerUrl(context, serverUrl); Prefs.clearLastSync(context); BlocklistSyncWorker.syncNow(context) }, modifier = Modifier.fillMaxWidth())
             Text(stringResource(R.string.dev_model, app.detector.modelVersion), style = MaterialTheme.typography.bodyMedium)
             val syncedAt = Prefs.lastSyncAt(context)
             Text(
@@ -188,7 +180,12 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(stringResource(R.string.dev_blocked, blocked), style = MaterialTheme.typography.bodyMedium)
-            OutlinedButton(onClick = onOpenDemo, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.dev_open_demo)) }
+            val overlayOn by DemoOverlay.enabled.collectAsState()
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.dev_demo_overlay), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                Switch(checked = overlayOn, onCheckedChange = { DemoOverlay.setEnabled(context, it) })
+            }
+            LindaButton(stringResource(R.string.dev_open_demo), onClick = onOpenDemo, modifier = Modifier.fillMaxWidth(), secondary = true)
         }
     }
 }

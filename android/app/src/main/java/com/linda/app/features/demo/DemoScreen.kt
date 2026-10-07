@@ -27,6 +27,7 @@ import com.linda.app.features.calls.CallWarnings
 import com.linda.app.features.detection.RiskLevel
 import com.linda.app.features.sms.MessageProcessor
 import kotlinx.coroutines.launch
+import com.linda.app.core.ui.components.LindaButton
 
 /**
  * Demo mode: the presenter "receives" any sample instantly, with no network, through the exact same
@@ -40,7 +41,7 @@ fun DemoScreen(onBack: () -> Unit) {
     var status by remember { mutableStateOf<String?>(null) }
 
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(stringResource(R.string.demo_title), style = MaterialTheme.typography.titleLarge)
@@ -48,22 +49,17 @@ fun DemoScreen(onBack: () -> Unit) {
 
         DemoSamples.all.forEach { sample ->
             val label = stringResource(sample.title)
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
+            LindaButton(label, onClick = {
                     scope.launch {
                         val result = MessageProcessor(context).process(sample.body, sample.sender, System.currentTimeMillis(), source = "demo", notify = true)
                         val v = result.verdict
                         status = if (v.level == RiskLevel.SAFE) context.getString(R.string.demo_result_safe, label)
                         else context.getString(R.string.demo_result_flagged, label, v.level.name, v.category)
                     }
-                },
-            ) { Text(label) }
+                }, modifier = Modifier.fillMaxWidth())
         }
 
-        OutlinedButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
+        LindaButton(stringResource(R.string.demo_call), onClick = {
                 scope.launch {
                     val warning = CallWarnings.check(context, DemoSamples.SCAMMER_NUMBER)
                     status = when (warning) {
@@ -72,10 +68,9 @@ fun DemoScreen(onBack: () -> Unit) {
                         null -> context.getString(R.string.demo_call_none)
                     }
                 }
-            },
-        ) { Text(stringResource(R.string.demo_call)) }
+            }, modifier = Modifier.fillMaxWidth(), secondary = true)
 
         status?.let { Text(it, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary) }
-        OutlinedButton(onClick = onBack, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.action_back)) }
+        LindaButton(stringResource(R.string.action_back), onClick = onBack, modifier = Modifier.fillMaxWidth(), secondary = true)
     }
 }

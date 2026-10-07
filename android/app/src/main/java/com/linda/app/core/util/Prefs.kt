@@ -43,6 +43,10 @@ object Prefs {
     fun voiceChoice(ctx: Context): Boolean? = if (p(ctx).contains("voice_enabled")) p(ctx).getBoolean("voice_enabled", false) else null
     fun setVoiceChoice(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("voice_enabled", value).apply()
 
+    /** The demo overlay for judges (tap the logo 7 times). Off until switched on. */
+    fun demoOverlay(ctx: Context) = p(ctx).getBoolean("demo_overlay", false)
+    fun setDemoOverlay(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("demo_overlay", value).apply()
+
     /** The hidden developer screen (tap the version 7 times). */
     fun devMode(ctx: Context) = p(ctx).getBoolean("dev_mode", false)
     fun setDevMode(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("dev_mode", value).apply()

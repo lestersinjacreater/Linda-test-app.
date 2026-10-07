@@ -26,6 +26,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.linda.app.R
 import com.linda.app.core.ui.components.LevelChip
 import com.linda.app.core.util.formatDateTime
+import com.linda.app.core.ui.components.LindaCard
+import com.linda.app.core.ui.components.LindaTextField
 
 /** Searchable list of flagged messages with a level filter (F9). Tapping one opens its detail screen. */
 @Composable
@@ -36,7 +38,7 @@ fun HistoryScreen(onOpen: (Long) -> Unit, viewModel: HistoryViewModel = viewMode
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.history_title), style = MaterialTheme.typography.titleLarge)
-        OutlinedTextField(
+        LindaTextField(
             value = query,
             onValueChange = { viewModel.query.value = it },
             modifier = Modifier.fillMaxWidth(),
@@ -57,12 +59,7 @@ fun HistoryScreen(onOpen: (Long) -> Unit, viewModel: HistoryViewModel = viewMode
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(items, key = { it.id }) { d ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth().clickable { onOpen(d.id) },
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    LindaCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpen(d.id) }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 LevelChip(d.level)
                                 Text(
@@ -73,7 +70,6 @@ fun HistoryScreen(onOpen: (Long) -> Unit, viewModel: HistoryViewModel = viewMode
                             Text(d.body, maxLines = 2, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(formatDateTime(d.receivedAt), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                    }
                 }
             }
         }

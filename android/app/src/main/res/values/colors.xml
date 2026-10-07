@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="linda_background">#0B0F1A</color>
-    <color name="linda_card">#151B2E</color>
-    <color name="linda_cyan">#00E5FF</color>
-    <color name="linda_pink">#FF2E88</color>
-    <color name="linda_amber">#FFC940</color>
+    <!-- Window background shown before Compose draws: matches docs/design-system.md 3.2 so there is no flash. -->
+    <color name="linda_background">#F6F8F7</color>
+    <!-- Launcher icon background: Forest green (green900), so the five pale-to-deep segments stand out. -->
+    <color name="linda_launcher_background">#00602F</color>
 </resources>

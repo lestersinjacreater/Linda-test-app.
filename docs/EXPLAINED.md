@@ -347,3 +347,100 @@ The APK was published only from a branch literally named `main`, so merging into
 
 ### Honest limits
 We have not seen it served from github.io yet (Pages needs the owner to switch it on). The repository name ends in a dot, which is unusual and could confuse some links. It cannot count downloads.
+
+## UI redesign, step 1: the design foundation (`android/.../core/ui/theme`, `core/ui/components`)
+
+### What changed and why
+The app used a dark cyan-and-pink look. We replaced it with the design in `docs/design-system.md`: Safaricom green, light by default (readable in sunlight), dark mode that follows the phone's setting, Poppins for headings and Inter for text. Nothing about detection changed. This step only builds the "kit" the other screens will use, and every existing screen picks up the new colours and fonts automatically.
+
+### The kit
+- **Palette.kt**: every colour as a plain number. **Color.kt**: the named tokens (`green500`, `scamRed`, `layerL`...) plus `LindaTheme.colors`, which gives the right shade for light or dark.
+- **Type.kt, Shape.kt, Spacing.kt, Motion.kt**: the size table, the corner radii (8/16/24dp), the only allowed spacings, the animation timings, and the "shield notch" shape (a card with its bottom-right corner cut off like a shield point).
+- **Components**: `LindaButton` (52dp, one primary per screen), `LindaCard` (soft green shadow in light mode), `LevelChip` and `RiskIcon` (icon plus words plus colour, never colour alone).
+
+### A deliberate difference from the design file
+Two colour pairs written in the design file fail its own 4.5:1 reading rule: green `#00A651` words on the mint Safe background (2.9:1) and red `#E4002B` words on the pink Scam background (4.1:1). So *words* use deep green `#007A3D` and a slightly deeper red `#D0002A`, while icons, borders and big fills keep the exact brand colours. A unit test (`PaletteContrastTest`) checks every text pair in light and dark mode, so a future colour change that makes text hard to read fails the build.
+
+### Fonts
+Poppins and Inter are bundled inside the app (both free under the SIL Open Font License; listed in `LIBRARIES.md`), so nothing is downloaded and the app still works offline. They add about 1.5 MB to the APK.
+
+### Not done yet (later steps)
+The Layer Trace and scan animation (step 2), the home ring and verdict card (step 3), restyling the other screens (step 4), and the demo overlay (step 5). Until then the old screens look green and clean but keep their old layouts. Not yet seen on a real phone.
+
+## UI redesign, step 2: the Layer Trace and the scan sweep (`android/.../features/trace`)
+
+### What it is
+Linda checks every message in five steps, and the name spells them: **L**anguage, **I**ntelligence, **N**etwork, **D**ecision, **A**lert. The Layer Trace is a row of five boxes, one per letter. When a message has been analysed they light up from left to right in under half a second (480 ms), so a judge can *see* the steps happen. A layer that found something risky takes the verdict's colour (amber or red) and gives a small shake; a layer that found nothing stays green with a tick. Tap a letter to read what that layer found. With the phone's "remove animations" setting on, the boxes just appear finished.
+
+### It only tells the truth
+Each line comes from something Linda really worked out for that message, never a made-up figure:
+- **L**: words the scammer disguised and how Linda read them (for example "M-P3SA" became "mpesa"). Amounts like "Ksh3,140" are not treated as disguises.
+- **I**: the type of scam, the scam wording the on-device model leaned on, and how sure it was.
+- **N**: who sent it: an ordinary phone number, not in your contacts, first message, a link, pretending to be M-Pesa, or a number other Linda phones already confirmed. A verified sender (M-Pesa, bank, KPLC, KRA) is shown as verified and never flagged.
+- **D**: the verdict.
+- **A**: what Linda did: warned you, reported the number, alerted your guardian.
+Pasted text has no sender, and the trace says so instead of guessing.
+
+### Where it shows
+On the warning screen (when you open a saved warning) and in the "Is this a scam?" checker, where the phone also buzzes: nothing for a safe message, one tick for Caution, two pulses for Scam. The buzz uses the phone's own touch-feedback setting, so it needs no extra permission and stays quiet if the person turned that off.
+
+### How it is tested
+The logic that decides which layer flags what (and the 480 ms timing, and the buzz pattern) is plain Kotlin with 17 unit tests, including: a verified sender is never flagged, amounts are not "disguises", and the sweep always finishes under 600 ms. The drawing itself is not yet seen on a real phone.
+
+## UI redesign, step 3: home ring, verdict card, full-screen scam alert
+
+### The home ring (`features/home`)
+The home screen is now a ring of five arcs, one for each layer (L I N D A), around the Linda mark (a shield cut into five coloured segments, which is also the new app icon). All five bright means "LINDA is protecting you." If something is switched off, only the arc that needs it fades, and one button fixes it:
+- **L** needs permission to receive texts, **N** needs contacts access, **A** needs notifications on. **I** (the model) and **D** (the decision) live inside the app, so they never fade.
+- The fix button asks for the permission; if the phone will not ask again, it opens the app's settings page. The check runs again every time you come back to the app.
+- Below the ring: how many scams were stopped this month in big numbers, or "No scams yet. LINDA is watching." The ring "breathes" (grows 2%) once every 6 seconds, unless the phone's remove-animations setting is on. The card has the "shield notch", a bottom-right corner cut like a shield point, used only here.
+The rules for which arc fades are plain code with their own unit tests.
+
+### The verdict card (`features/detail`)
+Opening a warning now shows one card tinted for its risk (amber for Caution, red for Scam, green for Safe) with a bar of that colour on its left edge: icon and words, a three-line preview of the message, the Layer Trace, the reasons as separate lines, and the buttons. Only Scam cards glow red. There is **one main button**: "Don't send money" for a Scam (or "I'll be careful" for Caution), which closes the screen. Under it, smaller: "I already sent money" (opens Recovery), "Mark as safe" and "Report this number". A message that imitates M-PESA but did not come from M-PESA also gets a crossed-out-receipt badge: "Not from M-PESA. You have not received any money."
+
+### The full-screen scam alert (`ScamTakeover`)
+When you tap a warning notification for a confident scam, the first thing you see is a big alert: a large octagon, "Stop. This looks like a scam.", the top reason, two short buzzes, and two buttons ("OK, show me why" and "I already sent money"). If voice warnings are on, it reads **exactly** the headline and the reason shown on screen; a unit test checks that the spoken headline equals the text in `strings.xml` in both languages. It does not repeat the voice if the text just arrived and was already read aloud (30-second rule). Opening an old warning from History goes straight to the verdict card, so it does not shout every time. The alert fills the content area; the bottom navigation bar is still visible under it.
+
+### Not done yet
+Restyling History, Inbox, Checker, Recovery, Guardian, Settings, Onboarding and Demo (step 4); the demo overlay (step 5). Not yet seen on a real phone.
+
+## UI redesign, step 4: every other screen in the new look
+
+### What changed
+History, Inbox scan, the "Is this a scam?" checker, Recovery, Family Guardian, Settings, Onboarding, Demo and the bottom bar now use the same kit as Home and the warning screen: one button style (`LindaButton`: a filled deep-green main button, outlined secondary buttons), one card style with a soft green shadow, one text-field style (raised fill, green focus border), the shared type sizes and spacing. The leftover purple from Material's default colours is gone, so filter chips, switches and the selected bottom-bar item are all green.
+
+### Screens with real design changes
+- **Checker**: the answer is now the same Verdict Card as on the warning screen (icon and words, the five-layer trace, the reasons), for safe messages too, with a short note when the message looks fine.
+- **Recovery**: the checklist is a vertical stepper. Each step is a numbered dot on a line; ticking a step turns its dot into a tick; the first unticked step has a ring that pulses gently (still when animations are off). If you sent the money in the last day, the top shows "Don't panic. Let's act fast." and a chip "Reversals work best within minutes." The "which step is current" rule is plain code with a test. The numbers and phone codes in the steps did not change and are still marked "verify before demo" in `RecoveryConfig.kt`.
+- **Family Guardian**: the log of alerts that were sent shows each one as an amber Caution-style card, so the protected person sees what their guardian was told. The design file describes a card on the *guardian's* phone; we did not build that because the guardian receives a plain text message, not the app.
+- **Onboarding** starts with the Linda mark. **Bottom bar** uses the green selected indicator.
+
+### Rules we kept and where we bent them
+- Red is only for verdicts. Messages like "permission was denied" are now normal dark text, not red. The one exception is the code field on the Recovery form, which still shows Material's red outline when the transaction code is invalid.
+- Every spacing now uses the 4/8/12/16/24/32 scale; the old 14, 10, 6 and 20 dp values were moved to the nearest allowed one.
+- Text fields keep Material's 56 dp minimum height (the design file says 52 dp) so they stay easy to tap.
+- Some screens still have more than one filled main button (Onboarding has "Allow" and "Done", Settings has a few switches' worth of actions). Those are setup screens, not warnings.
+
+### Not done yet
+The demo overlay (step 5). Not yet seen on a real phone, and the Swahili for the new lines is unreviewed.
+
+## UI redesign, step 5: the demo overlay for judges (`android/.../features/demo`)
+
+### What it is
+A hidden panel for the demo. **Tap the Linda mark in the middle of the home ring seven times** (each tap within 1.5 seconds of the last) and a translucent panel slides up above the bottom bar; the same tap sequence turns it off again. (It can also be switched in Settings, in the developer section that opens when you tap the version number seven times.) Every time Linda analyses a message (a real text, a demo-mode message, or text pasted into the checker) the panel plays the five-layer sweep again and, under it, prints what each layer actually produced, in a monospaced font:
+- **L**: the cleaned-up text Linda read, and any disguised words it undid (for example `M-P3SA->mpesa`).
+- **I**: the score next to the two warning lines (`score=0.94 warn=0.55 scam=0.80`), the scam type and the wording the model leaned on.
+- **N**: the sender and the facts used: in your contacts, first message, verified sender, ordinary phone number, link, M-Pesa-style, fake M-Pesa, on the confirmed list.
+- **D**: the verdict and score.
+- **A**: what Linda did: `notified`, `voiced`, `guardian:sent` (or why it was skipped), `reported:queued`.
+It can be folded to a one-line bar, or hidden with Hide.
+
+### Privacy
+The overlay is **off by default**. While it is off, Linda keeps nothing about any message in memory for it. While it is on, the last analysed message's cleaned-up text is held in memory only so the panel can show it; it is never saved, never sent anywhere, and switching the overlay off throws it away. It only ever shows what is on this phone's own screen, so show it only on the demo phone. The key=value lines are log-style on purpose and are not translated; the title, the Hide and Fold buttons and the Layer Trace itself are in English and Kiswahili.
+
+### How it is tested
+The tap sequence rule (seven quick taps, a pause restarts it, slow tapping never triggers it) and the text of every line are plain code with 8 unit tests.
+
+### With this step the redesign is complete
+Foundation, Layer Trace and scan sweep, home ring, verdict card, full-screen alert, every other screen and the demo overlay are built and tested on GitHub's build. None of it has been seen on a real phone yet.

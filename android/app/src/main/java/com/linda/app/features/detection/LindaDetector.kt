@@ -18,6 +18,8 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
 
     override val verifiedSenders: Set<String> get() = scorer.verifiedSenders
     override val modelVersion: String get() = scorer.version
+    override val warnThreshold: Double get() = scorer.warnThreshold
+    override val scamThreshold: Double get() = scorer.scamThreshold
 
     override fun analyse(input: MessageInput): Verdict {
         val detail = scorer.explain(input.body, input.sender)

@@ -22,6 +22,7 @@ class LindaApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        com.linda.app.features.demo.DemoOverlay.init(this)
         BlocklistSyncWorker.schedule(this) // keeps the offline list of confirmed scam numbers fresh
     }
 }

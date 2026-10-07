@@ -6,7 +6,9 @@ import android.media.AudioManager
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import com.linda.app.core.util.Prefs
+import com.linda.app.features.detection.Reason
 import com.linda.app.features.detection.ReasonsJson
+import com.linda.app.features.detection.RiskLevel
 import com.linda.app.features.detection.Verdict
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +56,30 @@ object VoiceWarnings {
         return scope.launch {
             say(app, preferred) { lang -> VoiceScript.warning(lang, reason?.let { ReasonsJson.text(it, lang) }) }
         }
+    }
+
+    /**
+     * The full-screen scam alert reads its own headline and top reason (docs/design-system.md 7.4). Same rules as an
+     * arriving text (only if voice is on, phone not on silent or in a call, not twice within 30 s), so it never
+     * repeats the warning that was just spoken when the text arrived.
+     */
+    fun speakTakeover(context: Context, reason: Reason?): Job? {
+        val app = context.applicationContext
+        val audio = app.getSystemService(AudioManager::class.java)
+        val now = System.currentTimeMillis()
+        val allowed = VoicePolicy.shouldSpeak(
+            level = RiskLevel.SCAM,
+            enabled = isEnabled(app),
+            source = "sms",
+            ringer = if (audio.ringerMode == AudioManager.RINGER_MODE_NORMAL) Ringer.NORMAL else Ringer.QUIET,
+            inCall = audio.mode != AudioManager.MODE_NORMAL,
+            lastSpokeAt = lastSpokeAt,
+            now = now,
+        )
+        if (!allowed) return null
+        lastSpokeAt = now
+        val preferred = Prefs.effectiveLanguage(app)
+        return scope.launch { say(app, preferred) { lang -> VoiceScript.takeover(lang, reason?.let { ReasonsJson.text(it, lang) }) } }
     }
 
     /** The "Test voice" button in Settings. */

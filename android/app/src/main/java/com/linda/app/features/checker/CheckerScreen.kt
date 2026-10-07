@@ -28,9 +28,18 @@ import com.linda.app.core.ui.components.LevelChip
 import com.linda.app.core.util.Prefs
 import com.linda.app.features.detection.ReasonsJson
 import com.linda.app.features.detection.RiskLevel
+import com.linda.app.features.trace.LayerTraceBuilder
+import com.linda.app.features.trace.LayerTraceView
+import com.linda.app.features.trace.TraceInput
+import com.linda.app.features.detail.VerdictCard
+import com.linda.app.core.ui.theme.LindaTheme
+import com.linda.app.core.util.formatDateTime
+import com.linda.app.features.trace.rememberVerdictHaptic
 import com.linda.app.features.sms.MessageProcessor
 import com.linda.app.features.sms.ProcessResult
 import kotlinx.coroutines.launch
+import com.linda.app.core.ui.components.LindaButton
+import com.linda.app.core.ui.components.LindaTextField
 
 /**
  * "Is this a scam?" (F7): paste a message, or share one from WhatsApp or any app into Linda.
@@ -63,34 +72,46 @@ fun CheckerScreen(sharedText: String?) {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(stringResource(R.string.checker_title), style = MaterialTheme.typography.titleLarge)
         Text(stringResource(R.string.checker_help), color = MaterialTheme.colorScheme.onSurfaceVariant)
-        OutlinedTextField(
+        LindaTextField(
             value = text,
             onValueChange = { text = it; result = null },
             modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp),
             label = { Text(stringResource(R.string.checker_hint)) },
         )
-        Button(onClick = { check(text) }, enabled = text.isNotBlank() && !checking, modifier = Modifier.fillMaxWidth()) {
-            Text(stringResource(R.string.checker_button))
-        }
+        LindaButton(stringResource(R.string.checker_button), onClick = { check(text) }, modifier = Modifier.fillMaxWidth(), enabled = text.isNotBlank() && !checking)
 
         result?.let { r ->
             val v = r.verdict
-            if (v.level == RiskLevel.SAFE) {
-                Text(stringResource(R.string.checker_safe), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                Text(stringResource(R.string.checker_safe_note), color = MaterialTheme.colorScheme.onSurfaceVariant)
-            } else {
-                LevelChip(v.level.name)
-                Text(
-                    stringResource(if (v.level == RiskLevel.SCAM) R.string.detail_headline_scam else R.string.detail_headline_caution),
-                    style = MaterialTheme.typography.headlineSmall,
+            // The five layers, lit up one by one; the phone buzzes once or twice for a Caution or Scam.
+            val trace = remember(r) {
+                LayerTraceBuilder.build(
+                    TraceInput(
+                        level = v.level.name, score = v.score, category = v.category,
+                        reasonCodes = v.reasons.map { it.code }.toSet(), scamWords = LayerTraceBuilder.scamWords(v.reasons),
+                        body = text, senderVerified = false, onBlocklist = false, reported = false, guardianAlerted = false, isPasted = true,
+                    ),
                 )
-                Text(stringResource(R.string.detail_why), style = MaterialTheme.typography.titleMedium)
-                v.reasons.forEach { Text("• " + ReasonsJson.text(it, language), style = MaterialTheme.typography.bodyLarge) }
+            }
+            val time = remember(r) { formatDateTime(System.currentTimeMillis()) }
+            VerdictCard(
+                level = v.level.name,
+                sender = stringResource(R.string.sender_pasted),
+                time = time,
+                body = text,
+                fakeMpesa = v.category == "fake_mpesa",
+                trace = trace,
+                reasons = v.reasons.map { ReasonsJson.text(it, language) },
+                onTraceLanded = rememberVerdictHaptic(v.level.name),
+            ) {
+                // A safe message gets a short, honest note; a warning explains itself in the reasons above.
+                if (v.level == RiskLevel.SAFE) {
+                    Text(stringResource(R.string.checker_safe_note), style = MaterialTheme.typography.bodyLarge, color = LindaTheme.colors.textPrimary)
+                }
             }
         }
     }
