@@ -203,7 +203,7 @@
       var asset = (rel.assets || []).filter(function (a) { return a.name === "linda-debug.apk"; })[0];
       if (!asset) return;
       document.getElementById("apk").href = asset.browser_download_url;
-      var mb = (asset.size / 1048576).toFixed(1);
+      var mb = (asset.size / 1000000).toFixed(1);
       var when = new Date(asset.updated_at || rel.published_at).toLocaleString(lang === "sw" ? "sw-KE" : "en-GB", { dateStyle: "medium", timeStyle: "short" });
       say("Free · Android 8.0 or newer · " + mb + " MB · built " + when, "Bure · Android 8.0 au mpya zaidi · MB " + mb + " · imejengwa " + when);
       if (asset.digest && /^sha256:/.test(asset.digest)) document.getElementById("sha").textContent = asset.digest.slice(7);
