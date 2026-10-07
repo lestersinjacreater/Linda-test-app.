@@ -18,8 +18,9 @@
   body { margin:0; background:var(--bg); color:var(--text); font:18px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
   main { max-width: 720px; margin: 0 auto; padding: 20px 16px 56px; }
   a { color: var(--cyan); }
-  h1 { font-size: 2rem; line-height: 1.15; margin: 8px 0 8px; }
-  h2 { font-size: 1.35rem; margin: 40px 0 12px; }
+  /* bigger text gets tighter letter-spacing and leading; body text stays at normal */
+  h1 { font-size: 2rem; line-height: 1.15; letter-spacing: -.02em; margin: 8px 0 8px; }
+  h2 { font-size: 1.35rem; letter-spacing: -.01em; margin: 40px 0 12px; }
   p { margin: 0 0 12px; }
   .muted { color: var(--muted); }
   .small { font-size: .9rem; }
@@ -42,6 +43,10 @@
          background:var(--cyan); color:#00131A; font-weight:800; font-size:1.25rem; text-decoration:none; border-radius:16px; }
   .btn:hover, .btn:focus-visible { filter: brightness(1.08); outline: 3px solid #fff3; outline-offset: 3px; }
   .btn svg { width:26px; height:26px; flex:none; }
+  /* feedback the instant a finger lands, not when it lifts */
+  .btn, .lang { transition: transform 100ms ease-out; }
+  .btn:active, .lang:active { transform: scale(.97); }
+  @media (prefers-reduced-motion: reduce) { .btn, .lang { transition: none; } .btn:active, .lang:active { transform: none; } }
   .meta { margin-top: 12px; color: var(--muted); font-size: .95rem; text-align: center; }
   .notice { display:none; margin-top:16px; padding:14px 16px; border-radius:14px; background:#2A2410; border:1px solid var(--amber); color:#FFE9A8; }
   html:not(.is-android) .notice { display:block; }

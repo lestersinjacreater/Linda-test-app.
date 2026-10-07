@@ -8,7 +8,7 @@ function Tile({ label, value, accent, note }: { label: string; value: string; ac
   return (
     <div className="rounded-2xl bg-card px-5 py-4">
       <div className="text-base text-muted">{label}</div>
-      <div className="text-5xl font-extrabold tabular-nums leading-tight" style={{ color: accent }}>{value}</div>
+      <div className="text-5xl font-extrabold tracking-tight tabular-nums leading-tight" style={{ color: accent }}>{value}</div>
       {note && <div className="text-sm text-muted">{note}</div>}
     </div>
   );

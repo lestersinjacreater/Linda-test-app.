@@ -460,3 +460,10 @@ Dragging, flicking, rubber-banding and momentum: nothing in Linda is draggable, 
 
 ### How to judge it
 Spring feel can only be judged by touching a real phone. If it feels too slow or too quick, there is one number to change: `SpringMath.CALM_RESPONSE` (smaller = quicker).
+
+## Motion polish (apple-design skill), part B: the dashboard and the download page
+
+- **Less motion on request.** People whose device says "reduce motion" no longer get the pulsing dots and colour fades on the dashboard map (the colours still change, so nothing is lost), and the download page and dashboard buttons stop shrinking when pressed.
+- **Instant press feedback.** The dashboard's control buttons and the page's Download and language buttons shrink to 97% the moment a finger or mouse goes down (100 ms), not when it is released.
+- **Tighter type where it is big.** The page headline and the dashboard's big numbers get slightly tighter letter spacing; small text is unchanged.
+- **Guarded by tests.** The page tests (now 13) fail if the page ever gains a transition or animation without a reduced-motion rule, and if the Download button loses its press feedback. The dashboard still passes its type check, its 13 tests and its production build.
