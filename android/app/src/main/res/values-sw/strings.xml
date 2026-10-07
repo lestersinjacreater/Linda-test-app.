@@ -68,4 +68,12 @@
     <string name="battery_itel">Itel: Mipangilio > Betri > Uboreshaji wa betri > Linda > "Usiboreshe". Kisha fungua Phone Manager > Autostart na uwashe Linda.</string>
     <string name="battery_samsung">Samsung: Mipangilio > Programu > Linda > Betri > "Bila kizuizi". Kisha Mipangilio > Betri > Vikomo vya matumizi ya mandharinyuma > Programu zisizolala kamwe > ongeza Linda.</string>
     <string name="battery_xiaomi">Xiaomi, Redmi au Poco: Mipangilio > Programu > Dhibiti programu > Linda > washa Autostart, na Kiokoa betri > "Bila vikwazo". Pia funga Linda kwenye orodha ya programu za hivi karibuni.</string>
+
+    <string name="consent_title">3. Saidia kulinda wengine (si lazima)</string>
+    <string name="consent_body">Linda ikiwa na uhakika kuwa ujumbe ni ulaghai, inaweza kuambia rada ya Linda ili watu wengine waonywe pia. Ripoti ina TU: nambari ya simu ya mtumaji, aina ya ulaghai, kiwango cha uhakika wa Linda, alama iliyochanganywa ya ujumbe, na msimbo wa kifaa usiotambulisha mtu. HAIWI KAMWE na maandishi ya ujumbe, anwani zako, wala nambari yako ya simu. Unaweza kuzima hili wakati wowote kwenye Mipangilio. Imezimwa hadi ubofye Kubali.</string>
+    <string name="consent_agree">Kubali na saidia kulinda wengine</string>
+    <string name="consent_decline">Hapana, asante</string>
+    <string name="settings_reporting_title">Saidia kulinda wengine</string>
+    <string name="settings_reporting_body">Tuma ripoti za ulaghai zisizotambulisha mtu (kamwe si maandishi ya ujumbe) ili wengine waonywe.</string>
+    <string name="settings_reports_waiting">Ripoti zinazosubiri kutumwa: %1$d</string>
 </resources>

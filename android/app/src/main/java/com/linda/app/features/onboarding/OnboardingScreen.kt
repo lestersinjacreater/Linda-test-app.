@@ -23,6 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.linda.app.R
+import com.linda.app.core.util.Prefs
+import com.linda.app.features.reporting.ConsentCard
 
 /**
  * First run: ask for the permissions Linda needs, and explain how to stop the phone from putting
@@ -57,6 +59,8 @@ fun OnboardingScreen(onDone: () -> Unit) {
             onClick = { context.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) },
             modifier = Modifier.fillMaxWidth(),
         ) { Text(stringResource(R.string.onboarding_open_battery)) }
+
+        ConsentCard(onAnswered = { agreed -> Prefs.setReportingConsent(context, agreed) })
 
         Button(onClick = onDone, modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
             Text(stringResource(R.string.onboarding_done))

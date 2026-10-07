@@ -7,6 +7,9 @@ package com.linda.app.features.detection
  */
 interface ScamDetector {
     fun analyse(input: MessageInput): Verdict
+
+    /** Upper-case IDs of senders that are never warned on and never reported (MPESA, banks, KPLC, KRA). */
+    val verifiedSenders: Set<String>
 }
 
 data class MessageInput(

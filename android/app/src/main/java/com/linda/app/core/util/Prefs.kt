@@ -22,6 +22,30 @@ object Prefs {
         else -> if (Locale.getDefault().language == "sw") "sw" else "en"
     }
 
+    /** Reports to the radar are OFF until the user taps Agree (consent screen). */
+    fun reportingConsent(ctx: Context) = p(ctx).getBoolean("reporting_consent", false)
+    fun setReportingConsent(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("reporting_consent", value).apply()
+
+    /** Where the radar lives. Empty until set in the hidden developer screen (or a default is shipped). */
+    fun serverUrl(ctx: Context): String = p(ctx).getString("server_url", "") ?: ""
+    fun setServerUrl(ctx: Context, value: String) = p(ctx).edit().putString("server_url", value.trim().trimEnd('/')).apply()
+
+    /** Random anonymous id, made once per install and hashed. Never derived from the phone number. */
+    fun deviceId(ctx: Context): String {
+        val existing = p(ctx).getString("device_id", null)
+        if (existing != null) return existing
+        val fresh = com.linda.app.features.reporting.DeviceIds.fromSeed(java.util.UUID.randomUUID().toString())
+        p(ctx).edit().putString("device_id", fresh).apply()
+        return fresh
+    }
+
+    /** A context in a fixed language ("en" or "sw"), used where both languages are shown at once. */
+    fun contextFor(ctx: Context, language: String): Context {
+        val config = Configuration(ctx.resources.configuration)
+        config.setLocale(Locale(language))
+        return ctx.createConfigurationContext(config)
+    }
+
     /** A context whose resources use the chosen language, so strings.xml / values-sw/strings.xml are picked. */
     fun localized(ctx: Context): Context {
         if (language(ctx) == "system") return ctx

@@ -9,6 +9,7 @@ import com.linda.app.features.detection.MessageInput
 import com.linda.app.features.detection.ReasonsJson
 import com.linda.app.features.detection.RiskLevel
 import com.linda.app.features.detection.Verdict
+import com.linda.app.features.reporting.ReportingService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -45,6 +46,7 @@ class MessageProcessor(private val context: Context) {
                 ),
             )
             if (notify) AlertNotifier.show(context, id, verdict)
+            if (source == "sms") ReportingService.maybeEnqueue(context, verdict, sender, receivedAt) // only real texts are reported, never pasted or demo ones
             ProcessResult(verdict, id)
         }
 }

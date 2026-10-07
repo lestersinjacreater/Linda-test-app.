@@ -43,3 +43,21 @@ interface SenderDao {
     @Query("SELECT COUNT(*) > 0 FROM seen_senders WHERE sender = :sender")
     suspend fun hasSeen(sender: String): Boolean
 }
+
+@Dao
+interface ReportQueueDao {
+    @Insert
+    suspend fun insert(report: ReportQueueEntity): Long
+
+    @Query("SELECT * FROM report_queue ORDER BY id LIMIT :limit")
+    suspend fun pending(limit: Int): List<ReportQueueEntity>
+
+    @Query("DELETE FROM report_queue WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("UPDATE report_queue SET attempts = attempts + 1 WHERE id = :id")
+    suspend fun countAttempt(id: Long)
+
+    @Query("SELECT COUNT(*) FROM report_queue")
+    fun observeCount(): Flow<Int>
+}

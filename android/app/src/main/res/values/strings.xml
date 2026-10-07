@@ -74,4 +74,12 @@
     <string name="battery_itel">Itel: Settings > Battery > Battery optimisation > Linda > "Don\'t optimise". Then open Phone Manager > Autostart and switch Linda on.</string>
     <string name="battery_samsung">Samsung: Settings > Apps > Linda > Battery > "Unrestricted". Then Settings > Battery > Background usage limits > Never sleeping apps > add Linda.</string>
     <string name="battery_xiaomi">Xiaomi, Redmi or Poco: Settings > Apps > Manage apps > Linda > Autostart on, and Battery saver > "No restrictions". Also lock Linda in the recent-apps list.</string>
+
+    <string name="consent_title">3. Help protect others (optional)</string>
+    <string name="consent_body">If Linda is sure a message is a scam, it can tell the Linda radar so other people are warned too. A report contains ONLY: the sender\'s phone number, the type of scam, how sure Linda is, a scrambled fingerprint of the message, and an anonymous device code. It NEVER contains the message text, your contacts, or your own phone number. You can turn this off any time in Settings. It is OFF until you tap Agree.</string>
+    <string name="consent_agree">Agree and help protect others</string>
+    <string name="consent_decline">No thanks</string>
+    <string name="settings_reporting_title">Help protect others</string>
+    <string name="settings_reporting_body">Send anonymous scam reports (never the message text) so others are warned.</string>
+    <string name="settings_reports_waiting">Reports waiting to send: %1$d</string>
 </resources>

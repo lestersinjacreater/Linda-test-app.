@@ -33,3 +33,16 @@ data class AllowedSenderEntity(@PrimaryKey val sender: String)
 /** A sender Linda has seen before, so it can tell "first message from this number". */
 @Entity(tableName = "seen_senders")
 data class SeenSenderEntity(@PrimaryKey val sender: String, val firstSeen: Long)
+
+/** A report waiting to be sent to the radar. Survives app restarts and offline periods. No message text. */
+@Entity(tableName = "report_queue")
+data class ReportQueueEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val sender: String,
+    val category: String,
+    val confidence: Double,
+    val fingerprint: String,
+    val modelVersion: String,
+    val sentAt: Long,
+    val attempts: Int = 0,
+)

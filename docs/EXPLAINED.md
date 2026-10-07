@@ -156,3 +156,22 @@ Population behaviour (reading delays, detection latency, how many phones run Lin
 - **Context signals** (sender not in contacts + first message: +0.10; sender in contacts: -0.15) nudge a borderline score. They never apply to verified senders, and they cannot turn an innocent message into a SCAM. All numbers sit in `FusionConfig`.
 - **Every warning explains itself.** `ReasonCatalogue` holds the plain-language reason per scam type, plus "typical scam wording" built from the n-grams that raised the score most. **The Swahili has not been checked by a native speaker.**
 - **Safety tests:** no SAFE vector may ever be warned on, real `MPESA` messages stay SAFE even with unknown-sender context, and the same confirmation text flips from SAFE to SCAM when only the sender changes.
+
+## System rebuild, step 6b/6c: warnings and reporting on the phone
+
+### One path for every message (`MessageProcessor`)
+Real SMS, pasted text and (later) demo mode all go through the same function: skip senders the user marked safe; look up whether the sender is in the contacts and whether it is their first message (both used only on the phone); score with `ScamDetector`; if not SAFE, save to history and show the warning. SAFE messages are **never saved**. This is why demo mode behaves exactly like a real SMS.
+
+### The SMS receiver (`SmsReceiver`)
+Registered in the manifest so Android wakes it for every incoming SMS, even with the app closed. Long texts arrive in parts; parts from the same sender are joined before scoring. `goAsync()` keeps the receiver alive for the few milliseconds scoring needs. Cheap phones (Tecno, Infinix, Itel, Xiaomi, Samsung) kill background apps, so onboarding shows that brand's battery steps.
+
+### Warnings
+Notification title is in the chosen language (Settings), the text is the first reason, and the message itself is never shown on the lock screen. Tapping opens the detail screen: the message, the verdict, every reason, and **Mark as safe**, which adds the sender to an allow-list (a Room table) so Linda stops scoring it. Not built yet: the "I already sent money" recovery button (F10) and voice warnings (F12).
+
+### Reporting (`features/reporting`) and the consent rule
+- Off until the user taps **Agree** on the consent card, which lists in English and Swahili exactly what is sent: sender number, scam type, confidence, fingerprint, anonymous device code. Never the message text, contacts or the user's own number. Can be switched off in Settings.
+- Only **SCAM** verdicts from a **real phone number** are reported. Verified senders (MPESA, banks...) and pasted or demo text are never reported. Tested in `ReportPayloadTest`.
+- Reports go into a database queue first, then `ReportWorker` (WorkManager) sends them when there is network, retrying with growing delays. If the radar is down nothing breaks and nothing is lost. A 4xx answer drops the report so it cannot loop forever.
+- The device code is a hash of a random value created at install, never the phone number.
+- The server address is empty until set (hidden developer screen, step 6d), so a fresh install sends nothing anywhere.
+- `usesCleartextTraffic` is on so the laptop backup radar (plain http) works on demo day. Use https for the cloud radar.

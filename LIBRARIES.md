@@ -16,9 +16,11 @@ Required by the hackathon rules. Update this file **whenever a dependency is add
 | AndroidX Core KTX | 1.15.0 | Apache 2.0 | Kotlin helpers for Android APIs. |
 | AndroidX Room (runtime, ktx, compiler) | 2.6.1 | Apache 2.0 | The on-device database for detection history. |
 | KSP (Kotlin Symbol Processing) | 2.0.21-1.0.28 | Apache 2.0 | Runs Room's code generator. |
+| AndroidX WorkManager (work-runtime-ktx) | 2.9.1 | Apache 2.0 | Retries queued scam reports with growing delays when the phone is offline, and runs the 15-minute blocklist sync. |
 | JUnit | 4.13.2 | EPL 1.0 | JVM unit tests (test-only, not shipped in the APK). |
+| org.json | 20240303 | JSON licence (public-domain style) | JVM unit tests only: Android ships its own org.json, but its JVM-test stub does nothing. |
 
-Not used, on purpose: Firebase, analytics, ads or tracking SDKs, and any network library (the core app works fully offline).
+Not used, on purpose: Firebase, analytics, ads or tracking SDKs, and any network library (the app uses the platform's own `HttpURLConnection`, only for reports without text and the blocklist; the core app works fully offline).
 
 ## ML (Python 3.11)
 
