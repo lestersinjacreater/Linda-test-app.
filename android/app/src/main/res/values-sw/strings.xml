@@ -201,4 +201,16 @@
     <string name="cat_pin_request">ombi la PIN</string>
     <string name="cat_phishing_link">kiungo cha ulaghai</string>
     <string name="cat_other">ulaghai</string>
+
+    <string name="voice_title">Soma maonyo ya ulaghai kwa sauti</string>
+    <string name="voice_body">Linda ikiwa na uhakika ujumbe ni ulaghai, pia inasema kwa sauti. Inanyamaza simu ikiwa kimya au inatetemeka, au ukiwa kwenye simu.</string>
+    <string name="voice_on_by_guardian">Imewashwa kwa sababu Mlezi wa Familia umewashwa. Izime hapa wakati wowote.</string>
+    <string name="voice_checking">Inakagua sauti zilizo kwenye simu hii…</string>
+    <string name="voice_sw_available">Sauti ya Kiswahili imewekwa, kwa hivyo Kiswahili kitasemwa lugha yako ikiwa Kiswahili.</string>
+    <string name="voice_sw_missing">Hakuna sauti ya Kiswahili kwenye simu hii, kwa hivyo Kiingereza kitasemwa. Unaweza kuweka moja.</string>
+    <string name="voice_install">Weka sauti</string>
+    <string name="voice_install_unavailable">Simu hii haina kisakinishi cha sauti. Tafuta "Text-to-speech" kwenye mipangilio ya simu.</string>
+    <string name="voice_test">Jaribu sauti</string>
+    <string name="voice_test_ok">Imesemwa. Kama hukusikia kitu, ongeza sauti ya media.</string>
+    <string name="voice_test_failed">Haikuweza kusema. Simu hii huenda haina sauti ya text-to-speech.</string>
 </resources>

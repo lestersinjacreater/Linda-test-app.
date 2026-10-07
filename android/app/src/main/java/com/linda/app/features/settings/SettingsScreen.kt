@@ -1,6 +1,11 @@
 package com.linda.app.features.settings
 
 import android.app.Activity
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.produceState
+import android.speech.tts.TextToSpeech
+import android.content.Intent
+import android.content.ActivityNotFoundException
 import android.app.role.RoleManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -37,8 +42,10 @@ import androidx.compose.ui.unit.dp
 import com.linda.app.BuildConfig
 import com.linda.app.LindaApp
 import com.linda.app.R
+import kotlinx.coroutines.launch
 import com.linda.app.core.util.Prefs
 import com.linda.app.core.util.formatDateTime
+import com.linda.app.features.alerts.VoiceWarnings
 import com.linda.app.features.sync.BlocklistSyncWorker
 
 /**
@@ -52,6 +59,10 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
     var language by remember { mutableStateOf(Prefs.language(context)) }
     var reporting by remember { mutableStateOf(Prefs.reportingConsent(context)) }
     var devMode by remember { mutableStateOf(Prefs.devMode(context)) }
+    var voiceOn by remember { mutableStateOf(VoiceWarnings.isEnabled(context)) }
+    var voiceNote by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+    val swahiliVoice by produceState<Boolean?>(null) { value = VoiceWarnings.swahiliVoiceAvailable(context) }
     var versionTaps by remember { mutableIntStateOf(0) }
     var serverUrl by remember { mutableStateOf(Prefs.serverUrl(context)) }
     val waiting by app.database.reportQueueDao().observeCount().collectAsState(initial = 0)
@@ -87,6 +98,38 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
         Text(stringResource(R.string.settings_guardian_title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.settings_guardian_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         OutlinedButton(onClick = onOpenGuardian, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_guardian_open)) }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.voice_title), style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.voice_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Switch(checked = voiceOn, onCheckedChange = { voiceOn = it; Prefs.setVoiceChoice(context, it) })
+        }
+        if (voiceOn && Prefs.voiceChoice(context) == null) {
+            Text(stringResource(R.string.voice_on_by_guardian), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+        }
+        Text(
+            when (swahiliVoice) {
+                null -> stringResource(R.string.voice_checking)
+                true -> stringResource(R.string.voice_sw_available)
+                false -> stringResource(R.string.voice_sw_missing)
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (swahiliVoice == false) {
+            OutlinedButton(
+                onClick = { try { context.startActivity(Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)) } catch (e: ActivityNotFoundException) { voiceNote = context.getString(R.string.voice_install_unavailable) } },
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text(stringResource(R.string.voice_install)) }
+        }
+        OutlinedButton(
+            onClick = { scope.launch { voiceNote = context.getString(if (VoiceWarnings.speakTest(context)) R.string.voice_test_ok else R.string.voice_test_failed) } },
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text(stringResource(R.string.voice_test)) }
+        voiceNote?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary) }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
         Text(stringResource(R.string.settings_calls_title), style = MaterialTheme.typography.titleMedium)

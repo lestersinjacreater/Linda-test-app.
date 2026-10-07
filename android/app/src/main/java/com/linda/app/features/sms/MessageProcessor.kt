@@ -6,6 +6,7 @@ import com.linda.app.core.data.DetectionEntity
 import com.linda.app.core.data.SeenSenderEntity
 import com.linda.app.core.util.PhoneNumbers
 import com.linda.app.features.alerts.AlertNotifier
+import com.linda.app.features.alerts.VoiceWarnings
 import com.linda.app.features.detection.MessageInput
 import com.linda.app.features.detection.ReasonsJson
 import com.linda.app.features.detection.RiskLevel
@@ -13,10 +14,14 @@ import com.linda.app.features.detection.Verdict
 import com.linda.app.features.guardian.GuardianService
 import com.linda.app.features.reporting.ReportingService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
 
-/** What happened to one message. [detectionId] is null when nothing was saved (SAFE, or an allowed sender). */
-data class ProcessResult(val verdict: Verdict, val detectionId: Long?)
+/**
+ * What happened to one message. [detectionId] is null when nothing was saved (SAFE, or an allowed sender).
+ * [speech] is the voice warning still being read aloud, or null; the SMS receiver waits for it so the app is not stopped mid-sentence.
+ */
+data class ProcessResult(val verdict: Verdict, val detectionId: Long?, val speech: Job? = null)
 
 /**
  * The single path every message takes: real SMS, pasted text, and demo mode all come through here,
@@ -51,6 +56,8 @@ class MessageProcessor(private val context: Context) {
             // Family Guardian: tells a family member (only if the person opted in) about a SCAM from a real or demo text, never a pasted one.
             if (verdict.level == RiskLevel.SCAM && (source == "sms" || source == "demo")) GuardianService.maybeAlert(context, verdict, sender, receivedAt)
             if (source == "sms") ReportingService.maybeEnqueue(context, verdict, sender, receivedAt) // only real texts are reported, never pasted or demo ones
-            ProcessResult(verdict, id)
+            // Voice warning (F12): only if the rules allow it (opted in, phone not silent or on a call, not repeated within 30 s).
+            val speech = VoiceWarnings.speak(context, verdict, source)
+            ProcessResult(verdict, id, speech)
         }
 }

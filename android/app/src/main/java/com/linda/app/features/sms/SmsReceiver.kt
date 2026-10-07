@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Wakes up for every incoming SMS, even with the app closed and the screen off.
@@ -28,7 +29,9 @@ class SmsReceiver : BroadcastReceiver() {
                 val processor = MessageProcessor(context.applicationContext)
                 for ((sender, messages) in bySender) {
                     val body = messages.joinToString("") { it.messageBody ?: "" }
-                    processor.process(body, sender.ifBlank { null }, receivedAt, source = "sms", notify = true)
+                    val result = processor.process(body, sender.ifBlank { null }, receivedAt, source = "sms", notify = true)
+                    // Keep the process alive while a voice warning is being read (it is capped at 7 s: a receiver must not run long).
+                    result.speech?.let { withTimeoutOrNull(7_000) { it.join() } }
                 }
             } finally {
                 pending.finish()

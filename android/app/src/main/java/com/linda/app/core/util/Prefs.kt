@@ -39,6 +39,10 @@ object Prefs {
     fun protectedName(ctx: Context): String = p(ctx).getString("protected_name", "") ?: ""
     fun setProtectedName(ctx: Context, value: String) = p(ctx).edit().putString("protected_name", value).apply()
 
+    /** Voice warnings: null until the person chooses, so the default can follow Family Guardian (on for protected people). */
+    fun voiceChoice(ctx: Context): Boolean? = if (p(ctx).contains("voice_enabled")) p(ctx).getBoolean("voice_enabled", false) else null
+    fun setVoiceChoice(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("voice_enabled", value).apply()
+
     /** The hidden developer screen (tap the version 7 times). */
     fun devMode(ctx: Context) = p(ctx).getBoolean("dev_mode", false)
     fun setDevMode(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("dev_mode", value).apply()

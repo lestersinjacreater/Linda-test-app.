@@ -271,3 +271,24 @@ A parent (or anyone) names a **guardian**, such as a son or daughter. When the p
 - It uses the person's own SMS balance and the SEND_SMS permission, which is fine for a sideloaded APK but is exactly the kind of permission the Play Store restricts (we do not publish there).
 - The alert tells the guardian a scam arrived, which is a deliberate disclosure the person agreed to. Explain this plainly if a judge asks about privacy.
 - Voice warnings (F12) "on by default for guardian-protected users" are not built yet.
+
+## Voice warnings (`features/alerts/VoiceWarnings.kt`, rules in `VoiceLogic.kt`)
+
+### What it does
+When Linda is sure a message is a scam, it also **says so out loud**, using the phone's built-in text-to-speech (no extra library): "Linda warning. This message is probably a scam. [the first reason]. Do not send money and do not share your PIN." It is for people who may not read a notification fast, such as older people or people with low vision. The text notification always appears too.
+
+### The rules (all unit tested in `VoicePolicy`)
+- Only **SCAM** verdicts, only for real or demo texts (not pasted text: the person is already looking at the answer).
+- **Quiet if the phone is on silent or vibrate** (the person asked for quiet, e.g. at night) and **never during or while ringing for a call**.
+- **At most once every 30 seconds**, so a burst of scam texts does not become a wall of talking.
+- **On by default only for people with Family Guardian switched on**; once the person flips the switch themselves, their choice always wins.
+- The script contains no digits, no message content and no phone numbers.
+
+### Language
+If the person's language is Kiswahili and the phone has a Kiswahili voice, Linda speaks Kiswahili; otherwise English. Many cheap phones have **no Kiswahili voice installed**, so Settings checks and says so, and has an "Install voices" button and a "Test the voice" button. Note: the spec said "Swahili when available, otherwise English"; we follow the person's chosen language first, so someone who picked English is never spoken to in Kiswahili.
+
+### Keeping it alive
+The SMS receiver is only allowed a few seconds, so it waits for the voice (at most 7 seconds) before finishing, so the phone does not stop Linda mid-sentence. On very aggressive battery savers the voice can still be cut off; the notification is always shown first, which is why the voice is an extra and not the only warning.
+
+### Honest limits
+Not tested on a real phone yet (no Android device or emulator here). Voice quality depends entirely on the voices installed on the phone.

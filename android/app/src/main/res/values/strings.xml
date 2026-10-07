@@ -207,4 +207,16 @@
     <string name="cat_pin_request">PIN request</string>
     <string name="cat_phishing_link">phishing link</string>
     <string name="cat_other">scam</string>
+
+    <string name="voice_title">Read scam warnings aloud</string>
+    <string name="voice_body">When Linda is sure a message is a scam, it also says so out loud. Quiet if your phone is on silent or vibrate, or you are on a call.</string>
+    <string name="voice_on_by_guardian">On because Family Guardian is on. Turn it off here whenever you like.</string>
+    <string name="voice_checking">Checking the voices on this phone…</string>
+    <string name="voice_sw_available">A Kiswahili voice is installed, so Kiswahili will be spoken when your language is Kiswahili.</string>
+    <string name="voice_sw_missing">No Kiswahili voice is installed on this phone, so English will be spoken. You can install one.</string>
+    <string name="voice_install">Install voices</string>
+    <string name="voice_install_unavailable">This phone has no voice installer. Look for "Text-to-speech" in your phone settings.</string>
+    <string name="voice_test">Test the voice</string>
+    <string name="voice_test_ok">Spoken. If you heard nothing, turn up the media volume.</string>
+    <string name="voice_test_failed">Could not speak. This phone may have no text-to-speech voice installed.</string>
 </resources>
