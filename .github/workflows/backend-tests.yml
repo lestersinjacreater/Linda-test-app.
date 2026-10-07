@@ -1,0 +1,25 @@
+name: backend tests
+
+on:
+  push:
+    paths: ["backend/**", "shared/**", ".github/workflows/backend-tests.yml"]
+  pull_request:
+    paths: ["backend/**", "shared/**", ".github/workflows/backend-tests.yml"]
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install and test (skipped until the component has tests)
+        run: |
+          if ls backend/tests/test_*.py >/dev/null 2>&1; then
+            pip install -r backend/requirements.txt
+            python -m pytest backend/tests -v
+          else
+            echo "No tests yet in backend, nothing to run."
+          fi

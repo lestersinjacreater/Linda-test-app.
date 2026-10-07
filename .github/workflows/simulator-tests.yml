@@ -1,0 +1,25 @@
+name: simulator tests
+
+on:
+  push:
+    paths: ["simulator/**", "shared/**", ".github/workflows/simulator-tests.yml"]
+  pull_request:
+    paths: ["simulator/**", "shared/**", ".github/workflows/simulator-tests.yml"]
+  workflow_dispatch:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install and test (skipped until the component has tests)
+        run: |
+          if ls simulator/tests/test_*.py >/dev/null 2>&1; then
+            pip install -r simulator/requirements.txt
+            python -m pytest simulator/tests -v
+          else
+            echo "No tests yet in simulator, nothing to run."
+          fi

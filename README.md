@@ -1,24 +1,25 @@
-# Linda: On-Device Scam Shield
+# Linda
 
-Linda (Swahili for "protect") is an Android app that detects mobile-money scams on the phone, offline and in real time,
-and warns the user with a clear reason in English or Swahili. Entry for the Safaricom interns' *Intelligence Unleashed* hackathon (Finance track).
+Linda spots M-Pesa scams the moment they arrive and protects people on every kind of phone.
+Entry for the Safaricom interns' *Intelligence Unleashed* hackathon (Finance track).
 
-- Project spec and rules: [`CLAUDE.md`](CLAUDE.md)
-- Plain-English explanation of every module: [`docs/EXPLAINED.md`](docs/EXPLAINED.md)
-- Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-- Evaluation and device checklist: [`docs/EVALUATION.md`](docs/EVALUATION.md)
-- Declared libraries: [`LIBRARIES.md`](LIBRARIES.md)
+> Kaa Rada stops the payment. Linda stops the conversation.
+
+- Build spec (start here): [`CLAUDE.md`](CLAUDE.md), plus one `CLAUDE.md` per component folder
+- Plain-English explanation of every part: [`docs/EXPLAINED.md`](docs/EXPLAINED.md)
+- Declared libraries: [`LIBRARIES.md`](LIBRARIES.md) · datasets: [`DATASETS.md`](DATASETS.md)
 
 ## Get the app
 
-APKs are built by GitHub Actions. Open the **Releases** page, download `linda-debug.apk` from the `latest-build` pre-release, and install it on your phone.
+APKs are built by GitHub Actions. Open **Releases**, download `linda-debug.apk` from the `latest-build` pre-release, and install it.
 
 ## Layout
 
-| Folder | What is in it |
-|---|---|
-| `android/` | The Android app (Kotlin, Jetpack Compose) |
-| `ml/` | Python: data, training, evaluation, model export |
-| `shared/` | Test vectors used by both the Python and Kotlin tests |
-| `docs/` | Explanations, architecture, evaluation |
-| `dashboard/` | Campaign radar (Phase 3, not started) |
+| Folder | What is in it | Status |
+|---|---|---|
+| `android/` | Kotlin app: on-device detection, reporting, call screening | skeleton |
+| `ml/` | Dataset pipeline, training, evaluation, model export | scaffold |
+| `backend/` | The radar: reports, confirmation, lookups, USSD, payment precheck | not started |
+| `simulator/` | Mock telco for the demo (separable) | not started |
+| `dashboard/` | Live demo dashboard | not started |
+| `shared/` | Contracts, test vectors, verified senders, model artifacts | partial |

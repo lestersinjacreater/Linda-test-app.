@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body { background: #0B0F1A; color: #F2F5FA; height: 100%; }
+body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+/* A phone that just changed colour gets a quick pulse so the room can see where things are happening. */
+@keyframes pop { 0% { r: 3; opacity: .4; } 60% { r: 9; opacity: 1; } 100% { r: 5; } }
+.dot { transition: fill .35s ease; }
+.dot-hot { animation: pop .6s ease-out; }

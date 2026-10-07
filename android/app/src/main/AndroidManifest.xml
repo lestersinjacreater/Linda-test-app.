@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- No permissions yet. Each one is added by the feature that needs it
-         (RECEIVE_SMS for F5, READ_SMS for F8, SEND_SMS for F11, ...). -->
+    <!-- Each permission is added by the feature that needs it. -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />          <!-- score new messages -->
+    <uses-permission android:name="android.permission.READ_SMS" />              <!-- "Scan my inbox" only: read old messages ON the phone, asked when the person taps Scan -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />        <!-- is the sender in my contacts? Never uploaded -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />   <!-- show warnings (Android 13+) -->
+    <uses-permission android:name="android.permission.SEND_SMS" />             <!-- Family Guardian only: the short alert to the guardian, after the person opts in -->
+    <uses-permission android:name="android.permission.INTERNET" />             <!-- ONLY for reports (no text) and the blocklist; the app works without it -->
 
+    <!-- usesCleartextTraffic: the laptop backup radar on demo day is plain http. The cloud radar should be https. -->
     <application
         android:name=".LindaApp"
         android:allowBackup="false"
@@ -11,16 +17,44 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.Linda">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.Linda">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Share-to-Linda: text shared from WhatsApp or any app opens the checker (F7). -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
+
+        <!-- Android asks this about every call; Linda always lets it ring and only shows a warning. Needs the call-screening role. -->
+        <service
+            android:name=".features.calls.LindaCallScreeningService"
+            android:exported="true"
+            android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
+
+        <!-- Wakes for every incoming SMS, even with the app closed. Only the system may send it this broadcast. -->
+        <receiver
+            android:name=".features.sms.SmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

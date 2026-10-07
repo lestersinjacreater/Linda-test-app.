@@ -16,9 +16,11 @@ Required by the hackathon rules. Update this file **whenever a dependency is add
 | AndroidX Core KTX | 1.15.0 | Apache 2.0 | Kotlin helpers for Android APIs. |
 | AndroidX Room (runtime, ktx, compiler) | 2.6.1 | Apache 2.0 | The on-device database for detection history. |
 | KSP (Kotlin Symbol Processing) | 2.0.21-1.0.28 | Apache 2.0 | Runs Room's code generator. |
+| AndroidX WorkManager (work-runtime-ktx) | 2.9.1 | Apache 2.0 | Retries queued scam reports with growing delays when the phone is offline, and runs the 15-minute blocklist sync. |
 | JUnit | 4.13.2 | EPL 1.0 | JVM unit tests (test-only, not shipped in the APK). |
+| org.json | 20240303 | JSON licence (public-domain style) | JVM unit tests only: Android ships its own org.json, but its JVM-test stub does nothing. |
 
-Not used, on purpose: Firebase, analytics, ads or tracking SDKs, and any network library (the core app works fully offline).
+Not used, on purpose: Firebase, analytics, ads or tracking SDKs, and any network library (the app uses the platform's own `HttpURLConnection`, only for reports without text and the blocklist; the core app works fully offline).
 
 ## ML (Python 3.11)
 
@@ -26,7 +28,9 @@ Not used, on purpose: Firebase, analytics, ads or tracking SDKs, and any network
 |---|---|---|---|
 | pytest | 8.3.4 | MIT | Runs the Python tests. |
 
-pandas, numpy and scikit-learn are added here when the training code (F3) lands.
+| scikit-learn | 1.5.2 | BSD-3 | `ml/` | Trains the TF-IDF + logistic regression baseline. The app does not ship it: only the exported JSON ships. |
+| NumPy | 2.1.3 | BSD-3 | `ml/` | Arrays for scikit-learn. |
+| SciPy | 1.14.1 | BSD-3 | `ml/` | Sparse matrices that join text features and context features. |
 
 ## Build and CI
 
@@ -34,3 +38,45 @@ pandas, numpy and scikit-learn are added here when the training code (F3) lands.
 |---|---|---|---|
 | Gradle | 8.9 | Apache 2.0 | Build tool (via the Gradle wrapper). |
 | GitHub Actions: `checkout`, `setup-java`, `setup-python`, `setup-gradle`, `upload-artifact` | v4/v5 | MIT | CI that builds the APK and runs the tests. |
+
+## Backend, simulator, dashboard
+
+| Library | Version | Licence | Used in | Why |
+|---|---|---|---|---|
+| FastAPI | 0.115.6 | MIT | backend | The web framework for the radar endpoints. |
+| Uvicorn | 0.34.0 | BSD-3 | backend | Runs the FastAPI app. |
+| SQLAlchemy | 2.0.36 | MIT | backend | Talks to SQLite (dev/tests) and Postgres (docker) with the same code. |
+| psycopg2-binary | 2.9.10 | LGPL-3.0 (with exceptions) | backend | Postgres driver, used only in docker-compose. |
+| httpx | 0.28.1 | BSD-3 | backend | Calls the telco `/network/confirm` endpoint. |
+| Pydantic | 2.12.5 | MIT | backend | Validates report fields and rejects unknown ones (so message text cannot slip in). |
+| pytest | 8.3.4 | MIT | backend | Tests. |
+
+Simulator (`simulator/`) uses FastAPI, Uvicorn, httpx and Pydantic at the same versions as above, plus:
+
+| Library | Version | Licence | Why |
+|---|---|---|---|
+| websockets | 14.1 | BSD-3 | Lets Uvicorn serve the `/events` WebSocket the dashboard listens to. |
+| pytest-asyncio | 0.25.0 | Apache 2.0 | Runs the simulator's async tests (test-only). |
+
+## Dashboard (`dashboard/`)
+
+| Library | Version | Licence | Why |
+|---|---|---|---|
+| Next.js | 15.5.27 | MIT | The web framework (App Router) for the demo screen. |
+| React / React DOM | 19.3.0 | MIT | The UI library Next.js is built on. |
+| Tailwind CSS | 3.4.19 | MIT | Styling with the Linda palette. |
+| PostCSS, Autoprefixer | 8.5.29, 10.6.1 | MIT | Required by Tailwind. |
+| TypeScript | 5.9.3 | Apache 2.0 | Typed code. |
+| Vitest | 3.2.7 | MIT | Tests for the event reducer and replay (dev only). |
+| @types/node, @types/react, @types/react-dom | 22.20.5, 19.3.0, 19.3.0 | MIT | Type definitions (dev only). |
+
+No map library on purpose: the Kenya outline is a small hand-drawn SVG path (`features/radar-map/kenya.ts`), so there is no tile server to fail on stage.
+Africa's Talking and Daraja are **stubbed** for now (no SDK, no credentials).
+
+## Production server (docker images, not code we ship)
+
+| Image | Version | Licence | Why |
+|---|---|---|---|
+| Caddy | 2.8 | Apache 2.0 | The only public entry point: automatic HTTPS, an allow-list of paths, the presenter password, WebSocket proxying. |
+| PostgreSQL | 16 | PostgreSQL licence (BSD-style) | The radar's database in production (SQLite is used for tests and local runs). |
+| Python slim, Node alpine | 3.11, 22 | PSF, MIT | Base images for the radar/simulator and the dashboard. |

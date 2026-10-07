@@ -1,6 +1,6 @@
 # Linda training data
 
-Status: **no dataset yet** (Phase 0). This file will be kept up to date as data is added.
+Status: **no real dataset yet.** Only a synthetic baseline set exists (see the end of this file). Real, scrubbed team-collected messages are still being gathered.
 
 ## Schema
 
@@ -10,6 +10,8 @@ Status: **no dataset yet** (Phase 0). This file will be kept up to date as data 
 |---|---|
 | `id` | unique id |
 | `text` | message text, already scrubbed |
+| `sender` | sender ID or `2547XXXXXXXX` number (scrubbed to a placeholder). The model uses it as context |
+| `split` | `train`, `val` or `test`. `test` is reserved for REAL data only |
 | `label` | `scam` or `legit` |
 | `campaign` | scam campaign name (e.g. `reversal`, `fake_mpesa`), or `legit` |
 | `source` | where it came from, e.g. `team_collected`, `public_template`, `synthetic` |
@@ -26,7 +28,7 @@ Status: **no dataset yet** (Phase 0). This file will be kept up to date as data 
 
 ## Synthetic / generated data declared here
 
-None yet.
+`ml/data/processed/synthetic.csv`, about 2,300 rows made by `ml/src/features/dataset/synthetic.py` from hand-written templates (seed 42, run `make data`). `source` is `synthetic`. Whole templates are held out for `val`. There is no synthetic `test` split. Scam wordings were written by the team and Claude Code from scam types the team described; legit messages follow public M-Pesa, bank, KPLC and KRA formats. All phone numbers are fake placeholders.
 
 ## Consent
 

@@ -28,4 +28,241 @@
     <string name="settings_title">Settings</string>
     <string name="settings_language_label">Language</string>
     <string name="settings_language_value">Follows your phone language (English or Kiswahili).</string>
+
+    <string name="alert_scam_title">🚨 Linda warning: this is likely a scam</string>
+    <string name="alert_caution_title">⚠️ Linda: be careful with this message</string>
+    <string name="channel_scam">Scam warnings</string>
+    <string name="channel_caution">Caution notices</string>
+
+    <string name="level_scam">SCAM</string>
+    <string name="level_caution">CAUTION</string>
+    <string name="level_safe">SAFE</string>
+    <string name="filter_all">All</string>
+    <string name="history_search">Search messages or senders</string>
+    <string name="sender_pasted">Pasted text</string>
+
+    <string name="detail_not_found">This message is no longer in the history.</string>
+    <string name="detail_headline_scam">Do not reply and do not send money</string>
+    <string name="detail_headline_caution">Be careful with this message</string>
+    <string name="detail_why">Why Linda warned you</string>
+    <string name="detail_marked_safe">You marked this sender as safe. Linda will stop checking their messages.</string>
+    <string name="action_mark_safe">Mark as safe</string>
+    <string name="action_back">Back</string>
+
+    <string name="checker_help">Paste a message, or share one from WhatsApp or any app to Linda. It never leaves your phone.</string>
+    <string name="checker_hint">Paste the message here</string>
+    <string name="checker_button">Check this message</string>
+    <string name="checker_safe">Nothing suspicious found</string>
+    <string name="checker_safe_note">Linda cannot be sure. If it asks for money or your PIN, do not trust it.</string>
+
+    <string name="settings_language_system">Follow my phone language</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_swahili">Kiswahili</string>
+    <string name="settings_version">Linda version %1$s</string>
+
+    <string name="onboarding_title">Welcome to Linda</string>
+    <string name="onboarding_intro">Linda reads your incoming text messages on your phone and warns you before a scammer can trick you. Your messages are never sent anywhere.</string>
+    <string name="onboarding_permissions_title">1. Allow Linda to help</string>
+    <string name="onboarding_permissions_body">Linda needs to see new text messages, show you warnings, and check whether a sender is in your contacts.</string>
+    <string name="onboarding_allow">Allow permissions</string>
+    <string name="onboarding_battery_title">2. Keep Linda awake</string>
+    <string name="onboarding_open_battery">Open battery settings</string>
+    <string name="onboarding_done">I am ready</string>
+    <string name="battery_generic">Open Settings, find Linda in Battery, and choose "Unrestricted" or "Don\'t optimise". Without this your phone may stop Linda when the screen is off.</string>
+    <string name="battery_tecno">Tecno: Settings > Apps > Linda > Battery > "No restrictions". Then open Phone Master or Phone Manager > Autostart and switch Linda on. Also lock Linda in the recent-apps list.</string>
+    <string name="battery_infinix">Infinix: Settings > Apps > Linda > Battery > "No restrictions". Then open XOS Phone Master > Autostart and switch Linda on. Also lock Linda in the recent-apps list.</string>
+    <string name="battery_itel">Itel: Settings > Battery > Battery optimisation > Linda > "Don\'t optimise". Then open Phone Manager > Autostart and switch Linda on.</string>
+    <string name="battery_samsung">Samsung: Settings > Apps > Linda > Battery > "Unrestricted". Then Settings > Battery > Background usage limits > Never sleeping apps > add Linda.</string>
+    <string name="battery_xiaomi">Xiaomi, Redmi or Poco: Settings > Apps > Manage apps > Linda > Autostart on, and Battery saver > "No restrictions". Also lock Linda in the recent-apps list.</string>
+
+    <string name="consent_title">3. Help protect others (optional)</string>
+    <string name="consent_body">If Linda is sure a message is a scam, it can tell the Linda radar so other people are warned too. A report contains ONLY: the sender\'s phone number, the type of scam, how sure Linda is, a scrambled fingerprint of the message, and an anonymous device code. It NEVER contains the message text, your contacts, or your own phone number. You can turn this off any time in Settings. It is OFF until you tap Agree.</string>
+    <string name="consent_agree">Agree and help protect others</string>
+    <string name="consent_decline">No thanks</string>
+    <string name="settings_reporting_title">Help protect others</string>
+    <string name="settings_reporting_body">Send anonymous scam reports (never the message text) so others are warned.</string>
+    <string name="settings_reports_waiting">Reports waiting to send: %1$d</string>
+
+    <string name="call_warning_title">⚠️ Likely scam caller</string>
+    <string name="call_warning_recent">This caller sent you a suspected scam message %1$d minutes ago. Do not send money.</string>
+    <string name="call_warning_reported">This number was reported by other Linda users as a mobile-money scammer. Do not send money.</string>
+
+    <string name="settings_calls_title">Scam caller warnings</string>
+    <string name="settings_calls_body">Linda shows a warning when a known scam number calls. It never blocks the call: you decide.</string>
+    <string name="settings_calls_enable">Turn on caller warnings</string>
+    <string name="settings_calls_on">Caller warnings are on.</string>
+    <string name="settings_calls_unavailable">Caller warnings need Android 10 or newer.</string>
+
+    <string name="dev_title">Developer</string>
+    <string name="dev_server">Radar server address (e.g. http://192.168.1.5:8001)</string>
+    <string name="dev_save_sync">Save and sync now</string>
+    <string name="dev_model">Model version: %1$s</string>
+    <string name="dev_last_sync">Last blocklist sync: %1$s</string>
+    <string name="dev_never">never</string>
+    <string name="dev_blocked">Scam numbers on this phone: %1$d</string>
+    <string name="dev_open_demo">Open demo mode</string>
+
+    <string name="demo_title">Demo mode</string>
+    <string name="demo_help">Each button \"receives\" a message instantly, exactly like a real SMS, with no network. The last two messages must NOT warn.</string>
+    <string name="demo_fake_mpesa">Fake M-Pesa confirmation (from a normal number)</string>
+    <string name="demo_reversal">Sent-by-mistake scam (Kiswahili)</string>
+    <string name="demo_prize">Prize scam (Kiswahili)</string>
+    <string name="demo_fuliza">Fuliza upgrade link</string>
+    <string name="demo_pin">PIN request (Kiswahili)</string>
+    <string name="demo_real_mpesa">REAL M-Pesa message (from MPESA)</string>
+    <string name="demo_chat">Ordinary chat message</string>
+    <string name="demo_call">Simulate a call from the fake M-Pesa number</string>
+    <string name="demo_result_safe">%1$s: SAFE, no warning (correct).</string>
+    <string name="demo_result_flagged">%1$s: %2$s (%3$s)</string>
+    <string name="demo_call_recent">Call warning shown: sent you a scam message %1$d minutes ago.</string>
+    <string name="demo_call_reported">Call warning shown: reported number.</string>
+    <string name="demo_call_none">No call warning (receive the fake M-Pesa message first).</string>
+
+    <string name="recovery_title">I already sent money</string>
+    <string name="recovery_intro_urgent">Act fast. The first minutes matter most. Do these steps in order.</string>
+    <string name="recovery_intro_late">Some time has passed, but you can still report this and protect other people.</string>
+    <string name="recovery_form_title">Tell Linda what happened (optional)</string>
+    <string name="recovery_form_help">This only makes the steps and the report text more exact. It stays on your phone.</string>
+    <string name="recovery_amount">How much did you send? (Ksh)</string>
+    <string name="recovery_when_title">When did you send it?</string>
+    <string name="recovery_when_now">Just now</string>
+    <string name="recovery_when_24h">In the last 24 hours</string>
+    <string name="recovery_when_over">More than 24 hours ago</string>
+    <string name="recovery_paid_to">Number you sent the money to</string>
+    <string name="recovery_code">M-PESA transaction code (10 letters and numbers, from YOUR payment message)</string>
+    <string name="recovery_code_invalid">That does not look like a transaction code. Check the message that confirms your payment.</string>
+    <string name="recovery_bank">I paid from a bank account or card</string>
+    <string name="recovery_include_message">Include the scam message in the report text</string>
+    <string name="recovery_steps_title">What to do now</string>
+    <string name="recovery_done">Done</string>
+    <string name="recovery_call">Call %1$s</string>
+    <string name="recovery_open_sms">Open messages to %1$s</string>
+    <string name="recovery_action_note">Linda only opens your phone app. You press send or call yourself.</string>
+
+    <string name="step_stop_title">Stop. Do not send more.</string>
+    <string name="step_stop_body">Do not reply to the scammer and do not send any more money, even if they promise to return it or say you must pay a fee first.</string>
+    <string name="step_evidence_title">Keep the evidence</string>
+    <string name="step_evidence_body">Keep the scam message and the M-PESA message that confirms YOUR payment. Do not delete them. Take screenshots.</string>
+    <string name="step_reversal_title">Ask for a reversal now</string>
+    <string name="step_reversal_body">Forward the M-PESA message that confirms your payment to %1$s. It is free and only works within %2$d hours of the payment. Safaricom checks the request, and it may not work if the money has already been withdrawn.</string>
+    <string name="step_care_title">Call Safaricom customer care</string>
+    <string name="step_care_body">Call %1$s (prepaid) or %2$s (postpaid). Say clearly that you were a victim of M-PESA fraud and ask them to block the scammer\'s number.</string>
+    <string name="step_care_late_title">Call Safaricom customer care</string>
+    <string name="step_care_late_body">The %1$d-hour reversal window has passed, so money that was already withdrawn may not come back. Still call %2$s (prepaid) or %3$s (postpaid), explain what happened and ask them to block the number.</string>
+    <string name="step_report_title">Report the scam message</string>
+    <string name="step_report_body">Forward the scam message to %1$s (free). Safaricom checks and blocks fraud numbers, which protects other people.</string>
+    <string name="step_bank_title">Call your bank</string>
+    <string name="step_bank_body">You paid from a bank account or card. Call your bank right away on the number on the back of your card, tell them it was fraud and ask them to stop or recall the payment.</string>
+    <string name="step_police_title">Report to the police</string>
+    <string name="step_police_body">Report to the police and ask for an OB (occurrence book) number. You can also call the DCI toll-free hotline %1$s. Safaricom or your bank may ask for that number. If you are in danger, call %2$s or %3$s.</string>
+    <string name="step_police_optional_title">Consider reporting to the police</string>
+    <string name="step_police_optional_body">For a small amount it is your choice, but reporting helps. The DCI toll-free hotline is %1$s.</string>
+    <string name="step_beware_title">Watch out for \"recovery\" scams</string>
+    <string name="step_beware_body">Scammers often call again, pretending to be helpers who can get your money back for a fee. Nobody genuine charges you to recover money, and nobody will ever ask for your PIN.</string>
+
+    <string name="recovery_report_title_en">Report text (English)</string>
+    <string name="recovery_report_title_sw">Report text (Kiswahili)</string>
+    <string name="recovery_report_note">Copy this and paste it into a message, a bank form or a police statement. It stays on your phone: Linda never sends it anywhere.</string>
+    <string name="recovery_copy">Copy</string>
+    <string name="recovery_copied">Copied. Paste it where you need it.</string>
+    <string name="recovery_disclaimer">The numbers and steps follow Safaricom\'s published advice, but Linda cannot reverse money for you. Whether money comes back depends on Safaricom, your bank and whether it was already withdrawn.</string>
+
+    <string name="action_i_sent_money">I already sent money →</string>
+    <string name="home_recovery_title">I have been scammed. What now?</string>
+    <string name="home_recovery_body">Get a step-by-step guide to try to get your money back.</string>
+
+    <string name="guardian_title">Family Guardian</string>
+    <string name="guardian_intro">Choose someone you trust. If Linda is sure you received a scam message, it sends them one short SMS so they can call and check on you.</string>
+    <string name="guardian_what_title">What the SMS says</string>
+    <string name="guardian_what_body">Only your name, the kind of scam and the time, like: \"Linda alert: Mum received a suspected \'sent by mistake\' scam at 4:12 PM. Consider calling them.\" It never contains the message itself, the scammer\'s number, your contacts or your balance.</string>
+    <string name="guardian_rules">Linda sends at most one alert per scammer number every 6 hours. It uses your normal SMS balance. You can turn this off at any time.</string>
+    <string name="guardian_number_label">Guardian\'s phone number</string>
+    <string name="guardian_name_label">Your name in the alert (for example Mum)</string>
+    <string name="guardian_switch">Tell my guardian about scams</string>
+    <string name="guardian_fill_in">Enter the guardian\'s phone number (for example 0712345678) and your name first.</string>
+    <string name="guardian_permission_needed">Linda needs permission to send SMS for this to work.</string>
+    <string name="guardian_permission_removed">Guardian alerts are on, but the SMS permission was removed. No alert can be sent until you allow it again.</string>
+    <string name="guardian_is_on">Guardian alerts are ON.</string>
+    <string name="guardian_is_off">Guardian alerts are OFF.</string>
+    <string name="guardian_test_button">Send a test alert</string>
+    <string name="guardian_test_ok">Test alert handed to your phone\'s SMS system. Ask your guardian whether it arrived.</string>
+    <string name="guardian_test_failed">The test alert could not be sent. Check the number, your SMS balance and the permission.</string>
+    <string name="guardian_log_title">Alerts sent</string>
+    <string name="guardian_log_empty">Nothing sent yet.</string>
+    <string name="guardian_log_row">%1$s · %2$s · %3$s</string>
+    <string name="guardian_status_sent">sent</string>
+    <string name="guardian_status_failed">failed</string>
+    <string name="guardian_reset_limits">Reset alert limits (rehearsal only)</string>
+    <string name="settings_guardian_title">Family Guardian</string>
+    <string name="settings_guardian_body">Let a family member know when you get a suspected scam.</string>
+    <string name="settings_guardian_open">Set up</string>
+    <string name="cat_test">test</string>
+    <string name="cat_fake_mpesa">fake M-PESA message</string>
+    <string name="cat_sent_by_mistake">sent by mistake</string>
+    <string name="cat_prize">prize</string>
+    <string name="cat_fuliza_upgrade">Fuliza limit</string>
+    <string name="cat_kra_refund">KRA refund</string>
+    <string name="cat_job_fee">job fee</string>
+    <string name="cat_loan_fee">loan fee</string>
+    <string name="cat_pin_request">PIN request</string>
+    <string name="cat_phishing_link">phishing link</string>
+    <string name="cat_other">scam</string>
+
+    <string name="voice_title">Read scam warnings aloud</string>
+    <string name="voice_body">When Linda is sure a message is a scam, it also says so out loud. Quiet if your phone is on silent or vibrate, or you are on a call.</string>
+    <string name="voice_on_by_guardian">On because Family Guardian is on. Turn it off here whenever you like.</string>
+    <string name="voice_checking">Checking the voices on this phone…</string>
+    <string name="voice_sw_available">A Kiswahili voice is installed, so Kiswahili will be spoken when your language is Kiswahili.</string>
+    <string name="voice_sw_missing">No Kiswahili voice is installed on this phone, so English will be spoken. You can install one.</string>
+    <string name="voice_install">Install voices</string>
+    <string name="voice_install_unavailable">This phone has no voice installer. Look for "Text-to-speech" in your phone settings.</string>
+    <string name="voice_test">Test the voice</string>
+    <string name="voice_test_ok">Spoken. If you heard nothing, turn up the media volume.</string>
+    <string name="voice_test_failed">Could not speak. This phone may have no text-to-speech voice installed.</string>
+
+    <string name="inbox_title">Scan my inbox</string>
+    <string name="inbox_intro">Linda checks the text messages from the last 90 days and tells you which ones look like scams. It takes a few seconds.</string>
+    <string name="inbox_privacy">Everything happens on your phone. Your messages are not sent anywhere. Messages that look suspicious are saved in History on this phone, and Linda sends no alerts or reports for old messages.</string>
+    <string name="inbox_scan_button">Scan my last 90 days</string>
+    <string name="inbox_permission_denied">Linda needs permission to read your text messages for this. You can allow it and try again.</string>
+    <string name="inbox_failed">The scan could not finish. Check that Linda may read your text messages, then try again.</string>
+    <string name="inbox_scanning">Checking your messages…</string>
+    <string name="inbox_progress">Checked %1$d of %2$d messages</string>
+    <string name="inbox_cancel">Stop</string>
+    <string name="inbox_none">Linda found no suspicious messages in the last 90 days.</string>
+    <string name="inbox_summary">Checked %1$d messages in %2$s seconds.</string>
+    <string name="inbox_stopped">Stopped early.</string>
+    <string name="inbox_unknown_sender">Unknown sender</string>
+    <string name="inbox_saved_note">These are saved in History. Tap a sender to see the newest message and why Linda flagged it.</string>
+    <string name="inbox_again">Scan again</string>
+    <plurals name="inbox_found">
+        <item quantity="one">Linda found %d suspicious message</item>
+        <item quantity="other">Linda found %d suspicious messages</item>
+    </plurals>
+    <plurals name="inbox_found_so_far">
+        <item quantity="one">%d suspicious message so far</item>
+        <item quantity="other">%d suspicious messages so far</item>
+    </plurals>
+    <plurals name="inbox_group_count">
+        <item quantity="one">%d message</item>
+        <item quantity="other">%d messages</item>
+    </plurals>
+    <string name="home_inbox_title">Scan my inbox</string>
+    <string name="home_inbox_body">Find scams already hiding in your last 90 days of messages.</string>
+
+    <string name="action_report">Report this number</string>
+    <string name="report_done">Reported. Thank you for helping protect others.</string>
+    <string name="report_dialog_title">Report this number?</string>
+    <string name="report_dialog_intro">This is exactly what will be sent to the Linda radar so other people can be warned:</string>
+    <string name="report_field_number">• The sender\'s number: %1$s</string>
+    <string name="report_field_type">• Type of scam: %1$s</string>
+    <string name="report_field_sure">• How sure Linda is: %1$d%%</string>
+    <string name="report_field_fingerprint">• A scrambled code of the message: %1$s (the message cannot be read from it)</string>
+    <string name="report_field_device">• Your anonymous device code: %1$s</string>
+    <string name="report_never">Never sent: the message itself, your contacts, or your own phone number.</string>
+    <string name="report_no_server">No radar address is set on this phone yet, so the report will wait until one is set and you are online.</string>
+    <string name="report_send">Send report</string>
+    <string name="report_cancel">Cancel</string>
+    <string name="report_queued">Report queued. It is sent when you are online.</string>
+    <string name="report_saved_waiting">Report saved. It will be sent once a radar address is set and you are online.</string>
 </resources>

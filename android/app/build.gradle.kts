@@ -48,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true // the version name is shown in Settings
     }
 }
 
@@ -61,9 +62,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.core:core-ktx:1.15.0")
 
+    implementation("androidx.work:work-runtime-ktx:2.9.1") // retries queued reports when the phone is offline
+
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
     testImplementation("junit:junit:4.13.2")
+    // Android's built-in org.json is only a stub in JVM unit tests, so tests bring the real one.
+    testImplementation("org.json:json:20240303")
 }

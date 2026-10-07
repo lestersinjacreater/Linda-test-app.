@@ -1,0 +1,16 @@
+{
+  "sender_ids": [
+    "MPESA",
+    "M-PESA",
+    "SAFARICOM",
+    "KPLC",
+    "EQUITY",
+    "KCB",
+    "COOP",
+    "COOPBANK",
+    "NCBA",
+    "FULIZA",
+    "KRA"
+  ],
+  "note": "Verified sender IDs are never reported or confirmed. Extend with care and document the source. COOPBANK and KRA added 2026-10-07 because genuine bank OTPs and KRA notices in the shared test vectors use them; confirm the real sender IDs with each organisation before demo day."
+}

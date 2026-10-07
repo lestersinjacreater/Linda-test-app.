@@ -1,0 +1,45 @@
+# Caddy is the only thing the internet can reach. It gives us HTTPS, and exposes ONLY the paths below.
+#   {$SITE_ADDRESS}  a domain name (Caddy gets a free HTTPS certificate by itself), or ":80" for plain http on an IP address.
+#   /                the dashboard (public: it is the screen the audience watches)
+#   /radar/*         the radar: phones send reports and sync the blocklist here (https://DOMAIN/radar is the server address typed into the app)
+#   /telco/...       the simulator: only the read-only feeds the dashboard needs are public
+#   /telco/scenarios/*, /telco/reset   start/stop the demo: protected by the presenter's password
+# Everything else of the simulator (/network/confirm, /deliveries, /history) stays on the private docker network.
+
+{$SITE_ADDRESS} {
+	encode gzip
+
+	@telco_public path /telco/events /telco/metrics /telco/population /telco/health
+	handle @telco_public {
+		uri strip_prefix /telco
+		reverse_proxy telco:8000
+	}
+
+	@telco_control path /telco/scenarios/* /telco/reset
+	handle @telco_control {
+		basic_auth {
+			{$PRESENTER_USER} {$PRESENTER_HASH}
+		}
+		uri strip_prefix /telco
+		reverse_proxy telco:8000
+	}
+
+	handle /telco/* {
+		respond "Not found" 404
+	}
+
+	handle /radar/* {
+		uri strip_prefix /radar
+		reverse_proxy radar:8001
+	}
+
+	handle {
+		reverse_proxy dashboard:3000
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		-Server
+	}
+}

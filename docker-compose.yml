@@ -1,0 +1,45 @@
+# Radar + telco + dashboard + postgres. The Dockerfiles arrive with each component
+# (backend, simulator, dashboard); until then `make up` will fail on the missing build contexts.
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: linda
+      POSTGRES_PASSWORD: linda
+      POSTGRES_DB: linda
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  radar:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file: [.env]
+    environment:
+      DATABASE_URL: postgresql://linda:linda@postgres:5432/linda
+      TELCO_URL: http://telco:8000
+      RADAR_DEMO_TRUSTED_PREFIX: ${RADAR_DEMO_TRUSTED_PREFIX:-5111}
+    ports: ["8001:8001"]
+    depends_on: [postgres]
+
+  telco:
+    build:
+      context: .
+      dockerfile: simulator/Dockerfile
+    env_file: [.env]
+    environment:
+      RADAR_URL: http://radar:8001
+      SIM_SPEED: ${SIM_SPEED:-20}
+      SIM_SEED: ${SIM_SEED:-42}
+    ports: ["8000:8000"]
+
+  dashboard:
+    build:
+      context: ./dashboard
+      args:  # baked in at build time: the BROWSER connects to these, so use an address the presenter's browser can reach
+        NEXT_PUBLIC_TELCO_API: ${NEXT_PUBLIC_TELCO_API:-http://localhost:8000}
+        NEXT_PUBLIC_TELCO_WS: ${NEXT_PUBLIC_TELCO_WS:-ws://localhost:8000/events}
+    ports: ["3000:3000"]
+
+volumes:
+  pgdata:

@@ -26,3 +26,21 @@ node_modules/
 .env
 .env.*
 .DS_Store
+
+# keep the template
+!.env.example
+
+# Docker / Python envs
+*.egg-info/
+.env
+
+# regenerable synthetic training data and training output
+ml/data/processed/synthetic.csv
+ml/artifacts/
+
+# dashboard build output
+dashboard/tsconfig.tsbuildinfo
+
+# real server settings: never commit
+.env.production
+!.env.production.example
