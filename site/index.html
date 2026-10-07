@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get Linda for Android</title>
+<meta name="description" content="Linda warns you about mobile-money scam messages before they fool you. Download the Android app.">
+<meta name="theme-color" content="#0B0F1A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 8 14v16c0 15 10 26 24 30 14-4 24-15 24-30V14z' fill='%2300E5FF'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg:#0B0F1A; --card:#151B2E; --cyan:#00E5FF; --pink:#FF2E88; --amber:#FFC940;
+    --text:#F2F5FA; --muted:#A6B0C6; --line:#26304D;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin:0; background:var(--bg); color:var(--text); font:18px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 20px 16px 56px; }
+  a { color: var(--cyan); }
+  h1 { font-size: 2rem; line-height: 1.15; margin: 8px 0 8px; }
+  h2 { font-size: 1.35rem; margin: 40px 0 12px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); }
+  .small { font-size: .9rem; }
+
+  /* language: show only the chosen language. Content is plain HTML in both, so the page works without JavaScript. */
+  html[data-lang="en"] [lang="sw"], html[data-lang="sw"] [lang="en"] { display: none !important; }
+
+  .top { display:flex; align-items:center; gap:12px; justify-content:space-between; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.3rem; letter-spacing:.02em; }
+  .brand svg { width:36px; height:36px; }
+  .lang { background:transparent; color:var(--text); border:1px solid var(--line); border-radius:999px; padding:8px 16px; min-height:44px; font:inherit; font-size:.95rem; cursor:pointer; }
+  .lang:hover, .lang:focus-visible { border-color: var(--cyan); outline: none; }
+
+  .hero { padding: 28px 0 8px; }
+  .tag { color: var(--muted); font-size: 1.1rem; }
+
+  .card { background: var(--card); border-radius: 22px; padding: 22px; }
+  .download { margin-top: 16px; border: 1px solid var(--line); }
+  .btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height:64px; padding:14px 20px;
+         background:var(--cyan); color:#00131A; font-weight:800; font-size:1.25rem; text-decoration:none; border-radius:16px; }
+  .btn:hover, .btn:focus-visible { filter: brightness(1.08); outline: 3px solid #fff3; outline-offset: 3px; }
+  .btn svg { width:26px; height:26px; flex:none; }
+  .meta { margin-top: 12px; color: var(--muted); font-size: .95rem; text-align: center; }
+  .notice { display:none; margin-top:16px; padding:14px 16px; border-radius:14px; background:#2A2410; border:1px solid var(--amber); color:#FFE9A8; }
+  html:not(.is-android) .notice { display:block; }
+  html.is-android .qr { display:none; }
+  .qr { display:flex; align-items:center; gap:16px; margin-top:16px; }
+  .qr img { width:132px; height:132px; background:#fff; border-radius:12px; padding:8px; flex:none; }
+
+  ol.steps { list-style:none; counter-reset:s; padding:0; margin:0; }
+  ol.steps li { counter-increment:s; display:flex; gap:14px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--line); }
+  ol.steps li:last-child { border-bottom:0; }
+  ol.steps li::before { content:counter(s); flex:none; width:38px; height:38px; border-radius:50%; background:var(--pink); color:#fff; font-weight:800;
+                        display:flex; align-items:center; justify-content:center; }
+  ol.steps b { display:block; }
+
+  table { width:100%; border-collapse:collapse; font-size:.98rem; }
+  th, td { text-align:left; vertical-align:top; padding:10px 8px; border-bottom:1px solid var(--line); }
+  th { color:var(--muted); font-weight:600; }
+  td:first-child { white-space:nowrap; font-weight:600; }
+  .never { border-left: 4px solid var(--cyan); padding-left: 14px; }
+  details { border-bottom:1px solid var(--line); padding:12px 0; }
+  summary { cursor:pointer; font-weight:700; min-height:32px; }
+  footer { margin-top:44px; color:var(--muted); font-size:.92rem; }
+  code { background:#0F1526; padding:2px 6px; border-radius:6px; font-size:.9em; white-space:nowrap; }
+  #sha { white-space:normal; word-break:break-all; }
+  @media (max-width:520px) { .qr { flex-direction:column; align-items:flex-start; } td:first-child { white-space:normal; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4 8 14v16c0 15 10 26 24 30 14-4 24-15 24-30V14z" fill="#00E5FF"/><path d="m22 32 7 7 14-15" fill="none" stroke="#0B0F1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      LINDA
+    </div>
+    <button class="lang" id="lang" type="button" aria-label="Change language / Badilisha lugha">
+      <span lang="en">Kiswahili</span><span lang="sw">English</span>
+    </button>
+  </div>
+
+  <section class="hero">
+    <h1><span lang="en">Stop scam messages before they fool you.</span><span lang="sw">Zuia jumbe za ulaghai kabla hazijakudanganya.</span></h1>
+    <p class="tag"><span lang="en">Linda checks each text on your own phone and warns you, with the reason, before you lose money. It works with no internet.</span><span lang="sw">Linda inakagua kila ujumbe kwenye simu yako na kukuonya, pamoja na sababu, kabla hujapoteza pesa. Inafanya kazi bila intaneti.</span></p>
+
+    <div class="card download">
+      <a class="btn" id="apk" href="https://github.com/lestersinjacreater/Linda-test-app./releases/download/latest-build/linda-debug.apk" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span lang="en">Download Linda for Android</span><span lang="sw">Pakua Linda kwa Android</span>
+      </a>
+      <p class="meta" id="meta">
+        <span lang="en">Free · Android 8.0 or newer</span><span lang="sw">Bure · Android 8.0 au mpya zaidi</span>
+      </p>
+
+      <div class="notice" id="notice">
+        <span lang="en"><b>Open this page on your Android phone</b> to install Linda. Scan the code below with your phone's camera. Linda does not work on iPhone or on a computer.</span>
+        <span lang="sw"><b>Fungua ukurasa huu kwenye simu yako ya Android</b> ili kusakinisha Linda. Piga picha ya msimbo ulio hapa chini kwa kamera ya simu yako. Linda haifanyi kazi kwenye iPhone wala kompyuta.</span>
+      </div>
+      <div class="qr" id="qr">
+        <img id="qrimg" src="qr.svg" alt="QR code that opens this page on a phone" width="132" height="132" onerror="document.getElementById('qr').hidden=true">
+        <p class="muted small" style="margin:0"><span lang="en">Scan with your phone's camera to open this page on your phone.</span><span lang="sw">Piga picha kwa kamera ya simu yako ili kufungua ukurasa huu kwenye simu.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span lang="en">Install in 4 steps</span><span lang="sw">Sakinisha kwa hatua 4</span></h2>
+    <div class="card">
+      <ol class="steps">
+        <li><div>
+          <b><span lang="en">Tap the blue Download button.</span><span lang="sw">Gusa kitufe cha buluu cha Pakua.</span></b>
+          <span class="muted"><span lang="en">If your phone says this type of file can be harmful, choose <i>Download anyway</i>. That is normal for apps that are not from the Play Store.</span><span lang="sw">Simu ikisema aina hii ya faili inaweza kudhuru, chagua <i>Pakua hata hivyo</i>. Hilo ni la kawaida kwa programu zisizotoka Play Store.</span></span>
+        </div></li>
+        <li><div>
+          <b><span lang="en">Open the file <code>linda-debug.apk</code>.</span><span lang="sw">Fungua faili <code>linda-debug.apk</code>.</span></b>
+          <span class="muted"><span lang="en">Tap the download notification, or find it in your <i>Downloads</i> folder.</span><span lang="sw">Gusa arifa ya upakuaji, au uitafute kwenye folda ya <i>Downloads</i>.</span></span>
+        </div></li>
+        <li><div>
+          <b><span lang="en">Allow installing from this source.</span><span lang="sw">Ruhusu usakinishaji kutoka chanzo hiki.</span></b>
+          <span class="muted"><span lang="en">Android asks once: switch on <i>Allow from this source</i> for your browser, then go back and tap <i>Install</i>.</span><span lang="sw">Android huuliza mara moja: washa <i>Ruhusu kutoka chanzo hiki</i> kwa kivinjari chako, kisha rudi na ugonge <i>Sakinisha</i>.</span></span>
+        </div></li>
+        <li><div>
+          <b><span lang="en">Open Linda and follow the welcome screen.</span><span lang="sw">Fungua Linda na ufuate skrini ya karibu.</span></b>
+          <span class="muted"><span lang="en">Allow the permissions, and use the battery steps shown for your phone brand so Linda keeps working with the screen off.</span><span lang="sw">Ruhusu ruhusa, na utumie hatua za betri zinazoonyeshwa kwa chapa ya simu yako ili Linda ifanye kazi skrini ikiwa imezimwa.</span></span>
+        </div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2><span lang="en">What Linda asks for, and why</span><span lang="sw">Linda inaomba nini, na kwa nini</span></h2>
+    <div class="card">
+      <table>
+        <tr><th><span lang="en">Permission</span><span lang="sw">Ruhusa</span></th><th><span lang="en">Why</span><span lang="sw">Kwa nini</span></th></tr>
+        <tr><td><span lang="en">Receive text messages</span><span lang="sw">Kupokea jumbe</span></td><td><span lang="en">To check each new text on your phone. Messages are never sent anywhere.</span><span lang="sw">Kukagua kila ujumbe mpya kwenye simu yako. Jumbe hazitumwi popote.</span></td></tr>
+        <tr><td><span lang="en">Read text messages</span><span lang="sw">Kusoma jumbe</span></td><td><span lang="en">Only for "Scan my inbox", when you tap Scan.</span><span lang="sw">Kwa "Kagua kikasha changu" tu, unapogonga Kagua.</span></td></tr>
+        <tr><td><span lang="en">Contacts</span><span lang="sw">Anwani</span></td><td><span lang="en">To tell if a sender is someone you know. Never uploaded.</span><span lang="sw">Kujua kama mtumaji ni mtu unayemjua. Hazipakiwi kamwe.</span></td></tr>
+        <tr><td><span lang="en">Notifications</span><span lang="sw">Arifa</span></td><td><span lang="en">To show you the warning.</span><span lang="sw">Kukuonyesha onyo.</span></td></tr>
+        <tr><td><span lang="en">Send text messages</span><span lang="sw">Kutuma jumbe</span></td><td><span lang="en">Only if you turn on <i>Family Guardian</i>, to tell your chosen family member.</span><span lang="sw">Ikiwa tu utawasha <i>Mlezi wa Familia</i>, kumjulisha mwanafamilia uliyemchagua.</span></td></tr>
+        <tr><td><span lang="en">Call screening</span><span lang="sw">Ukaguzi wa simu</span></td><td><span lang="en">Only if you turn on caller warnings. Linda never blocks a call.</span><span lang="sw">Ikiwa tu utawasha onyo la wapigaji. Linda haizuii simu kamwe.</span></td></tr>
+        <tr><td><span lang="en">Internet</span><span lang="sw">Intaneti</span></td><td><span lang="en">Optional. Only for anonymous scam reports you agree to, and for the list of known scam numbers.</span><span lang="sw">Si lazima. Kwa ripoti zisizotambulisha mtu unazokubali tu, na orodha ya nambari za ulaghai zinazojulikana.</span></td></tr>
+      </table>
+      <p class="never" style="margin-top:16px"><b><span lang="en">Linda never sends the text of your messages anywhere.</span><span lang="sw">Linda haitumi maandishi ya jumbe zako popote kamwe.</span></b>
+        <span class="muted"><span lang="en"> No ads. No tracking.</span><span lang="sw"> Hakuna matangazo. Hakuna ufuatiliaji.</span></span></p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span lang="en">Is it safe to install?</span><span lang="sw">Je, ni salama kusakinisha?</span></h2>
+    <div class="card">
+      <p><span lang="en">Linda is a <b>prototype made for a hackathon</b>. It is not in the Play Store, which is why Android shows a warning. The app is built automatically from the public source code, and you can read all of it.</span><span lang="sw">Linda ni <b>mfano uliotengenezwa kwa hackathon</b>. Haipo kwenye Play Store, ndiyo maana Android inaonyesha onyo. Programu hujengwa kiotomatiki kutoka kwa msimbo wa chanzo wa umma, na unaweza kuusoma wote.</span></p>
+      <details>
+        <summary><span lang="en">Check the file was not changed (advanced)</span><span lang="sw">Hakikisha faili haikubadilishwa (kwa wataalamu)</span></summary>
+        <p class="muted"><span lang="en">The SHA-256 fingerprint of the file you should have downloaded:</span><span lang="sw">Alama ya vidole ya SHA-256 ya faili unayopaswa kuwa umepakua:</span></p>
+        <p><code id="sha">—</code></p>
+      </details>
+      <details>
+        <summary><span lang="en">Something went wrong?</span><span lang="sw">Kuna tatizo?</span></summary>
+        <p class="muted"><span lang="en"><b>"App not installed":</b> an older copy from a different build may be on your phone. Uninstall Linda, then install again. <b>No Install button:</b> go back and allow installing from this source (step 3). <b>Linda stops working when the screen is off:</b> follow the battery steps for your phone brand in the app's welcome screen.</span><span lang="sw"><b>"Programu haijasakinishwa":</b> huenda nakala ya zamani kutoka muundo tofauti iko kwenye simu yako. Ondoa Linda, kisha usakinishe tena. <b>Hakuna kitufe cha Sakinisha:</b> rudi na uruhusu usakinishaji kutoka chanzo hiki (hatua ya 3). <b>Linda inaacha kufanya kazi skrini ikizimwa:</b> fuata hatua za betri za chapa ya simu yako kwenye skrini ya karibu ya programu.</span></p>
+      </details>
+    </div>
+  </section>
+
+  <footer>
+    <p><span lang="en">Linda · "Kaa Rada stops the payment. Linda stops the conversation." · Built for the Safaricom interns' Intelligence Unleashed hackathon.</span><span lang="sw">Linda · "Kaa Rada inazuia malipo. Linda inazuia mazungumzo." · Imetengenezwa kwa hackathon ya Intelligence Unleashed ya wanafunzi wa Safaricom.</span></p>
+    <p><a href="https://github.com/lestersinjacreater/Linda-test-app." rel="noopener"><span lang="en">Source code and all releases on GitHub</span><span lang="sw">Msimbo wa chanzo na matoleo yote kwenye GitHub</span></a></p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var REPO = "lestersinjacreater/Linda-test-app.";
+  var doc = document.documentElement;
+
+  // Language: remember the choice if the browser allows it, otherwise just use it for this visit.
+  var lang = null;
+  try { lang = localStorage.getItem("linda-lang"); } catch (e) {}
+  if (!lang) lang = (navigator.language || "").toLowerCase().indexOf("sw") === 0 ? "sw" : "en";
+  doc.setAttribute("data-lang", lang); doc.lang = lang;
+  document.getElementById("lang").addEventListener("click", function () {
+    lang = lang === "en" ? "sw" : "en";
+    doc.setAttribute("data-lang", lang); doc.lang = lang;
+    try { localStorage.setItem("linda-lang", lang); } catch (e) {}
+  });
+
+  // Show the install notice and QR code unless this really is an Android phone.
+  if (/Android/i.test(navigator.userAgent)) doc.classList.add("is-android");
+
+  // Show when the newest build was made. If GitHub cannot be reached the button above still works.
+  function say(en, sw) {
+    var m = document.getElementById("meta");
+    m.innerHTML = "";
+    var a = document.createElement("span"); a.lang = "en"; a.textContent = en; m.appendChild(a);
+    var b = document.createElement("span"); b.lang = "sw"; b.textContent = sw; m.appendChild(b);
+  }
+  var ctl = typeof AbortController === "function" ? new AbortController() : null;
+  if (ctl) setTimeout(function () { ctl.abort(); }, 6000);
+  fetch("https://api.github.com/repos/" + REPO + "/releases/tags/latest-build", { headers: { Accept: "application/vnd.github+json" }, signal: ctl ? ctl.signal : undefined })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (rel) {
+      var asset = (rel.assets || []).filter(function (a) { return a.name === "linda-debug.apk"; })[0];
+      if (!asset) return;
+      document.getElementById("apk").href = asset.browser_download_url;
+      var mb = (asset.size / 1048576).toFixed(1);
+      var when = new Date(asset.updated_at || rel.published_at).toLocaleString(lang === "sw" ? "sw-KE" : "en-GB", { dateStyle: "medium", timeStyle: "short" });
+      say("Free · Android 8.0 or newer · " + mb + " MB · built " + when, "Bure · Android 8.0 au mpya zaidi · MB " + mb + " · imejengwa " + when);
+      if (asset.digest && /^sha256:/.test(asset.digest)) document.getElementById("sha").textContent = asset.digest.slice(7);
+    })
+    .catch(function () { /* keep the default text */ });
+})();
+</script>
+</body>
+</html>
