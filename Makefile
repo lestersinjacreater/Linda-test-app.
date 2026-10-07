@@ -1,5 +1,5 @@
 # One-word commands (root CLAUDE.md section 7). Targets for parts not built yet say so.
-.PHONY: setup data train export-model test up demo
+.PHONY: setup data train export-model test test-e2e up demo
 
 setup:
 	pip install -r ml/requirements.txt
@@ -22,8 +22,15 @@ test:
 	@test -d backend/tests && ls backend/tests/test_*.py >/dev/null 2>&1 && python -m pytest backend/tests -v || echo "backend tests: none yet"
 	@test -d simulator/tests && ls simulator/tests/test_*.py >/dev/null 2>&1 && python -m pytest simulator/tests -v || echo "simulator tests: none yet"
 
+test-e2e:
+	python -m pytest tests/e2e -v
+
 up:
 	docker compose up --build
 
+# Needs `make up` (or the two services running). Plays the scripted scam blast and prints the headline numbers.
+TELCO ?= http://localhost:8000
 demo:
-	@echo "demo: simulator not built yet"
+	curl -s -X POST $(TELCO)/reset
+	@echo
+	curl -s -X POST "$(TELCO)/scenarios/blast?wait=true" | python3 -m json.tool

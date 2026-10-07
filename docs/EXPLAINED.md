@@ -119,3 +119,31 @@ Uses only the exported JSON and basic arithmetic, no scikit-learn. It is the ref
 
 ### Running it
 `make train` (builds data, trains, evaluates), `make export-model` (writes `shared/models/model-<version>.json`, copies it to Android assets and the simulator, refreshes the expected scores in the test vectors).
+
+## System rebuild, step 5: the mock telco (`simulator/`) and the trust decision
+
+### The trust ceiling (decision of 2026-10-07)
+The spec capped phones without a Play Integrity token at trust 0.3, but nobody in the hackathon has a token, so nothing could ever be confirmed. The team chose: **phones without a token can earn trust above 0.3, but only through reports that later get confirmed.** Setting: `RADAR_NO_TOKEN_TRUST_CAP` (default 1.0; set 0.3 to get the old behaviour back, a test covers it).
+**The chicken-and-egg problem:** trust is earned by confirmations, so a brand-new radar has no trusted phones and cannot confirm anything. For the demo only, phones whose device id starts with `RADAR_DEMO_TRUSTED_PREFIX` (the simulator's Linda phones, prefix `5111`) start at trust 0.8, standing in for phones with a history. It is empty (off) by default. The poisoning scenario's fake devices use a different prefix, so they are not trusted. **Say this honestly to judges:** in production, trust comes from Play Integrity plus history; the prefix is a demo shortcut.
+
+### What the simulator is
+A pretend telco. It makes 300 phones in Kenyan towns (30 with Linda, 90 smartphones without it, 180 basic phones), sends a fake M-Pesa message to 240 of them over 90 simulated seconds, and plays out what would happen:
+1. Each Linda phone scores the message with the **real model** (same code as the app, vendored copy). It warns its owner immediately and, if confident, sends the radar a report: sender, type, confidence, fingerprint. **Never the text.**
+2. After 3 or more trusted phones agree, the radar confirms the number and calls the telco's `/network/confirm`.
+3. The telco warns every recipient who has not been warned (including basic phones, by SMS), and warns on delivery for anything still arriving.
+4. Each phone has a "reads the message after N seconds" habit, so we can count **warned before reading**, the headline number.
+
+### Repeatable on purpose
+One seed fixes the towns, timings and reading habits, so the demo is identical every run. Each run uses a fresh scammer number and fresh device ids, so the radar's memory of a previous run cannot change the result. `SIM_SPEED=0` runs instantly for tests.
+
+### Scenarios
+- **blast**: the main demo.
+- **rotating**: the same script from three numbers in turn (shows fingerprint matching helping later numbers).
+- **poison**: 20 fake new devices accuse an innocent number; the radar must refuse. Shown on stage as the "we thought about attackers" moment.
+- **call**: not built yet (arrives with call screening).
+
+### Tests
+Unit tests use a fake radar; `tests/e2e` starts the real radar and simulator as separate processes and checks confirmation, repeatability, poisoning and rotation over HTTP (`make test-e2e`).
+
+### Honest limits
+Population behaviour (reading delays, detection latency, how many phones run Linda) is invented. The numbers show how the mechanism works, not what Safaricom's network would measure.

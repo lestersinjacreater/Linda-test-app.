@@ -85,13 +85,65 @@ def test_trust_rises_after_a_confirmation_and_falls_after_silence(radar):
         assert s.get(Device, device(9)).trust < 0.8
 
 
-def test_devices_without_integrity_token_are_capped_at_the_spec_trust():
-    radar = Radar()  # spec default: cap 0.3
+def test_untokened_devices_can_earn_trust_only_through_confirmed_reports():
+    radar = Radar()  # default: no ceiling below 1.0 for untokened devices
+    newcomer = device(9)
+    radar.report(device=newcomer, confidence=1.0)
+    from src.core.db import Device
+    with radar.app.state.sessions() as s:
+        assert s.get(Device, newcomer).trust == radar.settings.new_device_trust  # starts low
+    # Three established devices (earned trust, no tokens) back the same sender; the newcomer joins them.
+    for n in (1, 2, 3):
+        radar.report(device=device(n), confidence=1.0)
+        radar.set_trust(device(n), 0.9, token=False)
+        radar.report(device=device(n), confidence=1.0)
+    assert radar.risk(SENDER)["status"] == "confirmed"
+    with radar.app.state.sessions() as s:
+        assert s.get(Device, newcomer).trust > radar.settings.new_device_trust  # earned by a confirmed report
+        assert s.get(Device, device(1)).trust > 0.9
+
+
+def test_untokened_devices_stay_unproven_without_a_confirmation():
+    radar = Radar()
     for n in (1, 2, 3, 4, 5):
         radar.report(device=device(n), confidence=1.0)
-        radar.set_trust(device(n), 1.0, token=False)  # even if their trust were high
+        radar.report(device=device(n), confidence=1.0)
+    assert radar.risk(SENDER)["status"] != "confirmed"
+    from src.core.db import Device
+    with radar.app.state.sessions() as s:
+        assert all(s.get(Device, device(n)).trust == radar.settings.new_device_trust for n in range(1, 6))
+
+
+def test_the_literal_spec_cap_of_0_3_makes_confirmation_impossible_without_tokens():
+    radar = Radar(no_token_trust_cap=0.3)  # kept as a setting so the old behaviour can be reproduced
+    for n in (1, 2, 3, 4, 5):
+        radar.report(device=device(n), confidence=1.0)
+        radar.set_trust(device(n), 1.0, token=False)
         body = radar.report(device=device(n), confidence=1.0).json()
     assert body["status"] != "confirmed"
+
+
+def test_with_a_token_the_device_is_not_held_to_the_cap():
+    radar = Radar(no_token_trust_cap=0.3)
+    for n in (1, 2, 3):
+        radar.report(device=device(n), confidence=1.0, token="play-integrity-token")
+        radar.set_trust(device(n), 0.9, token=True)
+        body = radar.report(device=device(n), confidence=1.0, token="play-integrity-token").json()
+    assert body["status"] == "confirmed"
+
+
+def test_demo_trusted_prefix_gives_a_starting_trust_and_is_off_by_default():
+    from src.core.db import Device
+    on = Radar(demo_trusted_prefix="5111", demo_trusted_trust=0.8)
+    on.report(device="5111" + "0" * 12)
+    on.report(device="7777" + "0" * 12)
+    with on.app.state.sessions() as s:
+        assert s.get(Device, "5111" + "0" * 12).trust == 0.8
+        assert s.get(Device, "7777" + "0" * 12).trust == 0.3
+    off = Radar()
+    off.report(device="5111" + "0" * 12)
+    with off.app.state.sessions() as s:
+        assert s.get(Device, "5111" + "0" * 12).trust == 0.3
 
 
 def test_fingerprint_of_a_confirmed_campaign_makes_a_new_number_suspected_not_confirmed(radar):

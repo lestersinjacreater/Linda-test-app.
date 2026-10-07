@@ -49,5 +49,12 @@ Not used, on purpose: Firebase, analytics, ads or tracking SDKs, and any network
 | Pydantic | 2.12.5 | MIT | backend | Validates report fields and rejects unknown ones (so message text cannot slip in). |
 | pytest | 8.3.4 | MIT | backend | Tests. |
 
-Planned (not added yet): Next.js, React, Tailwind (dashboard); simulator libraries.
+Simulator (`simulator/`) uses FastAPI, Uvicorn, httpx and Pydantic at the same versions as above, plus:
+
+| Library | Version | Licence | Why |
+|---|---|---|---|
+| websockets | 14.1 | BSD-3 | Lets Uvicorn serve the `/events` WebSocket the dashboard listens to. |
+| pytest-asyncio | 0.25.0 | Apache 2.0 | Runs the simulator's async tests (test-only). |
+
+Planned (not added yet): Next.js, React, Tailwind (dashboard).
 Africa's Talking and Daraja are **stubbed** for now (no SDK, no credentials).

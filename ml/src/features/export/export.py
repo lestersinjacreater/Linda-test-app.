@@ -3,7 +3,7 @@
     python -I ml/src/features/export/export.py
 
 Writes shared/models/model-<version>.json, copies it to the Android assets and the simulator
-(both must report the same version), then rewrites the expected scores in
+(both must report the same version), copies the scoring code into the simulator, then rewrites the expected scores in
 shared/test-vectors.json from the model, so Python, Kotlin and the simulator are all checked
 against the same numbers.
 """
@@ -43,6 +43,9 @@ def main() -> None:
         copy.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(target, copy)
     print(f"exported {target.name} ({len(text) // 1024} KB) to shared/, android assets and simulator")
+    from src.features.export.vendor import write_vendor
+    write_vendor()
+    print("refreshed the vendored scoring code in simulator/src/vendor/linda")
     subprocess.run([sys.executable, "-I", str(ROOT / "ml" / "src" / "features" / "vectors" / "fill_derived.py")], check=True)
     print("refreshed expected scores in shared/test-vectors.json")
 

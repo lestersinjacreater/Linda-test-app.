@@ -79,3 +79,25 @@ def test_copies_in_android_and_simulator_have_the_same_version():
     for rel in ("android/app/src/main/assets/model.json", "simulator/models/model.json"):
         copy = json.loads((ROOT / rel).read_text(encoding="utf-8"))
         assert copy["version"] == scorer.version, rel
+
+
+def test_categories_name_the_scam_type_for_most_scam_vectors():
+    from src.features.scoring.categories import categorise
+    names = {"reversal": "sent_by_mistake"}
+    scams = [v for v in VECTORS if v["expected_label"] == "SCAM"]
+    wrong = [(v["id"], categorise(v["text"], v["sender"], scorer.verified)) for v in scams
+             if categorise(v["text"], v["sender"], scorer.verified) != names.get(v["campaign"], v["campaign"])]
+    assert len(wrong) <= 3, wrong  # the keyword rules are simple on purpose; report the misses honestly
+
+
+def test_categories_never_invent_a_scam_type_for_safe_real_mpesa():
+    from src.features.scoring.categories import categorise
+    for v in VECTORS:
+        if v["sender"] in ("MPESA", "M-PESA"):
+            assert categorise(v["text"], v["sender"], scorer.verified) != "fake_mpesa"
+
+
+def test_simulator_vendored_copy_is_up_to_date():
+    from src.features.export.vendor import TARGET, vendored_sources
+    for name, expected in vendored_sources().items():
+        assert (TARGET / name).read_text(encoding="utf-8") == expected, f"{name} drifted: run make export-model"

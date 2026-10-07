@@ -22,7 +22,15 @@ class Settings:
 
     # Trust
     new_device_trust: float = 0.3         # where every device starts
-    no_token_trust_cap: float = 0.3       # ceiling for devices that send no integrity token (spec: <= 0.3)
+    # Devices that send no integrity token START at new_device_trust and can EARN trust (up to this ceiling)
+    # only through reports that end up confirmed. Decision of 2026-10-07; the spec's literal 0.3 made
+    # confirmation impossible in the hackathon, where no phone has a Play Integrity token.
+    no_token_trust_cap: float = 1.0
+    # DEMO ONLY: devices whose id starts with this prefix start with `demo_trusted_trust`, standing in for
+    # phones that already have a good history. Empty (off) by default. Needed because trust is earned
+    # through confirmations, and a brand-new radar has none yet.
+    demo_trusted_prefix: str = ""
+    demo_trusted_trust: float = 0.8
     unproven_score_cap: float = 1.2       # all unproven devices together can add at most this much
     trust_gain: float = 0.1               # after a report ends up confirmed
     trust_loss: float = 0.05              # after a report on a sender that never got confirmed
@@ -47,4 +55,6 @@ class Settings:
             min_score=float(e.get("RADAR_MIN_SCORE", d.min_score)),
             window_s=int(e.get("RADAR_WINDOW_S", d.window_s)),
             no_token_trust_cap=float(e.get("RADAR_NO_TOKEN_TRUST_CAP", d.no_token_trust_cap)),
+            demo_trusted_prefix=e.get("RADAR_DEMO_TRUSTED_PREFIX", d.demo_trusted_prefix),
+            demo_trusted_trust=float(e.get("RADAR_DEMO_TRUSTED_TRUST", d.demo_trusted_trust)),
         )

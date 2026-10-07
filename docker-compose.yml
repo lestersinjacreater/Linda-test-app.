@@ -18,14 +18,19 @@ services:
     environment:
       DATABASE_URL: postgresql://linda:linda@postgres:5432/linda
       TELCO_URL: http://telco:8000
+      RADAR_DEMO_TRUSTED_PREFIX: ${RADAR_DEMO_TRUSTED_PREFIX:-5111}
     ports: ["8001:8001"]
     depends_on: [postgres]
 
   telco:
-    build: ./simulator
+    build:
+      context: .
+      dockerfile: simulator/Dockerfile
     env_file: [.env]
     environment:
       RADAR_URL: http://radar:8001
+      SIM_SPEED: ${SIM_SPEED:-20}
+      SIM_SEED: ${SIM_SEED:-42}
     ports: ["8000:8000"]
 
   dashboard:

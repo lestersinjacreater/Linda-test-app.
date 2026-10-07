@@ -37,7 +37,7 @@ def load_verified_senders(settings: Settings) -> set[str]:
 
 
 def effective_trust(device: Device, settings: Settings) -> float:
-    """A device that never sent an integrity token can never be trusted above the cap."""
+    """A device that never sent an integrity token is held to `no_token_trust_cap` (default 1.0: it can earn full trust)."""
     if device.has_integrity_token:
         return device.trust
     return min(device.trust, settings.no_token_trust_cap)
@@ -132,7 +132,10 @@ def submit_report(session: Session, settings: Settings, verified: set[str], repo
 
     device = session.get(Device, report.device_id)
     if device is None:
-        device = Device(device_id=report.device_id, trust=settings.new_device_trust, first_seen=now)
+        starting_trust = settings.new_device_trust
+        if settings.demo_trusted_prefix and report.device_id.startswith(settings.demo_trusted_prefix):
+            starting_trust = settings.demo_trusted_trust  # demo only, see Settings
+        device = Device(device_id=report.device_id, trust=starting_trust, first_seen=now)
         session.add(device)
     if report.integrity_token:
         device.has_integrity_token = True  # hackathon: not verified; production must check Play Integrity
