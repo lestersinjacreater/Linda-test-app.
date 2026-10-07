@@ -1,0 +1,21 @@
+name: shared contracts
+
+# Runs the shared test vectors against Python, whenever shared/, the normalizer or model code changes.
+# The Kotlin side runs the same file inside build-apk.yml. Both sides are wired up in step 2.
+on:
+  push:
+    paths: ["shared/**", "ml/**", "android/**", ".github/workflows/shared-contracts.yml"]
+  pull_request:
+    paths: ["shared/**", "ml/**", "android/**", ".github/workflows/shared-contracts.yml"]
+  workflow_dispatch:
+
+jobs:
+  vectors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r ml/requirements.txt
+      - run: python -m pytest ml/tests -v

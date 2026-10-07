@@ -1,0 +1,2 @@
+{ "sender_ids": ["MPESA", "M-PESA", "SAFARICOM", "KPLC", "EQUITY", "KCB", "COOP", "NCBA", "FULIZA"],
+  "note": "Verified sender IDs are never reported or confirmed. Extend with care and document the source." }

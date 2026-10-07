@@ -26,3 +26,10 @@ node_modules/
 .env
 .env.*
 .DS_Store
+
+# keep the template
+!.env.example
+
+# Docker / Python envs
+*.egg-info/
+.env

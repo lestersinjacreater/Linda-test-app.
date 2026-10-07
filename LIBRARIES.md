@@ -34,3 +34,9 @@ pandas, numpy and scikit-learn are added here when the training code (F3) lands.
 |---|---|---|---|
 | Gradle | 8.9 | Apache 2.0 | Build tool (via the Gradle wrapper). |
 | GitHub Actions: `checkout`, `setup-java`, `setup-python`, `setup-gradle`, `upload-artifact` | v4/v5 | MIT | CI that builds the APK and runs the tests. |
+
+## Backend, simulator, dashboard
+
+None yet. Each library is added here (name, version, licence, why) in the same commit that adds it.
+Planned: FastAPI, uvicorn, SQLAlchemy, httpx, pytest (backend/simulator); Next.js, React, Tailwind (dashboard).
+Africa's Talking and Daraja are **stubbed** for now (no SDK, no credentials).
