@@ -265,4 +265,40 @@
     <string name="report_cancel">Cancel</string>
     <string name="report_queued">Report queued. It is sent when you are online.</string>
     <string name="report_saved_waiting">Report saved. It will be sent once a radar address is set and you are online.</string>
+
+    <!-- Layer Trace (docs/design-system.md sections 6 and 7.1). Swahili unreviewed by a native speaker. -->
+    <string name="trace_layer_l">Language</string>
+    <string name="trace_layer_i">Intelligence</string>
+    <string name="trace_layer_n">Network</string>
+    <string name="trace_layer_d">Decision</string>
+    <string name="trace_layer_a">Alert</string>
+    <string name="trace_explain_l">Read the message in English, Swahili or Sheng</string>
+    <string name="trace_explain_i">Checked it against thousands of known scams</string>
+    <string name="trace_explain_n">Checked who sent it and how</string>
+    <string name="trace_explain_d">Weighed everything together</string>
+    <string name="trace_explain_a">Protected you</string>
+    <string name="trace_tap_hint">Tap a letter to see what each layer found.</string>
+    <string name="trace_state_idle">waiting</string>
+    <string name="trace_state_scanning">checking</string>
+    <string name="trace_state_passed">nothing found</string>
+    <string name="trace_state_flagged">found a risk</string>
+    <string name="trace_l_clean">Nothing disguised. Read as written.</string>
+    <string name="trace_l_disguise">Undid a disguise: \"%1$s\" → \"%2$s\"</string>
+    <string name="trace_i_category">Looks like a known scam: %1$s</string>
+    <string name="trace_i_words">Scam wording: %1$s</string>
+    <string name="trace_i_score">Linda is %1$s%% sure</string>
+    <string name="trace_i_none">Nothing like the scams Linda knows.</string>
+    <string name="trace_n_verified">Verified sender (M-Pesa, bank, KPLC or KRA)</string>
+    <string name="trace_n_fake_mpesa">Pretends to be M-Pesa</string>
+    <string name="trace_n_personal">Came from an ordinary phone number</string>
+    <string name="trace_n_unknown">Not in your contacts, and a first message</string>
+    <string name="trace_n_link">Contains a link</string>
+    <string name="trace_n_blocklist">This number was confirmed as a scammer by other Linda phones</string>
+    <string name="trace_n_pasted">Pasted text: there is no sender to check</string>
+    <string name="trace_n_none">Nothing unusual about the sender</string>
+    <string name="trace_d_verdict">Verdict: %1$s</string>
+    <string name="trace_a_warned">Warning shown</string>
+    <string name="trace_a_reported">Number reported</string>
+    <string name="trace_a_guardian">Guardian alerted</string>
+    <string name="trace_a_nothing">No warning needed</string>
 </resources>

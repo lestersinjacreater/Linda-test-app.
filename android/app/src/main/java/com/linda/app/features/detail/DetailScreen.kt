@@ -35,6 +35,10 @@ import com.linda.app.core.ui.components.LevelChip
 import com.linda.app.core.util.Prefs
 import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.detection.ReasonsJson
+import com.linda.app.features.guardian.GuardianPolicy
+import com.linda.app.features.trace.LayerTraceBuilder
+import com.linda.app.features.trace.LayerTraceView
+import com.linda.app.features.trace.TraceInput
 import com.linda.app.core.ui.components.categoryLabel
 import com.linda.app.features.reporting.CannotReport
 import com.linda.app.features.reporting.ManualReport
@@ -60,6 +64,21 @@ fun DetailScreen(detectionId: Long, onOpenRecovery: (Long) -> Unit, onBack: () -
         return
     }
     val reasons = ReasonsJson.decode(d.reasonsJson)
+
+    // The Layer Trace: what each of the five layers found, from what the phone saved about this message.
+    val trace by produceState<List<com.linda.app.features.trace.LayerResult>?>(null, d.id, d.reportedAt) {
+        val onBlocklist = d.senderMsisdn?.let { app.database.blockedNumberDao().find(it) } != null
+        val lastGuardianAlert = d.sender?.takeIf { it.isNotBlank() }?.let { app.database.guardianAlertDao().lastSentAt(GuardianPolicy.senderKey(it)) }
+        val guardianAlerted = lastGuardianAlert != null && lastGuardianAlert >= d.receivedAt && lastGuardianAlert - d.receivedAt < 10 * 60 * 1000L
+        value = LayerTraceBuilder.build(
+            TraceInput(
+                level = d.level, score = d.score, category = d.category,
+                reasonCodes = reasons.map { it.code }.toSet(), scamWords = LayerTraceBuilder.scamWords(reasons),
+                body = d.body, senderVerified = (d.sender?.uppercase() ?: "") in app.detector.verifiedSenders,
+                onBlocklist = onBlocklist, reported = d.reportedAt != null, guardianAlerted = guardianAlerted, isPasted = d.sender == null,
+            ),
+        )
+    }
 
     // The Report button: what may be reported, and exactly what would be sent (never the message text).
     val verified = app.detector.verifiedSenders
@@ -89,6 +108,8 @@ fun DetailScreen(detectionId: Long, onOpenRecovery: (Long) -> Unit, onBack: () -
         ) {
             Text(d.body, modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.bodyLarge)
         }
+
+        trace?.let { LayerTraceView(it, d.level) }
 
         Text(stringResource(R.string.detail_why), style = MaterialTheme.typography.titleMedium)
         reasons.forEach { reason ->

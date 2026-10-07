@@ -259,4 +259,40 @@
     <string name="report_cancel">Ghairi</string>
     <string name="report_queued">Ripoti imewekwa kwenye foleni. Itatumwa ukiwa mtandaoni.</string>
     <string name="report_saved_waiting">Ripoti imehifadhiwa. Itatumwa mara anwani ya rada ikiwekwa na ukiwa mtandaoni.</string>
+
+    <!-- Layer Trace (docs/design-system.md sections 6 and 7.1). Swahili unreviewed by a native speaker. -->
+    <string name="trace_layer_l">Lugha</string>
+    <string name="trace_layer_i">Akili</string>
+    <string name="trace_layer_n">Mtandao</string>
+    <string name="trace_layer_d">Uamuzi</string>
+    <string name="trace_layer_a">Tahadhari</string>
+    <string name="trace_explain_l">Imesoma ujumbe kwa Kiingereza, Kiswahili au Sheng</string>
+    <string name="trace_explain_i">Imeulinganisha na maelfu ya ulaghai unaojulikana</string>
+    <string name="trace_explain_n">Imechunguza aliyeutuma na jinsi ulivyotumwa</string>
+    <string name="trace_explain_d">Imepima kila kitu pamoja</string>
+    <string name="trace_explain_a">Imekulinda</string>
+    <string name="trace_tap_hint">Gusa herufi uone kila safu ilipata nini.</string>
+    <string name="trace_state_idle">inasubiri</string>
+    <string name="trace_state_scanning">inakagua</string>
+    <string name="trace_state_passed">hakuna kilichopatikana</string>
+    <string name="trace_state_flagged">imepata hatari</string>
+    <string name="trace_l_clean">Hakuna kilichofichwa. Imesomwa kama ilivyoandikwa.</string>
+    <string name="trace_l_disguise">Imefumbua kificho: \"%1$s\" → \"%2$s\"</string>
+    <string name="trace_i_category">Inafanana na ulaghai unaojulikana: %1$s</string>
+    <string name="trace_i_words">Maneno ya ulaghai: %1$s</string>
+    <string name="trace_i_score">Linda ina uhakika wa %1$s%%</string>
+    <string name="trace_i_none">Hakuna kinachofanana na ulaghai anaoujua Linda.</string>
+    <string name="trace_n_verified">Mtumaji aliyethibitishwa (M-Pesa, benki, KPLC au KRA)</string>
+    <string name="trace_n_fake_mpesa">Unajifanya kuwa M-Pesa</string>
+    <string name="trace_n_personal">Umetoka kwa nambari ya kawaida ya simu</string>
+    <string name="trace_n_unknown">Hayuko kwenye anwani zako, na huu ni ujumbe wa kwanza</string>
+    <string name="trace_n_link">Una kiungo</string>
+    <string name="trace_n_blocklist">Nambari hii imethibitishwa kuwa ya tapeli na simu zingine za Linda</string>
+    <string name="trace_n_pasted">Maandishi yaliyobandikwa: hakuna mtumaji wa kukagua</string>
+    <string name="trace_n_none">Hakuna jambo lisilo la kawaida kuhusu mtumaji</string>
+    <string name="trace_d_verdict">Uamuzi: %1$s</string>
+    <string name="trace_a_warned">Onyo limeonyeshwa</string>
+    <string name="trace_a_reported">Nambari imeripotiwa</string>
+    <string name="trace_a_guardian">Mlezi amearifiwa</string>
+    <string name="trace_a_nothing">Hakuna onyo linalohitajika</string>
 </resources>

@@ -366,3 +366,23 @@ Poppins and Inter are bundled inside the app (both free under the SIL Open Font 
 
 ### Not done yet (later steps)
 The Layer Trace and scan animation (step 2), the home ring and verdict card (step 3), restyling the other screens (step 4), and the demo overlay (step 5). Until then the old screens look green and clean but keep their old layouts. Not yet seen on a real phone.
+
+## UI redesign, step 2: the Layer Trace and the scan sweep (`android/.../features/trace`)
+
+### What it is
+Linda checks every message in five steps, and the name spells them: **L**anguage, **I**ntelligence, **N**etwork, **D**ecision, **A**lert. The Layer Trace is a row of five boxes, one per letter. When a message has been analysed they light up from left to right in under half a second (480 ms), so a judge can *see* the steps happen. A layer that found something risky takes the verdict's colour (amber or red) and gives a small shake; a layer that found nothing stays green with a tick. Tap a letter to read what that layer found. With the phone's "remove animations" setting on, the boxes just appear finished.
+
+### It only tells the truth
+Each line comes from something Linda really worked out for that message, never a made-up figure:
+- **L**: words the scammer disguised and how Linda read them (for example "M-P3SA" became "mpesa"). Amounts like "Ksh3,140" are not treated as disguises.
+- **I**: the type of scam, the scam wording the on-device model leaned on, and how sure it was.
+- **N**: who sent it: an ordinary phone number, not in your contacts, first message, a link, pretending to be M-Pesa, or a number other Linda phones already confirmed. A verified sender (M-Pesa, bank, KPLC, KRA) is shown as verified and never flagged.
+- **D**: the verdict.
+- **A**: what Linda did: warned you, reported the number, alerted your guardian.
+Pasted text has no sender, and the trace says so instead of guessing.
+
+### Where it shows
+On the warning screen (when you open a saved warning) and in the "Is this a scam?" checker, where the phone also buzzes: nothing for a safe message, one tick for Caution, two pulses for Scam. The buzz uses the phone's own touch-feedback setting, so it needs no extra permission and stays quiet if the person turned that off.
+
+### How it is tested
+The logic that decides which layer flags what (and the 480 ms timing, and the buzz pattern) is plain Kotlin with 17 unit tests, including: a verified sender is never flagged, amounts are not "disguises", and the sweep always finishes under 600 ms. The drawing itself is not yet seen on a real phone.

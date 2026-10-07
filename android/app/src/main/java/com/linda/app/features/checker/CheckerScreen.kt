@@ -28,6 +28,10 @@ import com.linda.app.core.ui.components.LevelChip
 import com.linda.app.core.util.Prefs
 import com.linda.app.features.detection.ReasonsJson
 import com.linda.app.features.detection.RiskLevel
+import com.linda.app.features.trace.LayerTraceBuilder
+import com.linda.app.features.trace.LayerTraceView
+import com.linda.app.features.trace.TraceInput
+import com.linda.app.features.trace.rememberVerdictHaptic
 import com.linda.app.features.sms.MessageProcessor
 import com.linda.app.features.sms.ProcessResult
 import kotlinx.coroutines.launch
@@ -80,6 +84,17 @@ fun CheckerScreen(sharedText: String?) {
 
         result?.let { r ->
             val v = r.verdict
+            // The five layers, lit up one by one; the phone buzzes once or twice for a Caution or Scam.
+            val trace = remember(r) {
+                LayerTraceBuilder.build(
+                    TraceInput(
+                        level = v.level.name, score = v.score, category = v.category,
+                        reasonCodes = v.reasons.map { it.code }.toSet(), scamWords = LayerTraceBuilder.scamWords(v.reasons),
+                        body = text, senderVerified = false, onBlocklist = false, reported = false, guardianAlerted = false, isPasted = true,
+                    ),
+                )
+            }
+            LayerTraceView(trace, v.level.name, onLanded = rememberVerdictHaptic(v.level.name))
             if (v.level == RiskLevel.SAFE) {
                 Text(stringResource(R.string.checker_safe), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
                 Text(stringResource(R.string.checker_safe_note), color = MaterialTheme.colorScheme.onSurfaceVariant)
