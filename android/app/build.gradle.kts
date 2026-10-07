@@ -48,6 +48,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true // the version name is shown in Settings
     }
 }
 

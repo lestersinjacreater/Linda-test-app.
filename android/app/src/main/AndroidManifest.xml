@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- No permissions yet. Each one is added by the feature that needs it
-         (RECEIVE_SMS for F5, READ_SMS for F8, SEND_SMS for F11, ...). -->
+    <!-- Each permission is added by the feature that needs it. -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />          <!-- score new messages -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />        <!-- is the sender in my contacts? Never uploaded -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />   <!-- show warnings (Android 13+) -->
 
     <application
         android:name=".LindaApp"
@@ -16,11 +18,28 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.Linda">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Share-to-Linda: text shared from WhatsApp or any app opens the checker (F7). -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
+
+        <!-- Wakes for every incoming SMS, even with the app closed. Only the system may send it this broadcast. -->
+        <receiver
+            android:name=".features.sms.SmsReceiver"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

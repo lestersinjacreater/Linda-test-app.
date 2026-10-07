@@ -28,4 +28,50 @@
     <string name="settings_title">Settings</string>
     <string name="settings_language_label">Language</string>
     <string name="settings_language_value">Follows your phone language (English or Kiswahili).</string>
+
+    <string name="alert_scam_title">🚨 Linda warning: this is likely a scam</string>
+    <string name="alert_caution_title">⚠️ Linda: be careful with this message</string>
+    <string name="channel_scam">Scam warnings</string>
+    <string name="channel_caution">Caution notices</string>
+
+    <string name="level_scam">SCAM</string>
+    <string name="level_caution">CAUTION</string>
+    <string name="level_safe">SAFE</string>
+    <string name="filter_all">All</string>
+    <string name="history_search">Search messages or senders</string>
+    <string name="sender_pasted">Pasted text</string>
+
+    <string name="detail_not_found">This message is no longer in the history.</string>
+    <string name="detail_headline_scam">Do not reply and do not send money</string>
+    <string name="detail_headline_caution">Be careful with this message</string>
+    <string name="detail_why">Why Linda warned you</string>
+    <string name="detail_marked_safe">You marked this sender as safe. Linda will stop checking their messages.</string>
+    <string name="action_mark_safe">Mark as safe</string>
+    <string name="action_back">Back</string>
+
+    <string name="checker_help">Paste a message, or share one from WhatsApp or any app to Linda. It never leaves your phone.</string>
+    <string name="checker_hint">Paste the message here</string>
+    <string name="checker_button">Check this message</string>
+    <string name="checker_safe">Nothing suspicious found</string>
+    <string name="checker_safe_note">Linda cannot be sure. If it asks for money or your PIN, do not trust it.</string>
+
+    <string name="settings_language_system">Follow my phone language</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_swahili">Kiswahili</string>
+    <string name="settings_version">Linda version %1$s</string>
+
+    <string name="onboarding_title">Welcome to Linda</string>
+    <string name="onboarding_intro">Linda reads your incoming text messages on your phone and warns you before a scammer can trick you. Your messages are never sent anywhere.</string>
+    <string name="onboarding_permissions_title">1. Allow Linda to help</string>
+    <string name="onboarding_permissions_body">Linda needs to see new text messages, show you warnings, and check whether a sender is in your contacts.</string>
+    <string name="onboarding_allow">Allow permissions</string>
+    <string name="onboarding_battery_title">2. Keep Linda awake</string>
+    <string name="onboarding_open_battery">Open battery settings</string>
+    <string name="onboarding_done">I am ready</string>
+    <string name="battery_generic">Open Settings, find Linda in Battery, and choose "Unrestricted" or "Don\'t optimise". Without this your phone may stop Linda when the screen is off.</string>
+    <string name="battery_tecno">Tecno: Settings > Apps > Linda > Battery > "No restrictions". Then open Phone Master or Phone Manager > Autostart and switch Linda on. Also lock Linda in the recent-apps list.</string>
+    <string name="battery_infinix">Infinix: Settings > Apps > Linda > Battery > "No restrictions". Then open XOS Phone Master > Autostart and switch Linda on. Also lock Linda in the recent-apps list.</string>
+    <string name="battery_itel">Itel: Settings > Battery > Battery optimisation > Linda > "Don\'t optimise". Then open Phone Manager > Autostart and switch Linda on.</string>
+    <string name="battery_samsung">Samsung: Settings > Apps > Linda > Battery > "Unrestricted". Then Settings > Battery > Background usage limits > Never sleeping apps > add Linda.</string>
+    <string name="battery_xiaomi">Xiaomi, Redmi or Poco: Settings > Apps > Manage apps > Linda > Autostart on, and Battery saver > "No restrictions". Also lock Linda in the recent-apps list.</string>
 </resources>

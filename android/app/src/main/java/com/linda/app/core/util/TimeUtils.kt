@@ -13,3 +13,7 @@ fun startOfMonthMillis(now: Long = System.currentTimeMillis()): Long {
     calendar.set(Calendar.MILLISECOND, 0)
     return calendar.timeInMillis
 }
+
+/** For example "12 Oct, 4:12 PM". */
+fun formatDateTime(millis: Long): String =
+    java.text.SimpleDateFormat("d MMM, h:mm a", java.util.Locale.getDefault()).format(java.util.Date(millis))

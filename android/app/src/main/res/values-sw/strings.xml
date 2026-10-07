@@ -22,4 +22,50 @@
     <string name="settings_title">Mipangilio</string>
     <string name="settings_language_label">Lugha</string>
     <string name="settings_language_value">Inafuata lugha ya simu yako (Kiingereza au Kiswahili).</string>
+
+    <string name="alert_scam_title">🚨 Onyo la Linda: huenda huu ni ulaghai</string>
+    <string name="alert_caution_title">⚠️ Linda: kuwa mwangalifu na ujumbe huu</string>
+    <string name="channel_scam">Maonyo ya ulaghai</string>
+    <string name="channel_caution">Tahadhari</string>
+
+    <string name="level_scam">ULAGHAI</string>
+    <string name="level_caution">TAHADHARI</string>
+    <string name="level_safe">SALAMA</string>
+    <string name="filter_all">Zote</string>
+    <string name="history_search">Tafuta ujumbe au watumaji</string>
+    <string name="sender_pasted">Maandishi yaliyobandikwa</string>
+
+    <string name="detail_not_found">Ujumbe huu haupo tena kwenye historia.</string>
+    <string name="detail_headline_scam">Usijibu na usitume pesa</string>
+    <string name="detail_headline_caution">Kuwa mwangalifu na ujumbe huu</string>
+    <string name="detail_why">Kwa nini Linda imekuonya</string>
+    <string name="detail_marked_safe">Umemweka mtumaji huyu kuwa salama. Linda itaacha kukagua jumbe zake.</string>
+    <string name="action_mark_safe">Weka kuwa salama</string>
+    <string name="action_back">Rudi</string>
+
+    <string name="checker_help">Bandika ujumbe, au tuma ujumbe kutoka WhatsApp au programu yoyote kwenda Linda. Haiondoki kwenye simu yako.</string>
+    <string name="checker_hint">Bandika ujumbe hapa</string>
+    <string name="checker_button">Kagua ujumbe huu</string>
+    <string name="checker_safe">Hakuna kinachotia shaka</string>
+    <string name="checker_safe_note">Linda haiwezi kuwa na uhakika kamili. Ukiombwa pesa au PIN yako, usiamini.</string>
+
+    <string name="settings_language_system">Fuata lugha ya simu yangu</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_swahili">Kiswahili</string>
+    <string name="settings_version">Toleo la Linda %1$s</string>
+
+    <string name="onboarding_title">Karibu Linda</string>
+    <string name="onboarding_intro">Linda husoma jumbe zinazoingia kwenye simu yako na kukuonya kabla matapeli hawajakudanganya. Jumbe zako hazitumwi popote.</string>
+    <string name="onboarding_permissions_title">1. Ruhusu Linda ikusaidie</string>
+    <string name="onboarding_permissions_body">Linda inahitaji kuona jumbe mpya, kukuonyesha maonyo, na kuangalia kama mtumaji yuko kwenye anwani zako.</string>
+    <string name="onboarding_allow">Ruhusu</string>
+    <string name="onboarding_battery_title">2. Weka Linda ikiwa macho</string>
+    <string name="onboarding_open_battery">Fungua mipangilio ya betri</string>
+    <string name="onboarding_done">Niko tayari</string>
+    <string name="battery_generic">Fungua Mipangilio, tafuta Linda kwenye Betri, kisha chagua "Bila vikwazo" au "Usiboreshe". Bila hili simu yako inaweza kuzima Linda skrini ikiwa imezimwa.</string>
+    <string name="battery_tecno">Tecno: Mipangilio > Programu > Linda > Betri > "Bila vikwazo". Kisha fungua Phone Master au Phone Manager > Autostart na uwashe Linda. Pia funga Linda kwenye orodha ya programu za hivi karibuni.</string>
+    <string name="battery_infinix">Infinix: Mipangilio > Programu > Linda > Betri > "Bila vikwazo". Kisha fungua XOS Phone Master > Autostart na uwashe Linda. Pia funga Linda kwenye orodha ya programu za hivi karibuni.</string>
+    <string name="battery_itel">Itel: Mipangilio > Betri > Uboreshaji wa betri > Linda > "Usiboreshe". Kisha fungua Phone Manager > Autostart na uwashe Linda.</string>
+    <string name="battery_samsung">Samsung: Mipangilio > Programu > Linda > Betri > "Bila kizuizi". Kisha Mipangilio > Betri > Vikomo vya matumizi ya mandharinyuma > Programu zisizolala kamwe > ongeza Linda.</string>
+    <string name="battery_xiaomi">Xiaomi, Redmi au Poco: Mipangilio > Programu > Dhibiti programu > Linda > washa Autostart, na Kiokoa betri > "Bila vikwazo". Pia funga Linda kwenye orodha ya programu za hivi karibuni.</string>
 </resources>

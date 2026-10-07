@@ -5,9 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [DetectionEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [DetectionEntity::class, AllowedSenderEntity::class, SeenSenderEntity::class],
+    version = 2,
+    exportSchema = false,
+)
 abstract class LindaDatabase : RoomDatabase() {
     abstract fun detectionDao(): DetectionDao
+    abstract fun senderDao(): SenderDao
 
     companion object {
         fun create(context: Context): LindaDatabase =

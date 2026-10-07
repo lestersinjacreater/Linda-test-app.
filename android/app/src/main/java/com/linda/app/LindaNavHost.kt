@@ -9,16 +9,20 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.navArgument
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.linda.app.features.checker.CheckerScreen
+import com.linda.app.features.detail.DetailScreen
 import com.linda.app.features.history.HistoryScreen
 import com.linda.app.features.home.HomeScreen
 import com.linda.app.features.settings.SettingsScreen
@@ -35,9 +39,19 @@ private enum class Destination(
     Settings("settings", R.string.nav_settings, R.string.nav_glyph_settings),
 }
 
+/**
+ * [openDetectionId]: set when the user tapped a warning notification, to jump to that message.
+ * [sharedText]: set when text was shared into Linda from another app, to check it straight away.
+ */
 @Composable
-fun LindaNavHost() {
+fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
     val navController = rememberNavController()
+    LaunchedEffect(openDetectionId) {
+        if (openDetectionId != null && openDetectionId >= 0) navController.navigate("detail/$openDetectionId")
+    }
+    LaunchedEffect(sharedText) {
+        if (!sharedText.isNullOrBlank()) navController.navigate(Destination.Checker.route)
+    }
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
@@ -74,9 +88,12 @@ fun LindaNavHost() {
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(Destination.Home.route) { HomeScreen() }
-            composable(Destination.Checker.route) { CheckerScreen() }
-            composable(Destination.History.route) { HistoryScreen() }
+            composable(Destination.Checker.route) { CheckerScreen(sharedText) }
+            composable(Destination.History.route) { HistoryScreen(onOpen = { navController.navigate("detail/$it") }) }
             composable(Destination.Settings.route) { SettingsScreen() }
+            composable("detail/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
+                DetailScreen(detectionId = entry.arguments?.getLong("id") ?: -1L, onBack = { navController.popBackStack() })
+            }
         }
     }
 }
