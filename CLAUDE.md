@@ -187,6 +187,10 @@ recorded backup demo video, three full rehearsals. No new features after the fre
 8. Never commit secrets, raw data, or real people's messages.
 9. If something is ambiguous, **ask**; do not guess on contracts, privacy or rules.
 10. After each feature, update `docs/EXPLAINED.md` (what it does, how, why this way).
+11. For UI, motion and typography work, `docs/design-system.md` is the source of truth. The third-party `apple-design` skill
+    (`.claude/skills/apple-design/`, MIT, guidance only, written for the web) may inform how things move (springs, interruptible
+    animation, reduced motion, tracking and leading), translated to Compose for the Android app. Where it conflicts with
+    `docs/design-system.md`, the design system wins. Never copy code from it.
 
 ## 10. Demo flow the system must support (see docs/demo-script.md)
 
