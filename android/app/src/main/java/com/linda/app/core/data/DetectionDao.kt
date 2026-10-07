@@ -17,11 +17,15 @@ interface DetectionDao {
     @Query("SELECT * FROM detections WHERE id = :id")
     suspend fun getById(id: Long): DetectionEntity?
 
+    /** The id of an already saved message from this sender at this time, so scanning the inbox twice adds nothing twice. */
+    @Query("SELECT id FROM detections WHERE receivedAt = :receivedAt AND sender IS :sender LIMIT 1")
+    suspend fun findId(receivedAt: Long, sender: String?): Long?
+
     @Query("UPDATE detections SET markedSafe = 1 WHERE id = :id")
     suspend fun markSafe(id: Long)
 
-    /** Scams Linda caught since [since], not counting ones the user marked as safe. */
-    @Query("SELECT COUNT(*) FROM detections WHERE level = 'SCAM' AND markedSafe = 0 AND receivedAt >= :since")
+    /** Scams Linda caught LIVE since [since] (not ones found later by "Scan my inbox"), not counting ones marked safe. */
+    @Query("SELECT COUNT(*) FROM detections WHERE level = 'SCAM' AND markedSafe = 0 AND source != 'inbox' AND receivedAt >= :since")
     fun countScamsSince(since: Long): Flow<Int>
 
     /** Was there a scam message from this phone number since [since]? Used by call warnings. */
@@ -33,6 +37,9 @@ interface DetectionDao {
 interface SenderDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun allow(sender: AllowedSenderEntity)
+
+    @Query("SELECT sender FROM allowed_senders")
+    suspend fun allAllowed(): List<String>
 
     @Query("SELECT COUNT(*) > 0 FROM allowed_senders WHERE sender = :sender")
     suspend fun isAllowed(sender: String): Boolean

@@ -74,8 +74,14 @@ class ModelScorer(modelJson: String) {
         return weights.mapValues { it.value / norm }
     }
 
-    /** The raw score before squashing, plus the parts, so the detector can explain it. */
-    data class Detail(val probability: Double, val ngramContributions: List<Pair<String, Double>>, val meta: Map<String, Double>)
+    /**
+     * The score, plus the parts that explain it. The sorted list of n-grams is only built if someone asks for it
+     * (only warnings need it), because sorting thousands of numbers for every harmless message would waste time
+     * when scanning a whole inbox on a cheap phone.
+     */
+    class Detail(val probability: Double, private val contributions: List<Pair<String, Double>>, val meta: Map<String, Double>) {
+        val ngramContributions: List<Pair<String, Double>> by lazy { contributions.sortedByDescending { it.second } }
+    }
 
     fun explain(text: String, sender: String?): Detail {
         val normalized = Normalizer.normalize(text)
@@ -85,7 +91,7 @@ class ModelScorer(modelJson: String) {
         var z = intercept + contributions.sumOf { it.second }
         for ((name, value) in meta) z += metaCoef.getValue(name) * value
         val p = if (z >= 0) 1.0 / (1.0 + exp(-z)) else exp(z) / (1.0 + exp(z))
-        return Detail(p, contributions.sortedByDescending { it.second }, meta)
+        return Detail(p, contributions, meta)
     }
 
     fun score(text: String, sender: String?): Double = explain(text, sender).probability

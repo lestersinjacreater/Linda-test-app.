@@ -292,3 +292,21 @@ The SMS receiver is only allowed a few seconds, so it waits for the voice (at mo
 
 ### Honest limits
 Not tested on a real phone yet (no Android device or emulator here). Voice quality depends entirely on the voices installed on the phone.
+
+## Scan my inbox (`features/inbox`)
+
+### What it does
+Reads the last **90 days** of text messages **on the phone**, checks each one with the same detector as a live SMS, and shows "Linda found N suspicious messages" grouped by sender, worst first (any SCAM before caution-only, then most messages, then newest). Tapping a sender opens the newest message with the reasons. A progress bar shows "Checked 1,240 of 2,000", with a Stop button. It is the demo's step 4: run it on a teammate's real phone.
+
+### Decisions worth explaining
+- **Permission only when needed.** `READ_SMS` is asked for only when the person taps Scan, with a plain explanation first. Nothing is read otherwise.
+- **Nothing leaves the phone, and no alarms for old mail.** A 90-day backlog must not trigger 200 notifications, voice warnings, guardian SMS or radar reports. The scan makes none of them. Flagged messages are only saved in History on the phone.
+- **No double counting.** Scanning twice does not add duplicates (a saved message is found again by its sender and time). Inbox finds are marked `source = inbox` and are **not** counted in Home's "scams caught this month", which means scams Linda stopped live.
+- **One contact lookup per sender, not per message.** Asking Android "is this number in my contacts?" is the slow part on a cheap phone, so the answer is remembered per sender.
+- **The "first message from this sender" signal is not used.** A 90-day window cannot tell what was really the first message, so Linda does not guess.
+- **Senders the person marked safe are skipped**, and verified senders (M-Pesa, banks, KPLC, KRA) are never flagged.
+- **Cancel keeps what was found.** Stopping early still shows and saves the results so far and says "Stopped early".
+
+### Speed (the spec asks for 2,000 messages in under 20 seconds on a low-end phone)
+- Measured on a development machine, **2,000 messages are scored in about 0.5 seconds** (a test set that is half scams, which is far more scams than a real inbox). A cheap phone is many times slower, so **this is NOT yet proof of the 20-second target.** The result screen shows "Checked N messages in X seconds", so the first teammate to run it on a Tecno/Infinix/Itel phone gets the real number; scale it to 2,000.
+- To leave room, harmless messages (the vast majority) now skip extra work: no sorting of explanation data and no fingerprint unless the message is flagged. A test fails if scoring 2,000 messages ever takes more than 15 seconds on the build machine.

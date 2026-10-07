@@ -37,11 +37,11 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
             score >= scorer.warnThreshold -> RiskLevel.CAUTION
             else -> RiskLevel.SAFE
         }
-        val normalized = Normalizer.normalize(input.body)
-        val fingerprint = SimHash.simhash64(normalized)
         if (level == RiskLevel.SAFE) {
-            return Verdict(level, score.toFloat(), emptyList(), scorer.version, "none", fingerprint)
+            // Harmless messages are the vast majority, so do no extra work for them: no fingerprint (only warnings are reported).
+            return Verdict(level, score.toFloat(), emptyList(), scorer.version, "none", "")
         }
+        val fingerprint = SimHash.simhash64(Normalizer.normalize(input.body))
 
         val category = Categories.categorise(input.body, input.sender, scorer.verifiedSenders)
         val reasons = mutableListOf(ReasonCatalogue.forCategory(category))

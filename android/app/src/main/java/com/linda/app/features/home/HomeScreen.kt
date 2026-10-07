@@ -31,7 +31,7 @@ import com.linda.app.R
 
 /** Home: a big protection status instead of a list (CLAUDE.md section 10). */
 @Composable
-fun HomeScreen(onOpenRecovery: () -> Unit, viewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(onOpenInbox: () -> Unit, onOpenRecovery: () -> Unit, viewModel: HomeViewModel = viewModel()) {
     val caught by viewModel.scamsCaughtThisMonth.collectAsStateWithLifecycle()
 
     Column(
@@ -75,6 +75,25 @@ fun HomeScreen(onOpenRecovery: () -> Unit, viewModel: HomeViewModel = viewModel(
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
+                )
+            }
+        }
+        Spacer(Modifier.height(16.dp))
+        Card(
+            modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenInbox),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
+                Text(
+                    text = stringResource(R.string.home_inbox_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = stringResource(R.string.home_inbox_body),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }

@@ -213,4 +213,34 @@
     <string name="voice_test">Jaribu sauti</string>
     <string name="voice_test_ok">Imesemwa. Kama hukusikia kitu, ongeza sauti ya media.</string>
     <string name="voice_test_failed">Haikuweza kusema. Simu hii huenda haina sauti ya text-to-speech.</string>
+
+    <string name="inbox_title">Kagua kikasha changu</string>
+    <string name="inbox_intro">Linda inakagua jumbe za siku 90 zilizopita na kukuambia zipi zinaonekana kuwa ulaghai. Inachukua sekunde chache.</string>
+    <string name="inbox_privacy">Kila kitu kinafanyika kwenye simu yako. Jumbe zako hazitumwi popote. Jumbe zenye shaka huhifadhiwa kwenye Historia kwenye simu hii, na Linda haitumi maonyo wala ripoti kwa jumbe za zamani.</string>
+    <string name="inbox_scan_button">Kagua siku 90 zilizopita</string>
+    <string name="inbox_permission_denied">Linda inahitaji ruhusa ya kusoma jumbe zako kwa hili. Unaweza kuiruhusu na ujaribu tena.</string>
+    <string name="inbox_failed">Ukaguzi haukuweza kukamilika. Hakikisha Linda inaruhusiwa kusoma jumbe zako, kisha ujaribu tena.</string>
+    <string name="inbox_scanning">Inakagua jumbe zako…</string>
+    <string name="inbox_progress">Imekagua jumbe %1$d kati ya %2$d</string>
+    <string name="inbox_cancel">Simamisha</string>
+    <string name="inbox_none">Linda haikupata jumbe zenye shaka katika siku 90 zilizopita.</string>
+    <string name="inbox_summary">Imekagua jumbe %1$d kwa sekunde %2$s.</string>
+    <string name="inbox_stopped">Imesimamishwa mapema.</string>
+    <string name="inbox_unknown_sender">Mtumaji asiyejulikana</string>
+    <string name="inbox_saved_note">Hizi zimehifadhiwa kwenye Historia. Gusa mtumaji kuona ujumbe mpya zaidi na kwa nini Linda iliuweka alama.</string>
+    <string name="inbox_again">Kagua tena</string>
+    <plurals name="inbox_found">
+        <item quantity="one">Linda imepata ujumbe %d wenye shaka</item>
+        <item quantity="other">Linda imepata jumbe %d zenye shaka</item>
+    </plurals>
+    <plurals name="inbox_found_so_far">
+        <item quantity="one">Ujumbe %d wenye shaka hadi sasa</item>
+        <item quantity="other">Jumbe %d zenye shaka hadi sasa</item>
+    </plurals>
+    <plurals name="inbox_group_count">
+        <item quantity="one">Ujumbe %d</item>
+        <item quantity="other">Jumbe %d</item>
+    </plurals>
+    <string name="home_inbox_title">Kagua kikasha changu</string>
+    <string name="home_inbox_body">Tafuta ulaghai ambao tayari umejificha kwenye jumbe zako za siku 90 zilizopita.</string>
 </resources>

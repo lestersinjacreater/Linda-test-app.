@@ -219,4 +219,34 @@
     <string name="voice_test">Test the voice</string>
     <string name="voice_test_ok">Spoken. If you heard nothing, turn up the media volume.</string>
     <string name="voice_test_failed">Could not speak. This phone may have no text-to-speech voice installed.</string>
+
+    <string name="inbox_title">Scan my inbox</string>
+    <string name="inbox_intro">Linda checks the text messages from the last 90 days and tells you which ones look like scams. It takes a few seconds.</string>
+    <string name="inbox_privacy">Everything happens on your phone. Your messages are not sent anywhere. Messages that look suspicious are saved in History on this phone, and Linda sends no alerts or reports for old messages.</string>
+    <string name="inbox_scan_button">Scan my last 90 days</string>
+    <string name="inbox_permission_denied">Linda needs permission to read your text messages for this. You can allow it and try again.</string>
+    <string name="inbox_failed">The scan could not finish. Check that Linda may read your text messages, then try again.</string>
+    <string name="inbox_scanning">Checking your messages…</string>
+    <string name="inbox_progress">Checked %1$d of %2$d messages</string>
+    <string name="inbox_cancel">Stop</string>
+    <string name="inbox_none">Linda found no suspicious messages in the last 90 days.</string>
+    <string name="inbox_summary">Checked %1$d messages in %2$s seconds.</string>
+    <string name="inbox_stopped">Stopped early.</string>
+    <string name="inbox_unknown_sender">Unknown sender</string>
+    <string name="inbox_saved_note">These are saved in History. Tap a sender to see the newest message and why Linda flagged it.</string>
+    <string name="inbox_again">Scan again</string>
+    <plurals name="inbox_found">
+        <item quantity="one">Linda found %d suspicious message</item>
+        <item quantity="other">Linda found %d suspicious messages</item>
+    </plurals>
+    <plurals name="inbox_found_so_far">
+        <item quantity="one">%d suspicious message so far</item>
+        <item quantity="other">%d suspicious messages so far</item>
+    </plurals>
+    <plurals name="inbox_group_count">
+        <item quantity="one">%d message</item>
+        <item quantity="other">%d messages</item>
+    </plurals>
+    <string name="home_inbox_title">Scan my inbox</string>
+    <string name="home_inbox_body">Find scams already hiding in your last 90 days of messages.</string>
 </resources>

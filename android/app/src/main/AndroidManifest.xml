@@ -3,6 +3,7 @@
 
     <!-- Each permission is added by the feature that needs it. -->
     <uses-permission android:name="android.permission.RECEIVE_SMS" />          <!-- score new messages -->
+    <uses-permission android:name="android.permission.READ_SMS" />              <!-- "Scan my inbox" only: read old messages ON the phone, asked when the person taps Scan -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />        <!-- is the sender in my contacts? Never uploaded -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />   <!-- show warnings (Android 13+) -->
     <uses-permission android:name="android.permission.SEND_SMS" />             <!-- Family Guardian only: the short alert to the guardian, after the person opts in -->
