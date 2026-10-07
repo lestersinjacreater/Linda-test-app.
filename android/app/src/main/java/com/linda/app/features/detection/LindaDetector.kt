@@ -17,6 +17,7 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
     )
 
     override val verifiedSenders: Set<String> get() = scorer.verifiedSenders
+    override val modelVersion: String get() = scorer.version
 
     override fun analyse(input: MessageInput): Verdict {
         val detail = scorer.explain(input.body, input.sender)

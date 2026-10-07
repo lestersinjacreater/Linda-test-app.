@@ -175,3 +175,20 @@ Notification title is in the chosen language (Settings), the text is the first r
 - The device code is a hash of a random value created at install, never the phone number.
 - The server address is empty until set (hidden developer screen, step 6d), so a fresh install sends nothing anywhere.
 - `usesCleartextTraffic` is on so the laptop backup radar (plain http) works on demo day. Use https for the cloud radar.
+
+## System rebuild, step 6d: blocklist, caller warnings, developer screen, demo mode
+
+### Blocklist sync (`features/sync`)
+Every 15 minutes (Android's minimum) and when the app opens, a background job asks the radar `GET /v1/blocklist?since=<last as_of>` and stores the confirmed scam numbers in a local table. Only the changes travel, so it is tiny. If the radar is unreachable the job retries later and the phone keeps using its last list: **call warnings work offline**. The radar's answer has no "reported by N people" count (the contract does not include it), so the call text says "reported by other Linda users" without a number.
+
+### Caller warnings (`features/calls`)
+`LindaCallScreeningService` is asked by Android about every call. It **always lets the call ring** (never blocks or silences): it only shows a heads-up notification. Two reasons to warn, both checked on the phone: the number is on the confirmed blocklist, or it sent this phone a SCAM message in the last 2 hours ("sent you a suspected scam message 8 minutes ago"; the more specific one wins). Android only allows this after the user grants the **call-screening role**; the Settings screen has a button for it (Android 10 or newer).
+
+### Hidden developer screen
+Tap the version number in Settings 7 times: radar server address (blank by default, so a fresh install sends nothing anywhere), "Save and sync now", the model version, last sync time, number of scam numbers stored, and **Open demo mode**. Tap 7 times again to hide it.
+
+### Demo mode (`features/demo`)
+Seven buttons "receive" a scripted message instantly: fake M-Pesa from a normal number, sent-by-mistake, prize, Fuliza link, PIN request, **a real M-Pesa message (must not warn)** and an ordinary chat message. They use the same `MessageProcessor` as real SMS, so the notification, history entry and counters are real. A last button simulates a call from the fake M-Pesa number, which shows the real call-warning notification. It needs no network. Demo messages are never reported to the radar.
+
+### Known gaps in the Android app
+Recovery mode (F10), Family Guardian (F11), voice warnings (F12), "Scan my inbox" (F8) and the "Report" button on the detail screen are not built; they are Phase 2 items in the older spec. Swahili text is unreviewed.

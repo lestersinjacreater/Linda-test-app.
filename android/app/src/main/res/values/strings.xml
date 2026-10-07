@@ -82,4 +82,39 @@
     <string name="settings_reporting_title">Help protect others</string>
     <string name="settings_reporting_body">Send anonymous scam reports (never the message text) so others are warned.</string>
     <string name="settings_reports_waiting">Reports waiting to send: %1$d</string>
+
+    <string name="call_warning_title">⚠️ Likely scam caller</string>
+    <string name="call_warning_recent">This caller sent you a suspected scam message %1$d minutes ago. Do not send money.</string>
+    <string name="call_warning_reported">This number was reported by other Linda users as a mobile-money scammer. Do not send money.</string>
+
+    <string name="settings_calls_title">Scam caller warnings</string>
+    <string name="settings_calls_body">Linda shows a warning when a known scam number calls. It never blocks the call: you decide.</string>
+    <string name="settings_calls_enable">Turn on caller warnings</string>
+    <string name="settings_calls_on">Caller warnings are on.</string>
+    <string name="settings_calls_unavailable">Caller warnings need Android 10 or newer.</string>
+
+    <string name="dev_title">Developer</string>
+    <string name="dev_server">Radar server address (e.g. http://192.168.1.5:8001)</string>
+    <string name="dev_save_sync">Save and sync now</string>
+    <string name="dev_model">Model version: %1$s</string>
+    <string name="dev_last_sync">Last blocklist sync: %1$s</string>
+    <string name="dev_never">never</string>
+    <string name="dev_blocked">Scam numbers on this phone: %1$d</string>
+    <string name="dev_open_demo">Open demo mode</string>
+
+    <string name="demo_title">Demo mode</string>
+    <string name="demo_help">Each button \"receives\" a message instantly, exactly like a real SMS, with no network. The last two messages must NOT warn.</string>
+    <string name="demo_fake_mpesa">Fake M-Pesa confirmation (from a normal number)</string>
+    <string name="demo_reversal">Sent-by-mistake scam (Kiswahili)</string>
+    <string name="demo_prize">Prize scam (Kiswahili)</string>
+    <string name="demo_fuliza">Fuliza upgrade link</string>
+    <string name="demo_pin">PIN request (Kiswahili)</string>
+    <string name="demo_real_mpesa">REAL M-Pesa message (from MPESA)</string>
+    <string name="demo_chat">Ordinary chat message</string>
+    <string name="demo_call">Simulate a call from the fake M-Pesa number</string>
+    <string name="demo_result_safe">%1$s: SAFE, no warning (correct).</string>
+    <string name="demo_result_flagged">%1$s: %2$s (%3$s)</string>
+    <string name="demo_call_recent">Call warning shown: sent you a scam message %1$d minutes ago.</string>
+    <string name="demo_call_reported">Call warning shown: reported number.</string>
+    <string name="demo_call_none">No call warning (receive the fake M-Pesa message first).</string>
 </resources>

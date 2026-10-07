@@ -6,14 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [DetectionEntity::class, AllowedSenderEntity::class, SeenSenderEntity::class, ReportQueueEntity::class],
-    version = 3,
+    entities = [DetectionEntity::class, AllowedSenderEntity::class, SeenSenderEntity::class, ReportQueueEntity::class, BlockedNumberEntity::class],
+    version = 4,
     exportSchema = false,
 )
 abstract class LindaDatabase : RoomDatabase() {
     abstract fun detectionDao(): DetectionDao
     abstract fun senderDao(): SenderDao
     abstract fun reportQueueDao(): ReportQueueDao
+    abstract fun blockedNumberDao(): BlockedNumberDao
 
     companion object {
         fun create(context: Context): LindaDatabase =

@@ -14,6 +14,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.linda.app.MainActivity
 import com.linda.app.R
 import com.linda.app.core.util.Prefs
+import com.linda.app.features.calls.CallWarning
 import com.linda.app.features.detection.ReasonsJson
 import com.linda.app.features.detection.RiskLevel
 import com.linda.app.features.detection.Verdict
@@ -58,6 +59,31 @@ object AlertNotifier {
             .setAutoCancel(true)
             .build()
         NotificationManagerCompat.from(context).notify(detectionId.toInt(), notification)
+    }
+
+    /** Heads-up warning for an incoming call from a flagged number. Shown before the user answers. */
+    @SuppressLint("MissingPermission") // checked just below
+    fun showCallWarning(context: Context, msisdn: String, warning: CallWarning) {
+        if (Build.VERSION.SDK_INT >= 33 &&
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) return
+        val localized = Prefs.localized(context)
+        createChannels(localized)
+        val text = when (warning) {
+            is CallWarning.RecentScamMessage -> localized.getString(R.string.call_warning_recent, warning.minutesAgo)
+            is CallWarning.ReportedNumber -> localized.getString(R.string.call_warning_reported)
+        }
+        val notification = NotificationCompat.Builder(context, CHANNEL_SCAM)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(localized.getString(R.string.call_warning_title))
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
+            .build()
+        NotificationManagerCompat.from(context).notify(("call" + msisdn).hashCode(), notification)
     }
 
     private fun createChannels(localized: Context) {

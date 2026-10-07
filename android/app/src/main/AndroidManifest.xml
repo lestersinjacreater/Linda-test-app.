@@ -35,6 +35,16 @@
             </intent-filter>
         </activity>
 
+        <!-- Android asks this about every call; Linda always lets it ring and only shows a warning. Needs the call-screening role. -->
+        <service
+            android:name=".features.calls.LindaCallScreeningService"
+            android:exported="true"
+            android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
+
         <!-- Wakes for every incoming SMS, even with the app closed. Only the system may send it this broadcast. -->
         <receiver
             android:name=".features.sms.SmsReceiver"

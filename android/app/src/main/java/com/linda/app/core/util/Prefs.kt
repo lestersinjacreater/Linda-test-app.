@@ -30,6 +30,16 @@ object Prefs {
     fun serverUrl(ctx: Context): String = p(ctx).getString("server_url", "") ?: ""
     fun setServerUrl(ctx: Context, value: String) = p(ctx).edit().putString("server_url", value.trim().trimEnd('/')).apply()
 
+    /** The hidden developer screen (tap the version 7 times). */
+    fun devMode(ctx: Context) = p(ctx).getBoolean("dev_mode", false)
+    fun setDevMode(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("dev_mode", value).apply()
+
+    /** `as_of` from the last successful blocklist sync (sent back as ?since=), and when it happened. */
+    fun lastSyncAsOf(ctx: Context): String? = p(ctx).getString("sync_as_of", null)
+    fun lastSyncAt(ctx: Context): Long = p(ctx).getLong("sync_at", 0L)
+    fun setLastSync(ctx: Context, asOf: String, at: Long) = p(ctx).edit().putString("sync_as_of", asOf).putLong("sync_at", at).apply()
+    fun clearLastSync(ctx: Context) = p(ctx).edit().remove("sync_as_of").remove("sync_at").apply()
+
     /** Random anonymous id, made once per install and hashed. Never derived from the phone number. */
     fun deviceId(ctx: Context): String {
         val existing = p(ctx).getString("device_id", null)

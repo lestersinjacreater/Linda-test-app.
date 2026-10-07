@@ -24,9 +24,9 @@ interface DetectionDao {
     @Query("SELECT COUNT(*) FROM detections WHERE level = 'SCAM' AND markedSafe = 0 AND receivedAt >= :since")
     fun countScamsSince(since: Long): Flow<Int>
 
-    /** Was there a scam message from [sender] since [since]? Used by call screening (6d). */
-    @Query("SELECT * FROM detections WHERE sender = :sender AND level = 'SCAM' AND markedSafe = 0 AND receivedAt >= :since ORDER BY receivedAt DESC LIMIT 1")
-    suspend fun latestScamFrom(sender: String, since: Long): DetectionEntity?
+    /** Was there a scam message from this phone number since [since]? Used by call warnings. */
+    @Query("SELECT * FROM detections WHERE senderMsisdn = :msisdn AND level = 'SCAM' AND markedSafe = 0 AND receivedAt >= :since ORDER BY receivedAt DESC LIMIT 1")
+    suspend fun latestScamFrom(msisdn: String, since: Long): DetectionEntity?
 }
 
 @Dao
@@ -59,5 +59,20 @@ interface ReportQueueDao {
     suspend fun countAttempt(id: Long)
 
     @Query("SELECT COUNT(*) FROM report_queue")
+    fun observeCount(): Flow<Int>
+}
+
+@Dao
+interface BlockedNumberDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(numbers: List<BlockedNumberEntity>)
+
+    @Query("DELETE FROM blocked_numbers WHERE msisdn IN (:msisdns)")
+    suspend fun deleteAll(msisdns: List<String>)
+
+    @Query("SELECT * FROM blocked_numbers WHERE msisdn = :msisdn")
+    suspend fun find(msisdn: String): BlockedNumberEntity?
+
+    @Query("SELECT COUNT(*) FROM blocked_numbers")
     fun observeCount(): Flow<Int>
 }

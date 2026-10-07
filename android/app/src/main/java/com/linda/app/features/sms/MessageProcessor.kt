@@ -4,6 +4,7 @@ import android.content.Context
 import com.linda.app.LindaApp
 import com.linda.app.core.data.DetectionEntity
 import com.linda.app.core.data.SeenSenderEntity
+import com.linda.app.core.util.PhoneNumbers
 import com.linda.app.features.alerts.AlertNotifier
 import com.linda.app.features.detection.MessageInput
 import com.linda.app.features.detection.ReasonsJson
@@ -39,7 +40,7 @@ class MessageProcessor(private val context: Context) {
 
             val id = app.database.detectionDao().insert(
                 DetectionEntity(
-                    sender = sender, body = body, level = verdict.level.name, score = verdict.score,
+                    sender = sender, senderMsisdn = PhoneNumbers.toMsisdn(sender), body = body, level = verdict.level.name, score = verdict.score,
                     category = verdict.category, fingerprint = verdict.fingerprint,
                     reasonsJson = ReasonsJson.encode(verdict.reasons), modelVersion = verdict.modelVersion,
                     receivedAt = receivedAt, source = source,

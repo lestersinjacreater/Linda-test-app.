@@ -14,6 +14,7 @@ import androidx.room.PrimaryKey
 data class DetectionEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val sender: String?,        // null when the text was pasted or shared
+    val senderMsisdn: String? = null, // the sender as 2547XXXXXXXX when it is a phone number (used to match incoming calls)
     val body: String,
     val level: String,
     val score: Float,
@@ -46,3 +47,7 @@ data class ReportQueueEntity(
     val sentAt: Long,
     val attempts: Int = 0,
 )
+
+/** A number the radar confirmed as a scammer (contract 5.3). Kept on the phone so call warnings work offline. */
+@Entity(tableName = "blocked_numbers")
+data class BlockedNumberEntity(@PrimaryKey val msisdn: String, val category: String)

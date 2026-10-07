@@ -10,6 +10,9 @@ interface ScamDetector {
 
     /** Upper-case IDs of senders that are never warned on and never reported (MPESA, banks, KPLC, KRA). */
     val verifiedSenders: Set<String>
+
+    /** Version of the model file in use (shown in the developer screen). */
+    val modelVersion: String
 }
 
 data class MessageInput(

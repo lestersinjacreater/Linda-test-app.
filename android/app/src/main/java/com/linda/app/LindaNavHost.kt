@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.linda.app.features.checker.CheckerScreen
+import com.linda.app.features.demo.DemoScreen
 import com.linda.app.features.detail.DetailScreen
 import com.linda.app.features.history.HistoryScreen
 import com.linda.app.features.home.HomeScreen
@@ -90,7 +91,8 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
             composable(Destination.Home.route) { HomeScreen() }
             composable(Destination.Checker.route) { CheckerScreen(sharedText) }
             composable(Destination.History.route) { HistoryScreen(onOpen = { navController.navigate("detail/$it") }) }
-            composable(Destination.Settings.route) { SettingsScreen() }
+            composable(Destination.Settings.route) { SettingsScreen(onOpenDemo = { navController.navigate("demo") }) }
+            composable("demo") { DemoScreen(onBack = { navController.popBackStack() }) }
             composable("detail/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
                 DetailScreen(detectionId = entry.arguments?.getLong("id") ?: -1L, onBack = { navController.popBackStack() })
             }

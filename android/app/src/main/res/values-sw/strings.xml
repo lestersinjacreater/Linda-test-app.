@@ -76,4 +76,39 @@
     <string name="settings_reporting_title">Saidia kulinda wengine</string>
     <string name="settings_reporting_body">Tuma ripoti za ulaghai zisizotambulisha mtu (kamwe si maandishi ya ujumbe) ili wengine waonywe.</string>
     <string name="settings_reports_waiting">Ripoti zinazosubiri kutumwa: %1$d</string>
+
+    <string name="call_warning_title">⚠️ Huenda anayepiga ni tapeli</string>
+    <string name="call_warning_recent">Anayepiga alikutumia ujumbe unaoshukiwa kuwa ulaghai dakika %1$d zilizopita. Usitume pesa.</string>
+    <string name="call_warning_reported">Nambari hii iliripotiwa na watumiaji wengine wa Linda kuwa tapeli wa pesa za simu. Usitume pesa.</string>
+
+    <string name="settings_calls_title">Onyo la wapigaji matapeli</string>
+    <string name="settings_calls_body">Linda inaonyesha onyo nambari ya tapeli inayojulikana ikipiga. Haizuii simu: wewe ndiye unayeamua.</string>
+    <string name="settings_calls_enable">Washa onyo la wapigaji</string>
+    <string name="settings_calls_on">Onyo la wapigaji limewashwa.</string>
+    <string name="settings_calls_unavailable">Onyo la wapigaji linahitaji Android 10 au mpya zaidi.</string>
+
+    <string name="dev_title">Msanidi</string>
+    <string name="dev_server">Anwani ya seva ya rada (mfano http://192.168.1.5:8001)</string>
+    <string name="dev_save_sync">Hifadhi na usawazishe sasa</string>
+    <string name="dev_model">Toleo la modeli: %1$s</string>
+    <string name="dev_last_sync">Usawazishaji wa mwisho wa orodha: %1$s</string>
+    <string name="dev_never">kamwe</string>
+    <string name="dev_blocked">Nambari za matapeli kwenye simu hii: %1$d</string>
+    <string name="dev_open_demo">Fungua hali ya onyesho</string>
+
+    <string name="demo_title">Hali ya onyesho</string>
+    <string name="demo_help">Kila kitufe \"hupokea\" ujumbe papo hapo, kama SMS halisi, bila mtandao. Jumbe mbili za mwisho HAZIPASWI kuonya.</string>
+    <string name="demo_fake_mpesa">Uthibitisho wa M-Pesa wa kughushi (kutoka nambari ya kawaida)</string>
+    <string name="demo_reversal">Ulaghai wa kutuma kimakosa (Kiswahili)</string>
+    <string name="demo_prize">Ulaghai wa zawadi (Kiswahili)</string>
+    <string name="demo_fuliza">Kiungo cha nyongeza ya Fuliza</string>
+    <string name="demo_pin">Ombi la PIN (Kiswahili)</string>
+    <string name="demo_real_mpesa">Ujumbe HALISI wa M-Pesa (kutoka MPESA)</string>
+    <string name="demo_chat">Ujumbe wa kawaida wa mazungumzo</string>
+    <string name="demo_call">Igiza simu kutoka nambari ya M-Pesa ya kughushi</string>
+    <string name="demo_result_safe">%1$s: SALAMA, hakuna onyo (sahihi).</string>
+    <string name="demo_result_flagged">%1$s: %2$s (%3$s)</string>
+    <string name="demo_call_recent">Onyo la simu limeonyeshwa: alituma ujumbe wa ulaghai dakika %1$d zilizopita.</string>
+    <string name="demo_call_reported">Onyo la simu limeonyeshwa: nambari iliyoripotiwa.</string>
+    <string name="demo_call_none">Hakuna onyo la simu (pokea ujumbe wa M-Pesa wa kughushi kwanza).</string>
 </resources>
