@@ -467,3 +467,28 @@ Spring feel can only be judged by touching a real phone. If it feels too slow or
 - **Instant press feedback.** The dashboard's control buttons and the page's Download and language buttons shrink to 97% the moment a finger or mouse goes down (100 ms), not when it is released.
 - **Tighter type where it is big.** The page headline and the dashboard's big numbers get slightly tighter letter spacing; small text is unchanged.
 - **Guarded by tests.** The page tests (now 13) fail if the page ever gains a transition or animation without a reduced-motion rule, and if the Download button loses its press feedback. The dashboard still passes its type check, its 13 tests and its production build.
+
+## Training on real public data (model 2026.10.19-1)
+
+**What it does.** The model now learns from real scam and normal messages, not only from our synthetic templates:
+781 Tanzanian Swahili messages (Bongoscam, Kaggle) and 5,292 international English messages (Mendeley).
+
+**How.** `ml/src/features/dataset/public.py` reads the downloaded files and cleans them before training:
+- Every phone number becomes `0700000000` and names after "jina lije" or "By" become `JOHN DOE`, so no real
+  person's details reach the model.
+- Tanzanian details ("Tsh", "Halotel", "Tigo", "Vodacom") are converted or removed. Otherwise the model would learn
+  "Tanzanian words mean scam", which is useless in Kenya.
+- Mendeley's "spam" rows are adverts, not fraud, so they are dropped instead of guessed.
+- Exact duplicates are removed, and near-duplicates (the same scam script with a different number, similarity 0.6 or more)
+  are grouped so a script is wholly in training or wholly in testing.
+
+**Why the grouping matters.** Our first split put a third of the test scams next to a near-copy in training. The score
+looked better than the model really was. Grouping fixed that; the honest numbers are the ones in `ml/reports/metrics.md`.
+
+**What the numbers mean.** On real messages it never saw, the model catches about 94% of English smishing with 0.2%
+false alarms, and the Swahili test scams it saw were all caught, though that set is small (17 scams). It still flags no
+genuine M-Pesa, bank or KPLC message. Catching a scam *type* it never trained on is harder (37 to 66% for whole datasets
+held out), which is why real Kenyan examples are the next priority.
+
+**Known limits.** No Kenyan test data yet. The model file grew to about 1 MB (vocabulary 20,000); making it lighter is a
+separate task.

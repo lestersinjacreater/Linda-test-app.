@@ -25,11 +25,14 @@ from src.features.dataset.synthetic import generate, read_csv, write_csv  # noqa
 from src.features.normalize.normalize import NORMALIZER_VERSION, normalize  # noqa: E402
 from src.features.scoring.metadata import FEATURE_NAMES, metadata_features  # noqa: E402
 
-MODEL_VERSION = "2026.10.07-1"
+MODEL_VERSION = "2026.10.19-1"
 SEED = 42
 NGRAM_RANGE = (2, 5)
 THRESHOLDS = {"warn": 0.55, "scam": 0.80}
 DATA_PATH = ROOT / "ml" / "data" / "processed" / "synthetic.csv"
+# Real data, used when present (both are git-ignored and rebuilt locally, see ml/data/README.md):
+PUBLIC_PATH = ROOT / "ml" / "data" / "processed" / "public.csv"  # Bongoscam + Mendeley
+TEAM_PATH = ROOT / "ml" / "data" / "processed" / "team_collected.csv"  # scrubbed Kenyan messages
 ARTIFACT_PATH = ROOT / "ml" / "artifacts" / "model.json"
 VERIFIED_PATH = ROOT / "shared" / "verified_senders.json"
 
@@ -39,9 +42,23 @@ def load_verified() -> set[str]:
 
 
 def load_rows() -> list[dict]:
+    """Synthetic rows always; real public and team rows whenever their files exist."""
     if not DATA_PATH.exists():
         write_csv(DATA_PATH, generate())
-    return read_csv(DATA_PATH)
+    rows = read_csv(DATA_PATH)
+    for path in (PUBLIC_PATH, TEAM_PATH):
+        if path.exists():
+            rows += read_csv(path)
+    return rows
+
+
+def data_description(rows: list[dict]) -> str:
+    """One line for the model file saying what it was trained on."""
+    counts = {}
+    for r in rows:
+        if r["split"] in ("train", "val"):
+            counts[r["source"]] = counts.get(r["source"], 0) + 1
+    return ", ".join(f"{k} {v}" for k, v in sorted(counts.items()))
 
 
 def add_obfuscated_copies(rows: list[dict], seed: int = SEED) -> list[dict]:
@@ -89,7 +106,8 @@ def choose_C(train_rows, val_rows, verified) -> float:
     return best[1]
 
 
-def to_artifact(vectorizer, clf, verified: set[str], C: float, metrics: dict | None = None) -> dict:
+def to_artifact(vectorizer, clf, verified: set[str], C: float, metrics: dict | None = None,
+                data: str = "synthetic (no real data yet)") -> dict:
     """The export contract (root CLAUDE.md 5.8)."""
     n_text = len(vectorizer.vocabulary_)
     coef = clf.coef_[0]
@@ -110,7 +128,7 @@ def to_artifact(vectorizer, clf, verified: set[str], C: float, metrics: dict | N
         "thresholds": THRESHOLDS,
         "categories": {},
         "metrics": metrics or {},
-        "training": {"data": "synthetic (no real data yet)", "C": C, "seed": SEED},
+        "training": {"data": data, "C": C, "seed": SEED},
     }
 
 
@@ -122,7 +140,7 @@ def main() -> None:
     C = choose_C(train_rows, val_rows, verified)
     vectorizer, clf = train(train_rows, verified, C)  # validation rows are NOT trained on
     ARTIFACT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    ARTIFACT_PATH.write_text(json.dumps(to_artifact(vectorizer, clf, verified, C)), encoding="utf-8")
+    ARTIFACT_PATH.write_text(json.dumps(to_artifact(vectorizer, clf, verified, C, data=data_description(rows))), encoding="utf-8")
     print(f"trained on {len(train_rows)} rows, C={C}, vocabulary={len(vectorizer.vocabulary_)}")
     print(f"wrote {ARTIFACT_PATH}")
 

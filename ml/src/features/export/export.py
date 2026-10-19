@@ -28,7 +28,10 @@ def main() -> None:
     if METRICS_PATH.exists():
         m = json.loads(METRICS_PATH.read_text(encoding="utf-8"))
         model["metrics"] = {
-            "data": "SYNTHETIC ONLY, not evidence on real scams",
+            "data": model.get("training", {}).get("data", ""),
+            "real_test": {k: {"precision": round(v["precision"], 4), "recall": round(v["recall"], 4),
+                              "false_alarm_rate": round(v["false_alarm_rate"], 4), "n": v["n"]}
+                          for k, v in m.get("real_test", {}).items()},
             "validation_f1": round(m["validation"]["f1"], 4),
             "hard_negative_false_alarm_rate": m["validation"]["hard_negative_false_alarm_rate"],
             "held_out_campaign_average": round(m["held_out_campaign_average"], 4),

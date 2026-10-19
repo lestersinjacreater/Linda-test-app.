@@ -132,10 +132,17 @@ def main() -> None:
                            "vocabulary": len(vec.vocabulary_), "phone_latency": "NOT MEASURED (needs the cheapest team phone)"}
 
     # 8. Real test set, once it exists
+    # Reported per source: Kenyan team data and foreign public data answer different questions.
     if real_test:
-        yt = [1 if r["label"] == "scam" else 0 for r in real_test]
+        m["real_test"] = {}
         st = scores_for(vec, clf, real_test, verified)
-        m["real_test"] = confusion(yt, [1 if x >= WARN else 0 for x in st])
+        for src in sorted({r["source"] for r in real_test}) + ["all"]:
+            idx = [i for i, r in enumerate(real_test) if src in ("all", r["source"])]
+            yt = [1 if real_test[i]["label"] == "scam" else 0 for i in idx]
+            res = confusion(yt, [1 if st[i] >= WARN else 0 for i in idx])
+            res["false_alarm_rate"] = rate(res["fp"], res["fp"] + res["tn"])
+            res["n"] = len(idx)
+            m["real_test"][src] = res
 
     REPORTS.mkdir(parents=True, exist_ok=True)
     (REPORTS / "metrics.json").write_text(json.dumps(m, indent=2), encoding="utf-8")
@@ -145,13 +152,27 @@ def main() -> None:
 
 def render(m: dict) -> str:
     v, sv = m["validation"], m["shared_vectors"]
+    real = m.get("real_test", {})
+    kenyan = "team_collected" in real
+    if not real:
+        banner = [
+            "> **READ THIS FIRST.** There is **no real test data yet** (real test rows: 0).",
+            "> Every number below comes from synthetic template messages or the hand-written shared vectors.",
+            "> They prove the pipeline works. They are **not** evidence the model works on real scams. Do not quote them to judges as results.", "",
+        ]
+    else:
+        banner = [
+            f"> **READ THIS FIRST.** Section 8 is the only section measured on **real messages the model never saw** ({m['real_test_rows']} rows).",
+            "> " + ("It includes real Kenyan messages collected by the team." if kenyan else
+                    "There is **no Kenyan test data yet**: the real test rows are Tanzanian Swahili (Bongoscam) and "
+                    "international English (Mendeley). Quote them as such, not as results on Kenyan scams."),
+            "> Sections 1 to 6 mix synthetic and real messages and show the pipeline works.", "",
+        ]
     lines = [
         "# Linda model metrics", "",
         f"Model `{m['model_version']}` · thresholds warn {m['thresholds']['warn']} / scam {m['thresholds']['scam']}", "",
-        "> **READ THIS FIRST.** There is **no real test data yet** (real test rows: " + str(m["real_test_rows"]) + ").",
-        "> Every number below comes from synthetic template messages or the hand-written shared vectors.",
-        "> They prove the pipeline works. They are **not** evidence the model works on real scams. Do not quote them to judges as results.", "",
-        "## 1. Validation set (synthetic, wordings the model never saw)", "",
+        *banner,
+        "## 1. Validation set (wordings the model never saw)", "",
         f"- Precision {pct(v['precision'])} · Recall {pct(v['recall'])} · F1 {pct(v['f1'])}",
         f"- Confusion matrix: TP {v['tp']} · FP {v['fp']} · FN {v['fn']} · TN {v['tn']}",
         f"- **False-alarm rate on hard negatives:** {pct(v['hard_negative_false_alarm_rate'])} of {v['hard_negatives']} (target under 2%)",
@@ -177,9 +198,12 @@ def render(m: dict) -> str:
         f"- Model file: {m['size_and_speed']['model_json_kb']} KB, vocabulary {m['size_and_speed']['vocabulary']}",
         f"- {m['size_and_speed']['ms_per_message_python_dev_machine']} ms per message (Python, dev machine). Phone latency: {m['size_and_speed']['phone_latency']}", "",
     ]
-    if "real_test" in m:
-        r = m["real_test"]
-        lines += ["## 8. REAL test set", "", f"- Precision {pct(r['precision'])} · Recall {pct(r['recall'])} · F1 {pct(r['f1'])}", ""]
+    if real:
+        lines += ["## 8. REAL test set (real messages, never trained or tuned on)", "",
+                  "| Source | Messages | Precision | Recall | F1 | False-alarm rate |", "|---|---|---|---|---|---|"]
+        for src, r in real.items():
+            lines.append(f"| {src} | {r['n']} | {pct(r['precision'])} | {pct(r['recall'])} | {pct(r['f1'])} | {pct(r['false_alarm_rate'])} |")
+        lines.append("")
     return "\n".join(lines)
 
 
