@@ -156,3 +156,9 @@ that SQLite had hidden (see `docs/EXPLAINED.md`).
 **Not tested (no Docker daemon in the development environment):** building the container images, and Let's Encrypt issuing a real
 certificate. The CI job "deploy config" checks the compose file and Caddyfile on every change; the first `make prod-up` on a real server is the
 real test of the images, so do it days before the event, not on the morning of it.
+
+## Mock fraud intelligence
+
+`fraudintel` runs on the private network; the gateway reaches it at `http://fraudintel:8002`. The presenter can open
+`https://DOMAIN/fraud/v1/intel/reports` (the fraud team's inbox) and flag numbers with `POST https://DOMAIN/fraud/admin/numbers`,
+both behind the presenter's password.

@@ -514,3 +514,29 @@ genuine number always carries a badge, a "Safaricom" call without the badge stan
 In production, Safaricom's network can confirm a call truly came from its own line before the badge is shown.
 
 **Demo.** Demo mode has a "Simulate a call from Safaricom Customer Care" button next to the scam-call one.
+
+## The mock fraud team and how the gateway learns from it
+
+**What it does.** `fraudintel/` pretends to be Safaricom's fraud team: numbers reported to 333, numbers it blocked,
+known scam campaigns, and genuine official numbers. Every 30 seconds the Linda gateway asks it "what changed?" and
+brings that knowledge to phones. Every report a phone sends goes back to it, so the fraud team learns from Linda too.
+
+**The merge rules (what the gateway does with each answer).**
+- **Blocked or linked to a campaign:** treated as confirmed. The number joins the phone blocklist, so calls get the
+  "Reported for fraud" label, and the network is told, so it can warn everyone who heard from that number.
+- **Only reported to 333:** treated as suspected when someone checks the number, but never put on the phone blocklist.
+  One report is not proof, and a wrong label would hurt an innocent person.
+- **Verified numbers** (Safaricom Customer Care) can never be confirmed, whatever any source says.
+- **Campaign fingerprints:** if a brand-new number sends a message matching a known campaign, its very first report
+  marks it suspected. That is how Linda keeps up when scammers switch SIM cards.
+
+**Why a separate service.** It keeps the demo honest: the gateway only knows the contract (5.12), not the mock. In
+production the gateway points at Safaricom's real systems and nothing else changes. If the fraud service is down, the
+gateway keeps working with what it already has.
+
+**Privacy.** Reports sent back contain the sender's number, scam type, confidence, fingerprint and an anonymous device
+ID. The fraud service rejects any request that includes a message text field.
+
+**Demo.** The presenter can flag a number live (`POST /admin/numbers`), and show the fraud team's inbox filling up as
+judges report numbers (`GET /v1/intel/reports`). Phones pick up newly blocked numbers on their next sync; for the demo,
+use "Save and sync" in the app's hidden settings.

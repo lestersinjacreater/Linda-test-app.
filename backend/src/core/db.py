@@ -44,6 +44,27 @@ class Report(Base):
     settled: Mapped[bool] = mapped_column(Boolean, default=False)  # trust adjustment already applied
 
 
+class IntelNumber(Base):
+    """What the fraud team says about a number (contract 5.12), copied by the intel sync.
+    A separate table, so an existing database gains it without a migration."""
+    __tablename__ = "intel_numbers"
+    msisdn: Mapped[str] = mapped_column(String(16), primary_key=True)
+    status: Mapped[str] = mapped_column(String(16))  # reported | blocked | campaign
+    category: Mapped[str] = mapped_column(String(32))
+    reports: Mapped[int] = mapped_column(Integer, default=0)
+    campaign_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    synced_at: Mapped[float] = mapped_column(Float)
+
+
+class IntelFingerprint(Base):
+    """One SimHash of a known fraud-team campaign. Used to spot a new number sending a known script."""
+    __tablename__ = "intel_fingerprints"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    campaign_id: Mapped[str] = mapped_column(String(64), index=True)
+    category: Mapped[str] = mapped_column(String(32))
+    fingerprint: Mapped[str] = mapped_column(String(16))
+
+
 class SecurityEvent(Base):
     """Things worth a human's attention, e.g. a suspected poisoning attempt."""
     __tablename__ = "security_events"

@@ -6,7 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query, Request
 from sqlalchemy import func, select
 
-from src.core.db import Report, Sender
+from src.core.db import IntelNumber, Report, Sender
 from src.features.confirmation.service import status_of
 
 router = APIRouter()
@@ -32,10 +32,18 @@ def number_risk(msisdn: str, request: Request) -> dict:
         sender = session.get(Sender, msisdn)
         reports = session.scalar(select(func.count()).select_from(Report).where(Report.sender == msisdn))
         status = status_of(sender, app.state.clock())
+        intel = session.get(IntelNumber, msisdn)
+        if intel is not None:
+            reports += intel.reports  # reports the fraud team received (333 and others)
+            if status == "unknown" and intel.status == "reported":
+                status = "suspected"  # reported to Safaricom but not proven: never on the phone blocklist
+        category = sender.category if sender and status in ("confirmed", "suspected") else None
+        if category is None and intel is not None and status in ("confirmed", "suspected"):
+            category = intel.category
         return {
             "msisdn": msisdn,
             "status": status,
-            "category": sender.category if sender and status in ("confirmed", "suspected") else None,
+            "category": category,
             "reports": reports,
             "confirmed_at": _iso(sender.confirmed_at) if sender and status == "confirmed" else None,
         }

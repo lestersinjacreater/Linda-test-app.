@@ -41,6 +41,10 @@ class Settings:
     poison_burst_devices: int = 10
     poison_burst_window_s: int = 60
 
+    # Fraud intelligence (contract 5.12). Empty URL = off: the gateway works exactly as before.
+    fraudintel_url: str = ""
+    intel_sync_s: float = 30.0
+
     # Telling the network a sender is confirmed
     notify_retries: int = 3
     notify_backoff_s: float = 1.0
@@ -52,6 +56,8 @@ class Settings:
         return cls(
             database_url=e.get("DATABASE_URL", d.database_url),
             telco_url=e.get("TELCO_URL", d.telco_url),
+            fraudintel_url=e.get("FRAUDINTEL_URL", d.fraudintel_url).rstrip("/"),
+            intel_sync_s=float(e.get("INTEL_SYNC_S", d.intel_sync_s)),
             verified_senders_path=Path(e.get("VERIFIED_SENDERS_PATH", str(d.verified_senders_path))),
             verified_callers_path=Path(e.get("VERIFIED_CALLERS_PATH", str(d.verified_callers_path))),
             min_devices=int(e.get("RADAR_MIN_DEVICES", d.min_devices)),

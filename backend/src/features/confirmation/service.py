@@ -16,7 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.core.config import Settings
-from src.core.db import Device, Report, Sender
+from src.core.db import Device, IntelFingerprint, Report, Sender
 from src.core.security import check_poisoning_burst, is_rate_limited
 
 
@@ -109,8 +109,10 @@ def _matches_confirmed_campaign(session: Session, settings: Settings, fingerprin
     confirmed = session.scalars(
         select(Sender.fingerprint).where(Sender.confirmed_at.is_not(None), Sender.fingerprint.is_not(None))
     ).all()
+    # Also the fraud team's known campaigns (contract 5.12), synced into intel_fingerprints.
+    known = session.scalars(select(IntelFingerprint.fingerprint)).all()
     mine = int(fingerprint, 16)
-    return any(bin(mine ^ int(fp, 16)).count("1") <= settings.fingerprint_distance for fp in confirmed)
+    return any(bin(mine ^ int(fp, 16)).count("1") <= settings.fingerprint_distance for fp in [*confirmed, *known])
 
 
 @dataclass
