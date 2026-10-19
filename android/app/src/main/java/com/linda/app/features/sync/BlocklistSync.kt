@@ -15,6 +15,7 @@ import com.linda.app.LindaApp
 import com.linda.app.core.data.BlockedNumberEntity
 import com.linda.app.core.net.Http
 import com.linda.app.core.util.Prefs
+import com.linda.app.features.calls.VerifiedCallers
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
@@ -31,7 +32,14 @@ object BlocklistSync {
         dao.insertAll(delta.added.map { BlockedNumberEntity(it.msisdn, it.category) })
         if (delta.removed.isNotEmpty()) dao.deleteAll(delta.removed)
         Prefs.setLastSync(context, delta.asOf, System.currentTimeMillis())
+        syncVerifiedCallers(context, server)
         return true
+    }
+
+    /** Refreshes the verified-callers list (contract 5.13). Failure is fine: the bundled copy still works. */
+    private fun syncVerifiedCallers(context: Context, server: String) {
+        val response = Http.get("$server/v1/verified-callers") ?: return
+        if (response.code == 200) VerifiedCallers.store(context, response.body)
     }
 }
 

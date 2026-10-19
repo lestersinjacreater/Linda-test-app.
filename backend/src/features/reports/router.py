@@ -65,7 +65,9 @@ def post_report(report: ReportIn, background: BackgroundTasks, request: Request)
         raise HTTPException(422, "sender must look like 2547XXXXXXXX")
     with app.state.sessions() as session:
         try:
-            result = submit_report(session, app.state.settings, app.state.verified, report, app.state.clock())
+            # Verified callers (0722 000 000...) are treated like verified sender IDs: never confirmed.
+            never_confirm = app.state.verified | set(app.state.verified_callers)
+            result = submit_report(session, app.state.settings, never_confirm, report, app.state.clock())
         except RateLimited:
             raise HTTPException(429, "too many reports from this device; try again later")
     if result.newly_confirmed:

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 _DEFAULT_VERIFIED = Path(__file__).resolve().parents[3] / "shared" / "verified_senders.json"
+_DEFAULT_CALLERS = Path(__file__).resolve().parents[3] / "shared" / "verified_callers.json"
 
 
 @dataclass(frozen=True)
@@ -11,6 +12,7 @@ class Settings:
     database_url: str = "sqlite:///./radar.db"
     telco_url: str = "http://localhost:8000"
     verified_senders_path: Path = _DEFAULT_VERIFIED
+    verified_callers_path: Path = _DEFAULT_CALLERS
 
     # Confirmation rule (backend/CLAUDE.md)
     min_devices: int = 3          # at least this many independent devices
@@ -51,6 +53,7 @@ class Settings:
             database_url=e.get("DATABASE_URL", d.database_url),
             telco_url=e.get("TELCO_URL", d.telco_url),
             verified_senders_path=Path(e.get("VERIFIED_SENDERS_PATH", str(d.verified_senders_path))),
+            verified_callers_path=Path(e.get("VERIFIED_CALLERS_PATH", str(d.verified_callers_path))),
             min_devices=int(e.get("RADAR_MIN_DEVICES", d.min_devices)),
             min_score=float(e.get("RADAR_MIN_SCORE", d.min_score)),
             window_s=int(e.get("RADAR_WINDOW_S", d.window_s)),

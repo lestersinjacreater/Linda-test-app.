@@ -24,6 +24,10 @@ def number_risk(msisdn: str, request: Request) -> dict:
         return {"msisdn": msisdn, "status": "allowlisted", "category": None, "reports": 0, "confirmed_at": None}
     if not _MSISDN.fullmatch(msisdn):
         raise HTTPException(422, "msisdn must look like 2547XXXXXXXX")
+    caller = app.state.verified_callers.get(msisdn)
+    if caller is not None:  # a genuine number: say who it is, never "risky"
+        return {"msisdn": msisdn, "status": "verified", "category": None, "reports": 0, "confirmed_at": None,
+                "name_en": caller.name_en, "name_sw": caller.name_sw}
     with app.state.sessions() as session:
         sender = session.get(Sender, msisdn)
         reports = session.scalar(select(func.count()).select_from(Report).where(Report.sender == msisdn))

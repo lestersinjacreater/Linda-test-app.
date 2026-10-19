@@ -135,7 +135,8 @@ remove the marker in the same commit.
 - Response: `{ "status": "unknown|suspected|confirmed|allowlisted", "devices": 3 }`
 
 ### 5.2 Server-side → gateway: `GET /v1/numbers/{msisdn}/risk`
-`{ "msisdn": "...", "status": "unknown|suspected|confirmed|allowlisted", "category": "...", "reports": 12, "confirmed_at": null }`
+`{ "msisdn": "...", "status": "unknown|suspected|confirmed|allowlisted|verified", "category": "...", "reports": 12, "confirmed_at": null }`
+For a number on the verified-callers list, `status` is `verified` and the response adds `name_en` and `name_sw`.
 Takes a full number, so it is for server-side callers only (USSD, simulator, precheck).
 Phones move to 5.10 once it is built.
 
@@ -209,6 +210,14 @@ Only recent, high-risk confirmed numbers and the verified list. Never full numbe
 - `POST {FRAUDINTEL_URL}/v1/intel/reports` ← customer reports and gateway confirmations (5.1 fields, no text).
 The gateway merges fraud-team status with device reports; fraud-team "blocked" or "campaign" counts as confirmed.
 
+### 5.13 Phone → gateway: `GET /v1/verified-callers`
+`{ "version": "2026.10.19-1", "callers": [{ "msisdn": "254722000000", "name_en": "Safaricom Customer Care",
+"name_sw": "Huduma kwa Wateja ya Safaricom", "kind": "safaricom|bank|business" }] }`
+Source of truth: `shared/verified_callers.json` (each entry records its official `source`). The app bundles a copy in
+`android/app/src/main/assets/verified_callers.json` (must equal the shared file; a unit test checks) and replaces it
+with the gateway's copy after each sync. The list is public, so sending all of it is allowed (unlike flagged numbers).
+A verified number is never confirmed as a scammer, and a scam signal on a number always beats its badge.
+
 ## 6. Components (summary; details in each folder's CLAUDE.md)
 
 | Folder | Owner pair | Builds into | Key acceptance |
@@ -260,7 +269,7 @@ Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendele
 **Remaining, in priority order (P4, 19–22 Oct, then FEATURE FREEZE on 22 Oct):**
 1. Kenyan team data: `ml/data/processed/team_collected.csv`, campaign-split test, retrain, tune thresholds.
 2. `fraudintel/` mock service (5.12) and the gateway merging it.
-3. Verified-caller badges in the gateway and the app.
+3. ~~Verified-caller badges in the gateway and the app.~~ Done (5.13). In production the list comes from 5.12.
 4. Private hash-prefix lookups and hashed sync (5.10, 5.11), then retire 5.3 for phones.
 5. Lightweight model (5.8 PLANNED, 7.1 budgets), Python and Kotlin together.
 6. Network effect in the simulator: adoption levels (0.5%, 1%, 2%), warnings after scam calls, warning
