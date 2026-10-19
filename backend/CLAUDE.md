@@ -1,6 +1,9 @@
-# backend/: the radar (FastAPI + Postgres; SQLite allowed for local dev)
+# backend/: the Linda gateway (formerly "the radar"; FastAPI + Postgres; SQLite allowed for local dev)
 
 Replaces `radar_stub/` from the simulator starter. Implements root sections 5.1–5.3, 5.6, 5.7.
+Planned (root section 8): fraud-intel merge (5.12), verified callers, private lookups (5.10) and hashed
+sync (5.11). The gateway must never depend on `fraudintel/` code, only on its HTTP contract, and must
+never send phones a full list of numbers or the fraud team's evidence (root principle 6).
 
 ## Structure
 ```
