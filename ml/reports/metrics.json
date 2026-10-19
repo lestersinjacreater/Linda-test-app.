@@ -3,53 +3,57 @@
     "warn": 0.55,
     "scam": 0.8
   },
-  "model_version": "2026.10.07-1",
-  "real_test_rows": 0,
+  "model_version": "2026.10.19-1",
+  "real_test_rows": 1214,
   "validation": {
-    "tp": 182,
+    "tp": 353,
     "fp": 0,
-    "fn": 18,
-    "tn": 220,
+    "fn": 3,
+    "tn": 737,
     "precision": 1.0,
-    "recall": 0.91,
-    "f1": 0.9528795811518325,
+    "recall": 0.9915730337078652,
+    "f1": 0.995768688293371,
     "hard_negative_false_alarm_rate": 0.0,
     "verified_sender_false_alarm_rate": 0.0,
     "hard_negatives": 180,
-    "verified_sender_messages": 120
+    "verified_sender_messages": 140
   },
   "per_category_recall": {
+    "bongoscam": 0.9907407407407407,
     "fake_mpesa": 1.0,
     "fuliza_upgrade": 1.0,
-    "job_fee": 0.1,
+    "job_fee": 1.0,
     "kra_refund": 1.0,
     "loan_fee": 1.0,
+    "mendeley_smishing": 0.9583333333333334,
     "phishing_link": 1.0,
     "pin_request": 1.0,
     "prize": 1.0,
     "reversal": 1.0
   },
   "held_out_campaign_detection": {
-    "fake_mpesa": 0.4125,
+    "bongoscam": 0.656140350877193,
+    "fake_mpesa": 0.74375,
     "fuliza_upgrade": 1.0,
-    "job_fee": 0.7,
-    "kra_refund": 0.75,
+    "job_fee": 1.0,
+    "kra_refund": 1.0,
     "loan_fee": 1.0,
-    "phishing_link": 0.6375,
+    "mendeley_smishing": 0.37166324435318276,
+    "phishing_link": 1.0,
     "pin_request": 0.75,
     "prize": 1.0,
-    "reversal": 0.5
+    "reversal": 0.65
   },
-  "held_out_campaign_average": 0.75,
+  "held_out_campaign_average": 0.8337775995663979,
   "obfuscation": {
-    "original_detection": 0.91,
-    "disguised_detection": 0.885
+    "original_detection": 0.9915730337078652,
+    "disguised_detection": 0.9915730337078652
   },
   "by_language": {
     "en": {
-      "scam_recall": 1.0,
+      "scam_recall": 0.9864864864864865,
       "false_alarm_rate": 0.0,
-      "n": 240
+      "n": 751
     },
     "sheng": {
       "scam_recall": null,
@@ -57,9 +61,9 @@
       "n": 60
     },
     "sw": {
-      "scam_recall": 0.82,
+      "scam_recall": 0.9951923076923077,
       "false_alarm_rate": 0.0,
-      "n": 120
+      "n": 282
     }
   },
   "shared_vectors": {
@@ -67,18 +71,51 @@
     "safe_false_alarms": 0,
     "false_alarm_ids": [],
     "scam_total": 31,
-    "scam_caught": 30,
-    "missed_scam_ids": [
-      "job-fee-sw-01"
-    ],
+    "scam_caught": 31,
+    "missed_scam_ids": [],
     "caution_total": 5,
-    "caution_in_band": 1,
-    "level_agreement": 0.9206349206349206
+    "caution_in_band": 0,
+    "level_agreement": 0.8888888888888888
   },
   "size_and_speed": {
-    "model_json_kb": 389,
-    "ms_per_message_python_dev_machine": 0.26,
-    "vocabulary": 7351,
+    "model_json_kb": 1070,
+    "ms_per_message_python_dev_machine": 0.27,
+    "vocabulary": 20000,
     "phone_latency": "NOT MEASURED (needs the cheapest team phone)"
+  },
+  "real_test": {
+    "bongoscam": {
+      "tp": 17,
+      "fp": 0,
+      "fn": 0,
+      "tn": 92,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "false_alarm_rate": 0.0,
+      "n": 109
+    },
+    "mendeley_smishing": {
+      "tp": 64,
+      "fp": 2,
+      "fn": 4,
+      "tn": 1035,
+      "precision": 0.9696969696969697,
+      "recall": 0.9411764705882353,
+      "f1": 0.955223880597015,
+      "false_alarm_rate": 0.0019286403085824494,
+      "n": 1105
+    },
+    "all": {
+      "tp": 81,
+      "fp": 2,
+      "fn": 4,
+      "tn": 1127,
+      "precision": 0.9759036144578314,
+      "recall": 0.9529411764705882,
+      "f1": 0.9642857142857143,
+      "false_alarm_rate": 0.001771479185119575,
+      "n": 1214
+    }
   }
 }

@@ -1,6 +1,21 @@
 # Linda training data
 
-Status: **no real dataset yet.** Only a synthetic baseline set exists (see the end of this file). Real, scrubbed team-collected messages are still being gathered.
+Status: **real public data in use; no Kenyan data yet.** Training uses synthetic templates plus two real public datasets
+(Tanzanian Swahili and international English). Real, scrubbed Kenyan messages from the team are still being gathered and
+are the most important missing piece: until they exist, no test result is a result on Kenyan scams.
+
+## Getting the real data (each person, on their own machine)
+
+Raw and processed real data are git-ignored. To rebuild them:
+
+1. Download the Kaggle "Swahili SMS Detection Dataset" (henrydioniz) and save it as `ml/data/raw/bongoscam.csv`.
+2. Download the Mendeley "SMS Phishing Dataset" (Mishra and Soni), unzip it, and save `Dataset_5971.csv` as
+   `ml/data/raw/mendeley_smishing.csv`.
+3. Run `make data` (builds `processed/synthetic.csv` and `processed/public.csv`), then `make train`.
+
+Kenyan team messages go in `processed/team_collected.csv` with the schema below (`source` = `team_collected`).
+The trainer picks the file up automatically; put whole scam campaigns in `test` so the score shows how
+Linda handles Kenyan scam scripts it never saw.
 
 ## Schema
 
