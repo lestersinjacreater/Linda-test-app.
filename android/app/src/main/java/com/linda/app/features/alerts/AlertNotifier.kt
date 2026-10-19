@@ -15,6 +15,7 @@ import com.linda.app.MainActivity
 import com.linda.app.R
 import com.linda.app.core.util.Prefs
 import com.linda.app.features.calls.CallWarning
+import com.linda.app.features.calls.VerifiedCaller
 import com.linda.app.features.detection.ReasonsJson
 import com.linda.app.features.detection.RiskLevel
 import com.linda.app.features.detection.Verdict
@@ -24,6 +25,7 @@ object AlertNotifier {
     const val EXTRA_DETECTION_ID = "detection_id"
     private const val CHANNEL_SCAM = "linda_scam"
     private const val CHANNEL_CAUTION = "linda_caution"
+    private const val CHANNEL_VERIFIED = "linda_verified"
 
     @SuppressLint("MissingPermission") // checked just below
     fun show(context: Context, detectionId: Long, verdict: Verdict) {
@@ -86,6 +88,31 @@ object AlertNotifier {
         NotificationManagerCompat.from(context).notify(("call" + msisdn).hashCode(), notification)
     }
 
+    /**
+     * The verified badge for a genuine caller (e.g. Safaricom Customer Care on 0722 000 000). It still
+     * reminds the user never to share their PIN, because a genuine caller never needs it.
+     */
+    fun showVerifiedCaller(context: Context, msisdn: String, caller: VerifiedCaller) {
+        if (Build.VERSION.SDK_INT >= 33 &&
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+        ) return
+        val localized = Prefs.localized(context)
+        createChannels(localized)
+        val name = caller.name(Prefs.effectiveLanguage(context))
+        val text = localized.getString(R.string.call_verified_text, name)
+        val notification = NotificationCompat.Builder(context, CHANNEL_VERIFIED)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(localized.getString(R.string.call_verified_title, name))
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
+            .build()
+        NotificationManagerCompat.from(context).notify(("call" + msisdn).hashCode(), notification)
+    }
+
     private fun createChannels(localized: Context) {
         val manager = localized.getSystemService(NotificationManager::class.java)
         manager.createNotificationChannel(
@@ -93,6 +120,9 @@ object AlertNotifier {
         )
         manager.createNotificationChannel(
             NotificationChannel(CHANNEL_CAUTION, localized.getString(R.string.channel_caution), NotificationManager.IMPORTANCE_DEFAULT),
+        )
+        manager.createNotificationChannel(
+            NotificationChannel(CHANNEL_VERIFIED, localized.getString(R.string.channel_verified), NotificationManager.IMPORTANCE_HIGH),
         )
     }
 }

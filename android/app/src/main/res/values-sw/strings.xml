@@ -322,4 +322,9 @@
     <string name="overlay_toast_on">Paneli ya onyesho imewashwa</string>
     <string name="overlay_toast_off">Paneli ya onyesho imezimwa</string>
     <string name="dev_demo_overlay">Onyesha paneli ya onyesho</string>
+    <string name="call_verified_title">✅ Imethibitishwa: %1$s</string>
+    <string name="call_verified_text">Hii ni nambari halisi ya %1$s. Hata hivyo, usimpe mtu yeyote PIN yako ya M-Pesa.</string>
+    <string name="channel_verified">Wanaopiga waliothibitishwa</string>
+    <string name="demo_call_safaricom">Igiza simu kutoka Huduma kwa Wateja ya Safaricom (0722 000 000)</string>
+    <string name="demo_call_verified">Alama ya uthibitisho imeonyeshwa: %1$s.</string>
 </resources>

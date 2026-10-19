@@ -328,4 +328,9 @@
     <string name="overlay_toast_on">Demo overlay is on</string>
     <string name="overlay_toast_off">Demo overlay is off</string>
     <string name="dev_demo_overlay">Show the demo overlay</string>
+    <string name="call_verified_title">✅ Verified: %1$s</string>
+    <string name="call_verified_text">This is the genuine %1$s number. Even so, never share your M-Pesa PIN with anyone.</string>
+    <string name="channel_verified">Verified callers</string>
+    <string name="demo_call_safaricom">Simulate a call from Safaricom Customer Care (0722 000 000)</string>
+    <string name="demo_call_verified">Verified badge shown: %1$s.</string>
 </resources>

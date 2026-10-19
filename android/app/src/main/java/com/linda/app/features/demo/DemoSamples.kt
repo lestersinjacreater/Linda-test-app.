@@ -12,6 +12,8 @@ data class DemoSample(@StringRes val title: Int, val sender: String, val body: S
  */
 object DemoSamples {
     const val SCAMMER_NUMBER = "254700000777"
+    /** Safaricom Customer Care, on the verified list (shared/verified_callers.json). */
+    const val SAFARICOM_CARE_NUMBER = "254722000000"
 
     val all = listOf(
         DemoSample(

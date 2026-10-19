@@ -492,3 +492,25 @@ held out), which is why real Kenyan examples are the next priority.
 
 **Known limits.** No Kenyan test data yet. The model file grew to about 1 MB (vocabulary 20,000); making it lighter is a
 separate task.
+
+## Verified-caller badges
+
+**What it does.** When a genuine number calls, such as Safaricom Customer Care on 0722 000 000, Linda shows
+"✅ Verified: Safaricom Customer Care" before the call is answered, with a reminder never to share the M-Pesa PIN.
+
+**Why.** Scammers pretend to be Safaricom. Safaricom's own campaigns say it only calls customers from 0722 000 000. If the
+genuine number always carries a badge, a "Safaricom" call without the badge stands out.
+
+**How.**
+- The list lives in `shared/verified_callers.json`. Every entry records the official source it came from. We only add
+  numbers from official public sources, because a wrong entry would vouch for a scammer.
+- The gateway serves the list at `GET /v1/verified-callers`, says `verified` (with the name) in risk lookups, and never
+  confirms a verified number as a scammer, however many phones report it.
+- The app bundles a copy so it works offline, refreshes it after each sync, and checks it in call screening.
+- **Warnings always beat the badge.** If a verified number has sent a scam message or is on the blocklist, Linda shows the
+  warning, never the badge. The list is public, so the whole list may be on the phone; flagged numbers never are.
+
+**Known limit.** Caller ID can be faked on some routes (spoofing). On a phone alone, Linda trusts the number Android shows.
+In production, Safaricom's network can confirm a call truly came from its own line before the badge is shown.
+
+**Demo.** Demo mode has a "Simulate a call from Safaricom Customer Care" button next to the scam-call one.

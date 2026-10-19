@@ -1,0 +1,13 @@
+{
+  "version": "2026.10.19-1",
+  "note": "Genuine numbers that call customers. A number is added only from an official public source, recorded in `source`. Never add a number on guesswork: a wrong entry would vouch for a scammer. In production this list comes from Safaricom (root CLAUDE.md 5.12).",
+  "callers": [
+    {
+      "msisdn": "254722000000",
+      "name_en": "Safaricom Customer Care",
+      "name_sw": "Huduma kwa Wateja ya Safaricom",
+      "kind": "safaricom",
+      "source": "Safaricom public fraud-awareness campaigns: Safaricom only calls customers from 0722 000 000"
+    }
+  ]
+}

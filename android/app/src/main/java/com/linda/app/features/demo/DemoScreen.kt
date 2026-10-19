@@ -23,7 +23,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.linda.app.R
 import com.linda.app.features.calls.CallWarning
+import com.linda.app.features.calls.CallLabel
 import com.linda.app.features.calls.CallWarnings
+import com.linda.app.features.calls.VerifiedCall
+import com.linda.app.core.util.Prefs
 import com.linda.app.features.detection.RiskLevel
 import com.linda.app.features.sms.MessageProcessor
 import kotlinx.coroutines.launch
@@ -61,16 +64,25 @@ fun DemoScreen(onBack: () -> Unit) {
 
         LindaButton(stringResource(R.string.demo_call), onClick = {
                 scope.launch {
-                    val warning = CallWarnings.check(context, DemoSamples.SCAMMER_NUMBER)
-                    status = when (warning) {
-                        is CallWarning.RecentScamMessage -> context.getString(R.string.demo_call_recent, warning.minutesAgo)
-                        is CallWarning.ReportedNumber -> context.getString(R.string.demo_call_reported)
-                        null -> context.getString(R.string.demo_call_none)
-                    }
+                    status = describeCall(context, CallWarnings.check(context, DemoSamples.SCAMMER_NUMBER))
+                }
+            }, modifier = Modifier.fillMaxWidth(), secondary = true)
+
+        LindaButton(stringResource(R.string.demo_call_safaricom), onClick = {
+                scope.launch {
+                    status = describeCall(context, CallWarnings.check(context, DemoSamples.SAFARICOM_CARE_NUMBER))
                 }
             }, modifier = Modifier.fillMaxWidth(), secondary = true)
 
         status?.let { Text(it, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary) }
         LindaButton(stringResource(R.string.action_back), onClick = onBack, modifier = Modifier.fillMaxWidth(), secondary = true)
     }
+}
+
+/** What demo mode prints after simulating a call. */
+private fun describeCall(context: android.content.Context, label: CallLabel?): String = when (label) {
+    is CallWarning.RecentScamMessage -> context.getString(R.string.demo_call_recent, label.minutesAgo)
+    is CallWarning.ReportedNumber -> context.getString(R.string.demo_call_reported)
+    is VerifiedCall -> context.getString(R.string.demo_call_verified, label.caller.name(Prefs.effectiveLanguage(context)))
+    null -> context.getString(R.string.demo_call_none)
 }
