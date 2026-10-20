@@ -12,5 +12,7 @@ root contracts 5.1, 5.4 and 5.5.
 - Scenarios: `POST /scenarios/blast` (exists), `POST /scenarios/rotating` (same script from 3
   numbers in sequence), `POST /scenarios/poison` (fake devices report an innocent number),
   `POST /scenarios/call` (emits `call_attempt` events; warns feature phones of confirmed callers).
+- Done: real model, full 5.1 reports, blast/rotating/poison/call scenarios, adoption levels (`?adoption=`), `GET /adoption/odds`,
+  warnings after scam calls, warning SMS to `REAL_PHONES` through Africa's Talking (root item 6, contracts.md "Network effect additions").
 - Keep fixed seed + `SIM_SPEED` so the demo is identical every run.
 - The metrics endpoint stays the source of the headline numbers.

@@ -46,7 +46,7 @@ def stack(tmp_path_factory):
     radar = subprocess.Popen(
         serve + ["--port", str(radar_port)], cwd=ROOT / "backend", stdin=subprocess.DEVNULL,
         env={**base_env, "DATABASE_URL": f"sqlite:///{db}", "TELCO_URL": f"http://127.0.0.1:{telco_port}",
-             "RADAR_DEMO_TRUSTED_PREFIX": "5111"})
+             "RADAR_DEMO_TRUSTED_PREFIX": "5111", "RADAR_DEMO_TRUSTED_TRUST": "0.85"})  # as docker-compose
     telco = subprocess.Popen(
         serve + ["--port", str(telco_port)], cwd=ROOT / "simulator", stdin=subprocess.DEVNULL,
         env={**base_env, "RADAR_URL": f"http://127.0.0.1:{radar_port}", "SIM_SPEED": "0", "SIM_SEED": "42"})
@@ -63,8 +63,8 @@ def stack(tmp_path_factory):
                 p.kill()
 
 
-def run(telco: str, scenario: str) -> dict:
-    r = httpx.post(f"{telco}/scenarios/{scenario}", params={"wait": "true"}, timeout=60)
+def run(telco: str, scenario: str, **params) -> dict:
+    r = httpx.post(f"{telco}/scenarios/{scenario}", params={"wait": "true", **params}, timeout=60)
     assert r.status_code == 200, r.text
     return r.json()
 
@@ -100,3 +100,34 @@ def test_rotating_numbers_all_get_confirmed(stack):
     result = run(telco, "rotating")
     statuses = [httpx.get(f"{radar}/v1/numbers/{s}/risk").json()["status"] for s in result["senders"]]
     assert statuses == ["confirmed"] * 3
+
+
+def test_three_demo_phones_are_enough_for_the_real_gateway(stack):
+    """The pitch says 3 independent Linda phones. With demo trust 0.85 the real gateway agrees."""
+    _, telco = stack
+    run(telco, "blast")
+    history = httpx.get(f"{telco}/history").json()
+    confirmed_at = next(i for i, e in enumerate(history) if e["type"] == "sender_confirmed")
+    reports_before = [e for e in history[:confirmed_at] if e["type"] == "report_sent"]
+    assert len(reports_before) == 3
+
+
+def test_adoption_levels_on_the_real_gateway(stack):
+    _, telco = stack
+    m = {pct: run(telco, "blast", adoption=pct)["metrics"] for pct in ("0.5", "1", "2")}
+    assert all(x["delivered"] == 500 for x in m.values())
+    assert m["0.5"]["linda_recipients"] <= m["1"]["linda_recipients"] <= m["2"]["linda_recipients"]
+    assert m["1"]["confirmed_after_s"] is not None and m["1"]["feature_phones_warned_before_read_pct"] > 90
+
+
+def test_calls_from_a_number_the_gateway_confirmed_are_all_protected(stack):
+    _, telco = stack
+    scammer = run(telco, "blast")["senders"][0]  # the gateway now knows this number
+    calls = run(telco, "call", caller=scammer)["metrics"]["calls"]
+    assert calls["unprotected"] == 0 and calls["warned_after_call"] > 0
+
+
+def test_sms_then_calls_on_the_real_gateway(stack):
+    _, telco = stack
+    calls = run(telco, "call")["metrics"]["calls"]
+    assert calls["protected_pct"] > 80

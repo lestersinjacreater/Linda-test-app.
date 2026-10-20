@@ -121,5 +121,8 @@ describe("replay timing and wording", () => {
   it("describes events in plain English without any message text", () => {
     expect(say(ev("sender_confirmed", { sender: "254700900010", confirmed_after_s: 28.5 }))).toContain("RADAR CONFIRMED");
     expect(say(ev("warning_delivered", { kind: "feature", town: "Garissa", before_read: true }))).toBe("Basic phone in Garissa warned by the network before reading");
+    expect(say(ev("warning_delivered", { kind: "feature", town: "Thika", channel: "after_call", before_read: false }))).toBe("Basic phone in Thika warned by SMS right after the scam call");
+    expect(say(ev("call_labelled", { kind: "linda", town: "Nyeri", label: "reported" }))).toBe("Linda phone in Nyeri labelled the call before answering (reported for fraud)");
+    expect(say(ev("call_attempt", { sender: "254700900010", kind: "smart", known: true }))).toContain("already confirmed");
   });
 });

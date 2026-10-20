@@ -46,6 +46,13 @@ demo:
 	@echo
 	curl -s -X POST "$(TELCO)/scenarios/blast?wait=true" | python3 -m json.tool
 
+# The same 500-person blast at 0.5%, 1% and 2% Linda adoption, then the average over many replays.
+demo-adoption:
+	@for a in 0.5 1 2; do \
+	  curl -s -X POST "$(TELCO)/scenarios/blast?adoption=$$a&wait=true" | python3 scripts/print_adoption.py; \
+	done
+	@curl -s "$(TELCO)/adoption/odds" | python3 scripts/print_adoption.py
+
 # ---- Production on a VPS (docs/DEPLOY.md). Needs .env.production (copy .env.production.example) ----
 PROD = docker compose -f docker-compose.prod.yml --env-file .env.production
 

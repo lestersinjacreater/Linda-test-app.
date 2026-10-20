@@ -151,9 +151,12 @@ Server-side and tests only. Phones use the hashed sync in 5.11 (principle 6).
 ### 5.5 Simulator → dashboard: WebSocket `{TELCO_URL}/events`
 Event objects `{ "type": ..., "sim_time": ..., ...}` with types:
 `reset, blast_started, sms_delivered, linda_detected, report_sent, report_failed,
-sender_confirmed, warning_delivered (before_read: bool), blast_finished`.
+sender_confirmed, warning_delivered (before_read: bool, channel: sms|after_call, real_sms: bool), blast_finished,
+call_attempt (known: bool), call_labelled (label: reported|recent_scam_message|suspected)`.
 `GET /metrics?sender=` returns the headline numbers (delivered, warned, warned_before_read_pct,
-feature_phones_warned_before_read_pct, first_detection_after_s, confirmed_after_s).
+feature_phones_warned_before_read_pct, first_detection_after_s, confirmed_after_s, adoption_pct, linda_recipients,
+calls, real_phone_sms). Scenarios take `?adoption=<percent>` (0.5, 1, 2: a 2,000-phone country, 500 recipients);
+`POST /scenarios/call[?caller=2547...]`; `GET /adoption/odds` replays the blast many times per level (details in `shared/contracts.md`).
 
 ### 5.6 USSD (Africa's Talking callback): `POST /ussd` (form fields)
 `sessionId, serviceCode, phoneNumber, networkCode, text` → plain-text reply starting with
@@ -285,8 +288,9 @@ Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendele
 3. ~~Verified-caller badges in the gateway and the app.~~ Done (5.13). In production the list comes from 5.12.
 4. ~~Private hash-prefix lookups and hashed sync (5.10, 5.11), then retire 5.3 for phones.~~ Done.
 5. ~~Lightweight model (5.8, 7.1 budgets), Python and Kotlin together.~~ Done (model `2026.10.20-1`, 87 KB).
-6. Network effect in the simulator: adoption levels (0.5%, 1%, 2%), warnings after scam calls, warning
-   SMS to a real basic phone via Africa's Talking (if organisers allow).
+6. ~~Network effect in the simulator: adoption levels (0.5%, 1%, 2%), warnings after scam calls, warning
+   SMS to a real basic phone via Africa's Talking (if organisers allow).~~ Done. A real SIM needs a live Africa's
+   Talking account (the sandbox only reaches its web simulator) and the organisers' OK.
 7. USSD checker (5.6). Stretch.
 8. Payment precheck (5.7). Drop if short of time.
 9. Dashboard updates for fraud-intel hits, verified callers and adoption levels.
