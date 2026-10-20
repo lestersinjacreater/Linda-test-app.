@@ -49,7 +49,8 @@ fun LindaButton(
     if (secondary) {
         OutlinedButton(
             onClick = onClick, enabled = enabled, modifier = sized, shape = MediumShape,
-            border = BorderStroke(1.dp, colors.border), contentPadding = padding, interactionSource = interaction,
+            // textSecondary, not border: a control's outline needs 3:1, and border is only 1.3:1 (docs/design-system.md 7.9).
+            border = BorderStroke(1.dp, colors.textSecondary), contentPadding = padding, interactionSource = interaction,
             colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.textPrimary),
         ) { Text(text, style = MaterialTheme.typography.labelLarge) }
     } else {

@@ -661,3 +661,29 @@ never protects fewer people, odds within 4 points of the binomial, no after-call
 protected from the first call, a suspected caller gets the softer label, the real phone gets exactly one SMS with no scam text,
 real phones do not change the simulated run, no key still runs, the Africa's Talking request shape. `tests/e2e` runs the same
 scenarios against the real gateway. Try it: `make up`, then `make demo-adoption`.
+
+## UI pass on the key moments (from the design system and the mockups)
+
+**What changed in the app, and why:**
+- **Warning notifications have buttons.** "See why" opens the explanation straight away; on a likely scam, "Report this
+  number" opens the report sheet. The sheet still lists exactly what will be sent, so nothing ever leaves the phone without
+  the person seeing it first. Tapping the warning itself still opens the full-screen "Stop" for a confident scam.
+  (`features/alerts/AlertNotifier.kt`; which screen each button opens is `features/alerts/WarningRoute.kt`, unit tested.)
+- **No emoji in warning titles.** Emoji render differently on every phone. Instead the notification is tinted with the
+  risk colour (red for scams, amber for caution, green for a verified caller), which colours Linda's icon and name.
+- **"Safaricom's fraud team", not "the radar".** Customers do not know what a radar is. The consent screen and the report
+  sheet now say where a report really ends up (through Linda's server, root CLAUDE.md 5.12). The developer screen still
+  says "radar server address", because that is for the team.
+- **Darker outlines on secondary buttons and text fields.** The old outline colour was 1.3:1 against the card; a control
+  needs at least 3:1 to be seen, especially in sunlight. They now use the secondary text colour (5:1 or more).
+- **A bigger "Stop" headline** on the scam takeover (28sp bold instead of 24sp): it is the loudest moment in the app.
+- **A Network card on Home** ("You help protect others too"), shown only to people who agreed to send reports, because only
+  they help warn others. It explains the network effect in one sentence and shows no number, since we never show a
+  figure we cannot prove.
+
+**Swahili:** the new lines were written by the team's tools, not a native speaker. Check "Nionyeshe kwa nini", "Unasaidia
+kulinda wengine pia", the Network card body and "kitengo cha Safaricom cha kupambana na ulaghai" before the demo.
+
+**Tested by:** `WarningRouteTest` (each button opens the right screen; titles have no emoji in either language; the new
+wording exists in English and Swahili; no "rada" left in the consent or report text). The screens themselves are checked
+in the APK that CI builds.
