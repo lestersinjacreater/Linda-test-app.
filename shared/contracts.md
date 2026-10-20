@@ -22,12 +22,17 @@ bit b of the result is 1 when the sum over pieces of (+count if bit b is set, el
 Text shorter than 3 characters is one piece; empty text gives `0000000000000000`. Output is 16 lowercase hex chars.
 
 ## Model artifact details (5.8, implemented in ml/src/features/train/train.py and scoring/scorer.py)
-- `vectorizer`: `analyzer` `char_wb`, `ngram_range` [2,5], `sublinear_tf`, `norm` `l2`, `vocabulary` (n-gram to column), `idf`.
-  Scored on the NORMALISED text (no lowercasing inside the vectorizer).
+- `vectorizer`: `analyzer` `char_wb`, `ngram_range` [2,5], `sublinear_tf`, `norm` `l2`, `hash` `fnv1a_64`, `buckets` (32768),
+  `idf_scale` (16), `idf_uint8_b64`. Scored on the NORMALISED text (no lowercasing inside the vectorizer).
 - `char_wb` n-grams: for each whitespace-separated word, pad one space on each side; for each n from 2 to 5 take every
   window of n characters (a word shorter than n gives its padded form once, then longer n are skipped).
-- Weight of an n-gram in the vocabulary: `(1 + ln(count)) * idf`; then divide all weights by their L2 norm
-  (n-grams outside the vocabulary are ignored, and an empty vector stays empty).
+- Slot of an n-gram: FNV-1a 64 (same constants as the fingerprint) over its UTF-8 bytes, read as an UNSIGNED 64-bit
+  number, modulo `buckets`. Two n-grams may share a slot; their counts add up.
+- `idf[slot]` = byte `slot` of base64-decoded `idf_uint8_b64`, read UNSIGNED (0 to 255), divided by `idf_scale`.
+  A slot seen in fewer than 3 training messages has idf 0, so it is ignored.
+- Weight of a slot: `(1 + ln(count)) * idf[slot]`; then divide all weights by their L2 norm (an empty vector stays empty).
+- `coef[slot]` = byte `slot` of base64-decoded `coef_int8_b64`, read SIGNED (-127 to 127), times `coef_scale`.
+  Training reports metrics with these rounded weights, so the numbers describe the shipped file.
 - `metadata_features`: ordered list of `{name, coef}` for five 0/1 features computed on the RAW text and sender
   (`sender_verified`, `sender_personal_number`, `has_link`, `mpesa_style`, `fake_mpesa`; exact rules in
   ml/src/features/scoring/metadata.py). `verified_senders` is embedded so every platform uses the same list.

@@ -29,6 +29,20 @@ class ParityTest {
         assertEquals(0x85944171F73967E8uL.toLong(), SimHash.fnv1a64("foobar".toByteArray()))
     }
 
+    @Test fun letterPiecesGoInTheSameSlotsAsPython() {
+        // Values from ml/src/features/scoring/scorer.py bucket_of(gram, 32768); "é" checks UTF-8 bytes.
+        val expected = mapOf(" ki" to 14639, " nimek" to 5213, "pesa" to 20994, "a" to 27788, "é" to 7681)
+        for ((gram, slot) in expected) assertEquals(gram, slot, TestData.scorer.bucketOf(gram))
+    }
+
+    @Test fun explanationsStillNameTheMessagesOwnLetters() {
+        val text = "Nimekutumia 2,500 kimakosa, tafadhali nirudishie haraka"
+        val top = TestData.scorer.explain(text, "254700000123").ngramContributions.take(10)
+        val normalized = Normalizer.normalize(text)
+        assertTrue(top.isNotEmpty())
+        for ((gram, _) in top) assertTrue(gram, normalized.contains(gram.trim()))
+    }
+
     @Test fun modelVersionIsTheOneInTheVectorsRepo() {
         assertTrue(TestData.scorer.version.isNotBlank())
         assertEquals(0.55, TestData.scorer.warnThreshold, 1e-9)

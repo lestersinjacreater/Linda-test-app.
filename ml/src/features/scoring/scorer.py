@@ -1,14 +1,21 @@
 """Scores a message from a model JSON file, with no scikit-learn.
 
-This is the reference the Kotlin app and the simulator copy: it uses only the JSON
-(vocabulary, idf, coef, intercept) and plain arithmetic. Tests prove it equals
-scikit-learn's probability, and the Kotlin tests prove it equals this.
+This is the reference the Kotlin app and the simulator copy: it uses only the JSON and plain
+arithmetic. Tests prove it equals the training code's probability, and the Kotlin tests prove it
+equals this.
+
+The model is LIGHTWEIGHT (root CLAUDE.md 5.8, 7.1): instead of a dictionary of 20,000 letter
+pieces, each piece is put in one of `buckets` slots by a hash (FNV-1a, the same one the phone
+already uses for fingerprints). The weights are stored as 1-byte numbers. The whole model is about
+87 KB instead of 1 MB, with the same accuracy (ml/reports/metrics.md).
 """
+import base64
 import json
 import math
 from collections import Counter
 from pathlib import Path
 
+from src.features.fingerprint.simhash import fnv1a_64
 from src.features.normalize.normalize import normalize
 from src.features.scoring.metadata import metadata_features
 
@@ -30,14 +37,39 @@ def char_wb_ngrams(text: str, ngram_range: tuple[int, int]) -> list[str]:
     return grams
 
 
+def bucket_of(gram: str, buckets: int) -> int:
+    """Which slot a letter piece goes in. Two pieces can share a slot; that is accounted for in training."""
+    return fnv1a_64(gram.encode("utf-8")) % buckets
+
+
+def bucket_counts(normalized: str, ngram_range: tuple[int, int], buckets: int) -> Counter:
+    return Counter(bucket_of(g, buckets) for g in char_wb_ngrams(normalized, ngram_range))
+
+
+def hashed_weights(normalized: str, ngram_range: tuple[int, int], buckets: int, idf: list[float]) -> dict[int, float]:
+    """Slot to weight: (1 + ln(count)) * idf, then divided by the L2 norm. Training uses this exact function."""
+    weights = {b: (1.0 + math.log(c)) * idf[b] for b, c in bucket_counts(normalized, ngram_range, buckets).items()}
+    norm = math.sqrt(sum(w * w for w in weights.values()))
+    return {b: w / norm for b, w in weights.items()} if norm > 0 else {}
+
+
+def decode_idf(vec: dict) -> list[float]:
+    return [q / vec["idf_scale"] for q in base64.b64decode(vec["idf_uint8_b64"])]
+
+
+def decode_coef(model: dict) -> list[float]:
+    scale = model["coef_scale"]
+    return [(q - 256 if q > 127 else q) * scale for q in base64.b64decode(model["coef_int8_b64"])]  # bytes are signed
+
+
 class Scorer:
     def __init__(self, model: dict):
         self.model = model
         vec = model["vectorizer"]
-        self.vocabulary: dict[str, int] = vec["vocabulary"]
-        self.idf: list[float] = vec["idf"]
+        self.buckets: int = vec["buckets"]
         self.ngram_range = tuple(vec["ngram_range"])
-        self.coef: list[float] = model["coef"]
+        self.idf = decode_idf(vec)
+        self.coef = decode_coef(model)
         self.intercept: float = model["intercept"]
         self.meta_coef = {m["name"]: m["coef"] for m in model["metadata_features"]}
         self.meta_order = [m["name"] for m in model["metadata_features"]]
@@ -50,21 +82,14 @@ class Scorer:
     def from_file(cls, path: str | Path) -> "Scorer":
         return cls(json.loads(Path(path).read_text(encoding="utf-8")))
 
-    def _tfidf(self, normalized: str) -> dict[int, float]:
-        counts = Counter(g for g in char_wb_ngrams(normalized, self.ngram_range) if g in self.vocabulary)
-        weights = {self.vocabulary[g]: (1.0 + math.log(c)) * self.idf[self.vocabulary[g]] for g, c in counts.items()}
-        norm = math.sqrt(sum(w * w for w in weights.values()))
-        return {i: w / norm for i, w in weights.items()} if norm > 0 else {}
-
     def logit_parts(self, text: str, sender: str | None) -> tuple[dict[int, float], dict[str, float], float]:
-        normalized = normalize(text)
-        tfidf = self._tfidf(normalized)
+        weights = hashed_weights(normalize(text), self.ngram_range, self.buckets, self.idf)
         values = metadata_features(text, sender, self.verified)
         meta = dict(zip(self.meta_order, values))
         z = self.intercept
-        z += sum(self.coef[i] * w for i, w in tfidf.items())
+        z += sum(self.coef[b] * w for b, w in weights.items())
         z += sum(self.meta_coef[n] * v for n, v in meta.items())
-        return tfidf, meta, z
+        return weights, meta, z
 
     def score(self, text: str, sender: str | None = None) -> float:
         z = self.logit_parts(text, sender)[2]

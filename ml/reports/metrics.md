@@ -1,6 +1,6 @@
 # Linda model metrics
 
-Model `2026.10.19-1` · thresholds warn 0.55 / scam 0.8
+Model `2026.10.20-1` · thresholds warn 0.55 / scam 0.8
 
 > **READ THIS FIRST.** Section 8 is the only section measured on **real messages the model never saw** (1214 rows).
 > There is **no Kenyan test data yet**: the real test rows are Tanzanian Swahili (Bongoscam) and international English (Mendeley). Quote them as such, not as results on Kenyan scams.
@@ -17,18 +17,18 @@ Model `2026.10.19-1` · thresholds warn 0.55 / scam 0.8
 
 | Campaign | Detected |
 |---|---|
-| bongoscam | 65.6% |
-| fake_mpesa | 74.4% |
+| bongoscam | 63.2% |
+| fake_mpesa | 71.9% |
 | fuliza_upgrade | 100.0% |
 | job_fee | 100.0% |
 | kra_refund | 100.0% |
 | loan_fee | 100.0% |
-| mendeley_smishing | 37.2% |
+| mendeley_smishing | 32.4% |
 | phishing_link | 100.0% |
 | pin_request | 75.0% |
 | prize | 100.0% |
 | reversal | 65.0% |
-| **average** | **83.4%** |
+| **average** | **82.5%** |
 
 ## 3. Per-category recall (validation)
 
@@ -63,12 +63,12 @@ Model `2026.10.19-1` · thresholds warn 0.55 / scam 0.8
 - SAFE messages wrongly warned: **0 of 27** 
 - Scams caught: 31 of 31; missed: none
 - CAUTION cases scoring in the caution band: 0 of 5 (the text model alone cannot judge these: they need the app's context signals such as unknown sender and not in contacts)
-- Level agreement with expected labels: 88.9%
+- Level agreement with expected labels: 92.1%
 
 ## 7. Size and speed
 
-- Model file: 1070 KB, vocabulary 20000
-- 0.27 ms per message (Python, dev machine). Phone latency: NOT MEASURED (needs the cheapest team phone)
+- Model file: 86 KB, 32768 hashed slots, 1-byte weights
+- 0.35 ms per message (Python, dev machine). Phone latency: NOT MEASURED (needs the cheapest team phone)
 
 ## 8. REAL test set (real messages, never trained or tuned on)
 

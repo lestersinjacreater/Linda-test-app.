@@ -5,6 +5,7 @@
 > - Old section 4 (repo layout) and section 7 phases are replaced by root sections 3 and 8.
 > - Old `shared/test-vectors.json` schema (`expected_level`) is replaced by root section 5.9.
 > - `dashboard/` is now the live demo dashboard (root section 6), not a Supabase campaign radar.
+> - Section 8's export contract (`linda_model.json` with a vocabulary) is replaced by root section 5.8 (hashed slots, 1-byte weights, `assets/model.json`).
 > - Section 10 (UI and design direction) is **replaced** by `docs/design-system.md` (Safaricom green, light by default, the five-layer trace).
 
 # CLAUDE.md — Linda: On-Device Scam Shield

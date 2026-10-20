@@ -1,4 +1,5 @@
 """The exported model: parity with scikit-learn, and the safety gates on the shared vectors."""
+import base64
 import json
 import sys
 from pathlib import Path
@@ -67,12 +68,37 @@ def test_scam_vectors_are_caught_except_known_misses():
 
 def test_model_file_has_the_contract_fields():
     m = json.loads(MODEL_PATH.read_text(encoding="utf-8"))
-    for key in ("version", "created_at", "normalizer_version", "vectorizer", "classes", "coef", "intercept",
-                "metadata_features", "thresholds", "categories", "metrics"):
+    for key in ("version", "created_at", "normalizer_version", "vectorizer", "classes", "coef_scale",
+                "coef_int8_b64", "intercept", "metadata_features", "thresholds", "categories", "metrics"):
         assert key in m, key
+    vec = m["vectorizer"]
+    assert vec["hash"] == "fnv1a_64" and vec["analyzer"] == "char_wb" and vec["ngram_range"] == [2, 5]
+    assert len(base64.b64decode(m["coef_int8_b64"])) == len(base64.b64decode(vec["idf_uint8_b64"])) == vec["buckets"]
     assert m["thresholds"] == {"warn": 0.55, "scam": 0.80}
-    assert len(m["coef"]) == len(m["vectorizer"]["idf"]) == len(m["vectorizer"]["vocabulary"])
     assert m["version"] in MODEL_PATH.name
+
+
+def test_model_file_is_within_the_lightweight_budget():
+    """Root CLAUDE.md 7.1: model file under 300 KB."""
+    assert MODEL_PATH.stat().st_size < 300 * 1024
+
+
+def test_one_byte_weights_barely_change_scores():
+    """Rounding the weights to 1 byte must not move any shared vector's score by more than 0.02."""
+    from src.features.train import train as T
+    verified = {s.upper() for s in scorer.verified}
+    rows = generate(seed=3, per_template=3)
+    vec, clf = T.train(rows, verified, C=1.0)
+    exact = clf.predict_proba(T.design_matrix(rows[:200], vec, verified))[:, 1]
+    shipped = T.probabilities(vec, clf, rows[:200], verified)
+    assert max(abs(a - b) for a, b in zip(exact, shipped)) < 0.02
+
+
+def test_bucket_uses_the_published_fnv1a_64():
+    """Kotlin must put each letter piece in the same slot: FNV-1a 64 of the UTF-8 bytes, unsigned, mod buckets."""
+    from src.features.scoring.scorer import bucket_of
+    assert bucket_of("a", 2**64) == 0xAF63DC4C8601EC8C  # published FNV-1a 64 test value
+    assert bucket_of(" ki", 32768) == bucket_of(" ki", 2**64) % 32768
 
 
 def test_copies_in_android_and_simulator_have_the_same_version():
