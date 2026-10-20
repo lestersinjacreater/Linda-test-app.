@@ -333,4 +333,6 @@
     <string name="channel_verified">Verified callers</string>
     <string name="demo_call_safaricom">Simulate a call from Safaricom Customer Care (0722 000 000)</string>
     <string name="demo_call_verified">Verified badge shown: %1$s.</string>
+    <string name="call_warning_suspected">This number has been reported as a possible scammer. Be careful: never send money or share your PIN.</string>
+    <string name="demo_call_suspected">Call warning shown: number reported, not yet confirmed.</string>
 </resources>

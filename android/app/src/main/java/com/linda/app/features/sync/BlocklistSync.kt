@@ -20,16 +20,16 @@ import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
 object BlocklistSync {
-    /** Downloads the changes and stores them. Returns false when the radar cannot be reached (offline is normal). */
+    /** Downloads the hashed changes (contract 5.11) and stores them. Returns false when the gateway cannot be reached (offline is normal). */
     suspend fun run(context: Context): Boolean {
         val server = Prefs.serverUrl(context)
         if (server.isBlank()) return false
         val since = Prefs.lastSyncAsOf(context)?.let { "?since=" + URLEncoder.encode(it, "UTF-8") } ?: ""
-        val response = Http.get("$server/v1/blocklist$since") ?: return false
+        val response = Http.get("$server/v1/sync$since", headers = PrivateLookup.headers(context)) ?: return false
         if (response.code != 200) return false
         val delta = try { BlocklistParser.parse(response.body) } catch (e: Exception) { return false }
         val dao = (context.applicationContext as LindaApp).database.blockedNumberDao()
-        dao.insertAll(delta.added.map { BlockedNumberEntity(it.msisdn, it.category) })
+        dao.insertAll(delta.added.map { BlockedNumberEntity(it.hash, it.category, it.label, it.labelSw) })
         if (delta.removed.isNotEmpty()) dao.deleteAll(delta.removed)
         Prefs.setLastSync(context, delta.asOf, System.currentTimeMillis())
         syncVerifiedCallers(context, server)

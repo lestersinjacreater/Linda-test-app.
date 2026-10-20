@@ -13,6 +13,8 @@ from src.features.confirmation.service import load_verified_senders
 from src.features.intel.client import HttpIntelClient, IntelClient
 from src.features.intel.sync import sync_intel
 from src.features.lookups.router import router as lookups_router
+from src.features.private.ratelimit import RateLimiter
+from src.features.private.router import router as private_router
 from src.features.reports.router import router as reports_router
 from src.features.verified.router import router as verified_router
 from src.features.verified.service import load_verified_callers
@@ -45,11 +47,13 @@ def create_app(
     app.state.notifier = notifier or make_telco_notifier(settings)
     app.state.clock = clock
     app.state.intel_client = intel_client
+    app.state.lookup_limiter = RateLimiter(settings.lookup_rate_per_hour, clock)
     app.state.intel_cursor = None  # "as_of" of the last fraud-intel sync
     app.state.intel_last = {"enabled": intel_client is not None}
     app.include_router(reports_router)
     app.include_router(lookups_router)
     app.include_router(verified_router)
+    app.include_router(private_router)
 
     @app.get("/health")
     def health() -> dict:

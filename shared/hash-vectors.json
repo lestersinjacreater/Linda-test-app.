@@ -1,0 +1,25 @@
+{
+  "note": "Phone number -> lowercase hex SHA-256 of the number as 2547XXXXXXXX (UTF-8). Python (backend) and Kotlin (android) must both reproduce every case (root CLAUDE.md 5.10).",
+  "cases": [
+    {
+      "msisdn": "254700000777",
+      "sha256": "7e85d1cfc8db46e2b290f0d66fc66b4891cf696225dc4550dcd335279e8337e9"
+    },
+    {
+      "msisdn": "254722000000",
+      "sha256": "8556a495c390f3ba95d2bdf6d06436f2fd09f516531f0a7cd9591c60812fa46d"
+    },
+    {
+      "msisdn": "254711000999",
+      "sha256": "d10896556d2f6656b4928360b4a7c6b689c400261f0e21dadaa0b2bdefdb8a53"
+    },
+    {
+      "msisdn": "254700900010",
+      "sha256": "ebc9bf5c319028d83fae84b28d17147f565eaa623b1bf8cf8931bea47ea10eba"
+    },
+    {
+      "msisdn": "254100000001",
+      "sha256": "e21e3b5a41124bbf690368843745bb69fa13da41b156d2b0302553ad52273a67"
+    }
+  ]
+}

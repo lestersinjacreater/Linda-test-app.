@@ -51,9 +51,12 @@ data class ReportQueueEntity(
     val userConfirmed: Boolean = false,
 )
 
-/** A number the radar confirmed as a scammer (contract 5.3). Kept on the phone so call warnings work offline. */
+/**
+ * A number the gateway confirmed as a scammer recently (contract 5.11), kept on the phone so call warnings
+ * work offline. Stored as a hash, never as the number, and only recent ones, so the list stays short.
+ */
 @Entity(tableName = "blocked_numbers")
-data class BlockedNumberEntity(@PrimaryKey val msisdn: String, val category: String)
+data class BlockedNumberEntity(@PrimaryKey val hash: String, val category: String, val label: String = "", val labelSw: String = "")
 
 /**
  * One alert sent (or attempted) to the guardian. Kept so the protected person can SEE what was sent, and so the

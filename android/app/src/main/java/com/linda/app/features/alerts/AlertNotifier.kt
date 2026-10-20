@@ -74,6 +74,7 @@ object AlertNotifier {
         val text = when (warning) {
             is CallWarning.RecentScamMessage -> localized.getString(R.string.call_warning_recent, warning.minutesAgo)
             is CallWarning.ReportedNumber -> localized.getString(R.string.call_warning_reported)
+            is CallWarning.SuspectedNumber -> localized.getString(R.string.call_warning_suspected)
         }
         val notification = NotificationCompat.Builder(context, CHANNEL_SCAM)
             .setSmallIcon(R.drawable.ic_launcher_foreground)

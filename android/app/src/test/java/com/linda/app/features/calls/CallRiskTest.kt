@@ -43,4 +43,22 @@ class CallRiskTest {
         assertEquals("Huduma kwa Wateja ya Safaricom", care.name("sw"))
         assertEquals("Safaricom Customer Care", care.name("en"))
     }
+
+    @Test fun aLiveConfirmedAnswerWarnsAsReported() {
+        assertEquals(CallWarning.ReportedNumber("prize"), CallRisk.decide(null, null, now, liveStatus = "confirmed", liveCategory = "prize"))
+    }
+
+    @Test fun aLiveSuspectedOrReportedAnswerGivesTheSofterWarning() {
+        assertEquals(CallWarning.SuspectedNumber("pin_request"), CallRisk.decide(null, null, now, liveStatus = "suspected", liveCategory = "pin_request"))
+        assertEquals(CallWarning.SuspectedNumber(null), CallRisk.decide(null, null, now, liveStatus = "reported"))
+    }
+
+    @Test fun theOfflineListBeatsTheLiveAnswer() {
+        assertEquals(CallWarning.ReportedNumber("fake_mpesa"), CallRisk.decide("fake_mpesa", null, now, liveStatus = "suspected"))
+    }
+
+    @Test fun aLiveVerifiedOrUnknownAnswerDoesNotWarn() {
+        assertNull(CallRisk.decide(null, null, now, liveStatus = "verified"))
+        assertNull(CallRisk.decide(null, null, now, liveStatus = null))
+    }
 }

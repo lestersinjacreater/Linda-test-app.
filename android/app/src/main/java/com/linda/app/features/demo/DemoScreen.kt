@@ -83,6 +83,7 @@ fun DemoScreen(onBack: () -> Unit) {
 private fun describeCall(context: android.content.Context, label: CallLabel?): String = when (label) {
     is CallWarning.RecentScamMessage -> context.getString(R.string.demo_call_recent, label.minutesAgo)
     is CallWarning.ReportedNumber -> context.getString(R.string.demo_call_reported)
+    is CallWarning.SuspectedNumber -> context.getString(R.string.demo_call_suspected)
     is VerifiedCall -> context.getString(R.string.demo_call_verified, label.caller.name(Prefs.effectiveLanguage(context)))
     null -> context.getString(R.string.demo_call_none)
 }

@@ -540,3 +540,26 @@ ID. The fraud service rejects any request that includes a message text field.
 **Demo.** The presenter can flag a number live (`POST /admin/numbers`), and show the fraud team's inbox filling up as
 judges report numbers (`GET /v1/intel/reports`). Phones pick up newly blocked numbers on their next sync; for the demo,
 use "Save and sync" in the app's hidden settings.
+
+## Private lookups: checking a number without saying which one
+
+**What it does.** When a call comes in from a number the phone knows nothing about, Linda asks the gateway about it
+privately, and gets a label like "Reported for fraud by 14 people" or "Suspected scam" before the call is answered.
+
+**How.**
+- The phone turns the number into a hash (SHA-256) and sends only the **first 5 characters**. Thousands of possible
+  numbers share those 5 characters, so the gateway never learns which number you asked about.
+- The gateway answers with every flagged or verified number in that "bucket" (usually none or a handful), each with only
+  a status, a scam type and a short label in English and Swahili. The phone picks out its own answer and ignores the rest.
+- For offline protection, the phone also keeps a short list of hashes of numbers **confirmed in the last 30 days**,
+  updated with `GET /v1/sync`. Numbers that were only reported, not confirmed, never go on that list.
+- If the network is slow, the phone gives up after 1.5 seconds and uses what it already knows, so a call is never held up.
+- Lookups are limited to 120 an hour per phone. A phone needs a few a day; harvesting the list would need millions.
+
+**Why this design.** Principle 6: scammers must not be able to download the list of caught numbers and switch before the
+fraud team acts. Before this change, phones downloaded the whole blocklist as plain numbers.
+
+**Honest limit (say this if a judge asks).** Kenyan phone numbers are a small space, so anyone determined can reverse a
+hash by trying every number. Hashing is not the protection on its own. The protection is that the full list is never
+downloadable, the offline list is short and recent, and lookups are rate-limited. A scammer can always check one of their
+own numbers by calling a Linda phone; no warning app can stop that. What we prevent is harvesting the whole list.

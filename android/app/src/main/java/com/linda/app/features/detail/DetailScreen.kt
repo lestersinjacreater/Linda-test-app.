@@ -72,7 +72,7 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, onOpenRecovery: (
 
     // The Layer Trace: what each of the five layers found, from what the phone saved about this message.
     val trace by produceState<List<com.linda.app.features.trace.LayerResult>?>(null, d.id, d.reportedAt) {
-        val onBlocklist = d.senderMsisdn?.let { app.database.blockedNumberDao().find(it) } != null
+        val onBlocklist = d.senderMsisdn?.let { app.database.blockedNumberDao().find(com.linda.app.core.util.PhoneHash.of(it)) } != null
         val lastGuardianAlert = d.sender?.takeIf { it.isNotBlank() }?.let { app.database.guardianAlertDao().lastSentAt(GuardianPolicy.senderKey(it)) }
         val guardianAlerted = lastGuardianAlert != null && lastGuardianAlert >= d.receivedAt && lastGuardianAlert - d.receivedAt < 10 * 60 * 1000L
         value = LayerTraceBuilder.build(

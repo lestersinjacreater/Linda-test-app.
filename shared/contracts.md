@@ -3,7 +3,7 @@
 The authoritative list of API contracts is section 5 of the root CLAUDE.md.
 Any change: update CLAUDE.md section 5, every component that uses the contract, and its tests,
 in one commit, with the message prefix `contract:`.
-Sections 5.10 and 5.11 (private lookup, hashed sync) and the lightweight model format in 5.8
+The lightweight model format in 5.8
 are marked PLANNED in CLAUDE.md: they are the agreed target and are not implemented yet.
 
 ## Normalizer rules (5.9, implemented in ml/src/features/normalize/normalize.py)

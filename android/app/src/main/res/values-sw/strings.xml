@@ -327,4 +327,6 @@
     <string name="channel_verified">Wanaopiga waliothibitishwa</string>
     <string name="demo_call_safaricom">Igiza simu kutoka Huduma kwa Wateja ya Safaricom (0722 000 000)</string>
     <string name="demo_call_verified">Alama ya uthibitisho imeonyeshwa: %1$s.</string>
+    <string name="call_warning_suspected">Nambari hii imeripotiwa kuwa huenda ni tapeli. Kuwa mwangalifu: usitume pesa wala kutoa PIN yako.</string>
+    <string name="demo_call_suspected">Onyo la simu limeonyeshwa: nambari imeripotiwa, bado haijathibitishwa.</string>
 </resources>

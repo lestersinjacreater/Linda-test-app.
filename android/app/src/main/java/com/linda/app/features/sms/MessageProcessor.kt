@@ -4,6 +4,7 @@ import android.content.Context
 import com.linda.app.LindaApp
 import com.linda.app.core.data.DetectionEntity
 import com.linda.app.core.data.SeenSenderEntity
+import com.linda.app.core.util.PhoneHash
 import com.linda.app.core.util.PhoneNumbers
 import com.linda.app.features.alerts.AlertNotifier
 import com.linda.app.features.alerts.VoiceWarnings
@@ -82,7 +83,7 @@ class MessageProcessor(private val context: Context) {
         verdict: Verdict, allowListed: Boolean, actions: List<String>,
     ) {
         if (!DemoOverlay.isOn()) return
-        val onBlocklist = PhoneNumbers.toMsisdn(sender)?.let { app.database.blockedNumberDao().find(it) } != null
+        val onBlocklist = PhoneNumbers.toMsisdn(sender)?.let { app.database.blockedNumberDao().find(PhoneHash.of(it)) } != null
         DemoOverlay.record(
             DemoSnapshots.create(
                 sequence = DemoOverlay.nextSequence(), body = body, sender = sender, source = source, inContacts = inContacts, firstMessage = first,
