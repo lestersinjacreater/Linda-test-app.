@@ -7,6 +7,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from src.features.confirmation.service import RateLimited, submit_report
+from src.features.intel.sync import forward_item
 
 CATEGORIES = {
     "sent_by_mistake", "fake_mpesa", "prize", "fuliza_upgrade", "kra_refund",
@@ -70,6 +71,9 @@ def post_report(report: ReportIn, background: BackgroundTasks, request: Request)
             result = submit_report(session, app.state.settings, never_confirm, report, app.state.clock())
         except RateLimited:
             raise HTTPException(429, "too many reports from this device; try again later")
+    if result.status != "allowlisted":  # the fraud team hears about every real report (no text)
+        background.add_task(forward_item, app, "report", report, app.state.clock())
     if result.newly_confirmed:
         background.add_task(app.state.notifier, report.sender)
+        background.add_task(forward_item, app, "confirmation", report, app.state.clock())
     return ReportOut(status=result.status, devices=result.devices)

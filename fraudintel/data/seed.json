@@ -1,0 +1,97 @@
+{
+  "note": "Fake placeholder numbers only. Regenerate with fraudintel/scripts/make_seed.py.",
+  "numbers": [
+    {
+      "msisdn": "254700000777",
+      "status": "blocked",
+      "category": "fake_mpesa",
+      "reports": 41,
+      "campaign_id": "camp-fake-mpesa"
+    },
+    {
+      "msisdn": "254700000801",
+      "status": "blocked",
+      "category": "sent_by_mistake",
+      "reports": 27,
+      "campaign_id": "camp-sent-by-mistake"
+    },
+    {
+      "msisdn": "254700000802",
+      "status": "campaign",
+      "category": "prize",
+      "reports": 9,
+      "campaign_id": "camp-prize"
+    },
+    {
+      "msisdn": "254700000803",
+      "status": "reported",
+      "category": "pin_request",
+      "reports": 2,
+      "campaign_id": null
+    },
+    {
+      "msisdn": "254700000804",
+      "status": "reported",
+      "category": "sent_by_mistake",
+      "reports": 1,
+      "campaign_id": null
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "camp-fake-mpesa",
+      "category": "fake_mpesa",
+      "fingerprints": [
+        "4259c1190df2b411",
+        "4271a11905f33491",
+        "4279a5190573b1d0",
+        "c241a41905723491",
+        "c249851905733190",
+        "c249e31945f33590",
+        "c259a11905733190",
+        "c259a5194d533591",
+        "c259e0190df335b5",
+        "c259e119457334b5",
+        "c279e21945f33591",
+        "c279e41945733193",
+        "c2d1a3194df23591",
+        "c2d9a119457325b7",
+        "c2d9c11945f2b491",
+        "c2d9e11945f3b191",
+        "c2e9a5190573b490",
+        "c2e9c11945f33590",
+        "c2e9e11945f33590",
+        "c2f1a1190d733491",
+        "c2f1a11945f33491",
+        "c2f1a5194d533191",
+        "c2f9a11945732191",
+        "c2f9a51905f32091"
+      ]
+    },
+    {
+      "id": "camp-sent-by-mistake",
+      "category": "sent_by_mistake",
+      "fingerprints": [
+        "42bab01905e22104",
+        "42bbb01905e22104",
+        "42bbb01905e23104",
+        "42bbb11905c23184",
+        "62bbb91905ea2104",
+        "62bbb91905fa2184"
+      ]
+    },
+    {
+      "id": "camp-prize",
+      "category": "prize",
+      "fingerprints": [
+        "c20ba01904ea8353",
+        "c20ba01904eac253",
+        "c20ba119046ac7d3",
+        "c24ba119046a83d3",
+        "c24ba11904eac35b",
+        "c26ba01905ead35f",
+        "c26ba11904eac75b"
+      ]
+    }
+  ]
+}

@@ -5,6 +5,7 @@ setup:
 	pip install -r ml/requirements.txt
 	@test -f backend/requirements.txt && pip install -r backend/requirements.txt || echo "backend: not built yet"
 	@test -f simulator/requirements.txt && pip install -r simulator/requirements.txt || echo "simulator: not built yet"
+	pip install -r fraudintel/requirements.txt
 	@test -f dashboard/package.json && (cd dashboard && npm install) || echo "dashboard: not built yet"
 
 data:
@@ -22,6 +23,7 @@ test:
 	python -m pytest ml/tests -v
 	@test -d backend/tests && ls backend/tests/test_*.py >/dev/null 2>&1 && python -m pytest backend/tests -v || echo "backend tests: none yet"
 	@test -d simulator/tests && ls simulator/tests/test_*.py >/dev/null 2>&1 && python -m pytest simulator/tests -v || echo "simulator tests: none yet"
+	python -m pytest fraudintel/tests -v
 	@test -d dashboard/node_modules && (cd dashboard && npm test) || echo "dashboard tests: run make setup first"
 
 test-e2e:
@@ -36,7 +38,10 @@ up:
 
 # Needs `make up` (or the two services running). Plays the scripted scam blast and prints the headline numbers.
 TELCO ?= http://localhost:8000
+FRAUD ?= http://localhost:8002
 demo:
+	curl -s -X POST $(FRAUD)/admin/reset
+	@echo
 	curl -s -X POST $(TELCO)/reset
 	@echo
 	curl -s -X POST "$(TELCO)/scenarios/blast?wait=true" | python3 -m json.tool

@@ -90,12 +90,12 @@ linda/
   ml/                        dataset pipeline, training, evaluation, export
   backend/                   the Linda gateway (FastAPI): reports, confirmation, lookups,
                              verified callers, fraud-intel sync, USSD, precheck
-  fraudintel/                PLANNED. Mock fraud intelligence service (demo infrastructure)
+  fraudintel/                mock Safaricom fraud intelligence service (demo infrastructure)
   simulator/                 mock telco (FastAPI): population, scam blasts, delivery log, warnings
   dashboard/                 Next.js live demo dashboard
   shared/                    contracts, test vectors, verified senders, model artifacts
   docs/                      EXPLAINED.md, technical-brief.md, demo-script.md
-  docker-compose.yml         gateway + telco + dashboard (+ postgres, + fraudintel when built)
+  docker-compose.yml         gateway + fraudintel + telco + dashboard + postgres
   Makefile                   one-word commands (see section 7)
   LIBRARIES.md  DATASETS.md  .env.example
 ```
@@ -202,13 +202,19 @@ Rate limit per device; responses are tiny and gzip-compressed.
 For offline call screening: `{ "as_of": "...", "added": [{"hash", "status", "category", "label"}], "removed": ["<hash>"] }`.
 Only recent, high-risk confirmed numbers and the verified list. Never full numbers. Replaces 5.3.
 
-### 5.12 PLANNED. Gateway ↔ fraud intelligence (`fraudintel/` today, Safaricom's systems tomorrow)
+### 5.12 Gateway ↔ fraud intelligence (`fraudintel/` today, Safaricom's systems tomorrow)
 - `GET  {FRAUDINTEL_URL}/v1/intel/numbers?since=<iso>` → `{ "as_of", "numbers": [{"msisdn", "status":
   "reported|blocked|campaign", "category", "reports", "campaign_id"}] }`
-- `GET  {FRAUDINTEL_URL}/v1/intel/verified` → `{ "numbers": [{"msisdn", "name", "kind": "safaricom|bank|business"}] }`
+- `GET  {FRAUDINTEL_URL}/v1/intel/verified` → `{ "numbers": [{"msisdn", "name_en", "name_sw", "kind": "safaricom|bank|business"}] }`
 - `GET  {FRAUDINTEL_URL}/v1/intel/campaigns` → `{ "campaigns": [{"id", "category", "fingerprints": ["<simhash>"]}] }`
-- `POST {FRAUDINTEL_URL}/v1/intel/reports` ← customer reports and gateway confirmations (5.1 fields, no text).
-The gateway merges fraud-team status with device reports; fraud-team "blocked" or "campaign" counts as confirmed.
+- `POST {FRAUDINTEL_URL}/v1/intel/reports` ← `{"kind": "report|confirmation", "sender", "category", "at",
+  "confidence"?, "fingerprint"?, "model_version"?, "device_id"?}`. Never message text: the service rejects unknown fields.
+The gateway pulls every `INTEL_SYNC_S` (30 s) when `FRAUDINTEL_URL` is set; with it empty or unreachable the gateway works
+as before. Merge rules: "blocked" or "campaign" counts as confirmed (reaches the phone blocklist, and the network is told);
+"reported" counts as suspected in risk lookups only (never on the phone blocklist); verified numbers are never confirmed;
+campaign fingerprints make a new number suspected on its first matching report; the fraud team's verified list is merged
+into 5.13. Demo-only extras on `fraudintel/` (not part of the contract): `GET /v1/intel/reports` (the fraud team's inbox),
+`POST /admin/numbers` (flag a number live), `POST /admin/reset`.
 
 ### 5.13 Phone → gateway: `GET /v1/verified-callers`
 `{ "version": "2026.10.19-1", "callers": [{ "msisdn": "254722000000", "name_en": "Safaricom Customer Care",
@@ -225,7 +231,7 @@ A verified number is never confirmed as a scammer, and a scam signal on a number
 | `ml/` | ML pair | `model-<version>.json` + `ml/reports/metrics.md` | Real test results per source; Kenyan campaign-split test once team data exists; false alarms on hard negatives near zero |
 | `android/` | Android pair | APK via GitHub Actions release | Warns before opening; labels and verifies callers; never flags verified senders; works offline; parity with test vectors |
 | `backend/` | Backend pair | Docker image | Confirms only with ≥3 independent devices; resists poisoning; private lookups; merges fraud intel; all endpoints in section 5 |
-| `fraudintel/` | Backend pair | Docker image | PLANNED. Seeded reported, blocked and verified numbers and campaigns; endpoints in 5.12 |
+| `fraudintel/` | Backend pair | Docker image | Seeded reported, blocked and verified numbers and campaigns (placeholder numbers); endpoints in 5.12; rejects message text |
 | `simulator/` | Demo owner | Docker image | Repeatable blast (fixed seed); adoption levels; warnings to phones without Linda; metrics endpoint; uses the real model |
 | `dashboard/` | Demo owner | Docker image | Live map + timeline + metrics; demo mode with hardcoded fallback data if WS is down |
 
@@ -268,7 +274,7 @@ Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendele
 
 **Remaining, in priority order (P4, 19–22 Oct, then FEATURE FREEZE on 22 Oct):**
 1. Kenyan team data: `ml/data/processed/team_collected.csv`, campaign-split test, retrain, tune thresholds.
-2. `fraudintel/` mock service (5.12) and the gateway merging it.
+2. ~~`fraudintel/` mock service (5.12) and the gateway merging it.~~ Done.
 3. ~~Verified-caller badges in the gateway and the app.~~ Done (5.13). In production the list comes from 5.12.
 4. Private hash-prefix lookups and hashed sync (5.10, 5.11), then retire 5.3 for phones.
 5. Lightweight model (5.8 PLANNED, 7.1 budgets), Python and Kotlin together.

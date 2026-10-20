@@ -1,4 +1,4 @@
-# Radar + telco + dashboard + postgres. The Dockerfiles arrive with each component
+# Gateway (radar) + mock fraud intelligence + telco + dashboard + postgres. The Dockerfiles arrive with each component
 # (backend, simulator, dashboard); until then `make up` will fail on the missing build contexts.
 services:
   postgres:
@@ -18,9 +18,16 @@ services:
     environment:
       DATABASE_URL: postgresql://linda:linda@postgres:5432/linda
       TELCO_URL: http://telco:8000
+      FRAUDINTEL_URL: http://fraudintel:8002
       RADAR_DEMO_TRUSTED_PREFIX: ${RADAR_DEMO_TRUSTED_PREFIX:-5111}
     ports: ["8001:8001"]
-    depends_on: [postgres]
+    depends_on: [postgres, fraudintel]
+
+  fraudintel:  # mock Safaricom fraud team (demo infrastructure, root CLAUDE.md 5.12)
+    build:
+      context: .
+      dockerfile: fraudintel/Dockerfile
+    ports: ["8002:8002"]
 
   telco:
     build:
