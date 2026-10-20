@@ -100,7 +100,7 @@ Time and the telco call are injected, so the tests need no network and can fast-
 ## System rebuild, step 4: the model (`ml/`)
 
 ### The idea in one paragraph
-Linda's text model is a **logistic regression** on **character n-gram TF-IDF**. In plain terms: chop the (normalised) message into overlapping 2 to 5 letter pieces, give each piece a weight (rare pieces count more), and add up the pieces' learned "scaminess" scores into one number between 0 and 1. Chosen because it is tiny (about 360 KB), runs in milliseconds on a cheap phone, needs no ML library in the APK, and we can list the exact pieces that raised a score, which feeds the "every warning explains itself" rule. It copes with Swahili and Sheng and mixed spelling because it looks at letter patterns, not dictionary words.
+Linda's text model is a **logistic regression** on **character n-gram TF-IDF**. In plain terms: chop the (normalised) message into overlapping 2 to 5 letter pieces, give each piece a weight (rare pieces count more), and add up the pieces' learned "scaminess" scores into one number between 0 and 1. Chosen because it is tiny (about 87 KB since model 2026.10.20-1, see "Making the model lightweight" below), runs in milliseconds on a cheap phone, needs no ML library in the APK, and we can list the exact pieces that raised a score, which feeds the "every warning explains itself" rule. It copes with Swahili and Sheng and mixed spelling because it looks at letter patterns, not dictionary words.
 
 ### Why five extra "context" features (`scoring/metadata.py`)
 A real M-Pesa confirmation and a fake one have **identical words**. Only the sender differs. So the model also sees five 0/1 facts: sender is verified, sender is a personal number, there is a link, the text looks like an M-Pesa confirmation, and it looks like one **but the sender is not verified**. The last one is the famous fake-M-Pesa signal. The test `test_same_confirmation_text_flips_with_the_sender` shows one message scoring under 0.05 from `MPESA` and over 0.9 from a personal number.
@@ -151,7 +151,7 @@ Population behaviour (reading delays, detection latency, how many phones run Lin
 ## System rebuild, step 6a: the detector on the phone (`android/.../features/detection/`)
 
 - **Same maths, second language.** `Normalizer`, `SimHash`, `ModelScorer`, `MetadataFeatures` and `Categories` are line-by-line Kotlin versions of the Python in `ml/`. The Kotlin tests read the same `shared/test-vectors.json` and require: identical normalised text, identical fingerprints, and scores within the stored range (plus or minus 0.001) for all 63 messages. If someone changes one side, the other side's tests fail.
-- **No ML library on the phone.** `ModelScorer` reads `assets/model.json` and does arithmetic: chop text into 2 to 5 letter pieces, look each up in a table, add up weights, squash to 0..1. About 360 KB, a few milliseconds.
+- **No ML library on the phone.** `ModelScorer` reads `assets/model.json` and does arithmetic: chop text into 2 to 5 letter pieces, hash each into one of 32,768 slots, add up the slots' weights, squash to 0..1. About 87 KB, a few milliseconds.
 - **`LindaDetector` = the one place that scores.** `ScamDetector.analyse(MessageInput)` returns a `Verdict`: level (SAFE, CAUTION, SCAM), score, reasons in English and Swahili, category, and the SimHash fingerprint for reports. Nothing else in the app may score a message.
 - **Context signals** (sender not in contacts + first message: +0.10; sender in contacts: -0.15) nudge a borderline score. They never apply to verified senders, and they cannot turn an innocent message into a SCAM. All numbers sit in `FusionConfig`.
 - **Every warning explains itself.** `ReasonCatalogue` holds the plain-language reason per scam type, plus "typical scam wording" built from the n-grams that raised the score most. **The Swahili has not been checked by a native speaker.**
@@ -490,8 +490,7 @@ false alarms, and the Swahili test scams it saw were all caught, though that set
 genuine M-Pesa, bank or KPLC message. Catching a scam *type* it never trained on is harder (37 to 66% for whole datasets
 held out), which is why real Kenyan examples are the next priority.
 
-**Known limits.** No Kenyan test data yet. The model file grew to about 1 MB (vocabulary 20,000); making it lighter is a
-separate task.
+**Known limits.** No Kenyan test data yet. The model file grew to about 1 MB (vocabulary 20,000); the next model fixed that (see "Making the model lightweight").
 
 ## Verified-caller badges
 
@@ -563,3 +562,41 @@ fraud team acts. Before this change, phones downloaded the whole blocklist as pl
 hash by trying every number. Hashing is not the protection on its own. The protection is that the full list is never
 downloadable, the offline list is short and recent, and lookups are rate-limited. A scammer can always check one of their
 own numbers by calling a Linda phone; no warning app can stop that. What we prevent is harvesting the whole list.
+
+## Making the model lightweight (model 2026.10.20-1)
+
+**What changed.** Same model, smaller file. The old file kept a dictionary of 20,000 letter pieces (each spelled out as
+text) plus two long lists of decimal numbers: about 1 MB. Now each letter piece is turned into a slot number from 0 to
+32,767 with FNV-1a, the same tiny hash the phone already uses for fingerprints, so the dictionary is gone. Each slot
+stores two numbers, and each is rounded to one byte: how rare the piece is (idf, stored as byte / 16) and how "scammy"
+it is (weight, stored as byte × one scale number). The bytes sit inside the same JSON file as base64 text, so the app
+and the simulator still load one file.
+
+| | Old (2026.10.19-1) | New (2026.10.20-1) |
+|---|---|---|
+| Model file | 1070 KB | 87 KB |
+| Real test, all sources (P / R / false alarms) | 97.6% / 95.3% / 0.2% | 97.6% / 95.3% / 0.2% |
+| Validation, hard-negative false alarms | 0 of 180 | 0 of 180 |
+| Shared test vectors: safe warned / scams missed | 0 / 0 | 0 / 0 |
+| Held-out campaign average | 83.4% | 82.5% |
+
+**Why it barely changes the answers.** Two letter pieces sometimes land in the same slot. With 32,768 slots and a few
+hundred pieces per message that is rare, and training sees the same collisions, so it learns around them. Rounding to one
+byte moves a score by less than 0.02 (a test checks it), and the reported metrics are computed with the rounded weights,
+so they describe the file that actually ships. The held-out campaign average dropped 0.9 points, which we report as is.
+
+**Why one file with base64, not a separate binary file.** One file means one thing to copy, one version to check, and no
+chance of the app loading a header from one model and weights from another. Base64 costs a third more than raw bytes; at
+87 KB total that is well inside the 300 KB budget.
+
+**How it is tested.** Python: the JSON-only scorer equals the training code to 1e-9; rounding moves scores less than 0.02;
+the file is under 300 KB; slot numbers use the published FNV-1a values. Kotlin: the same slot numbers as Python
+(including a non-ASCII letter), scores inside the shared vector ranges, and explanations still name the message's own
+letters (each piece gets its slot's contribution).
+
+**Honesty note.** A first try let validation pick a weaker regularisation (C=20) and kept every rare piece. Its real-test
+recall was lower, and we saw that before deciding. We did not tune on the test set: we went back to the old model's exact
+settings (the same C choices, and ignoring pieces seen fewer than 3 times, which the old dictionary also did), so the new
+model is a faithful port of the old one with hashing instead of a dictionary. The phone latency is still not measured on
+a budget phone.
+

@@ -129,7 +129,7 @@ def main() -> None:
         scorer.score(v["text"], v["sender"])
     ms = 1000 * (time.perf_counter() - t0) / len(vecs)
     m["size_and_speed"] = {"model_json_kb": round(size / 1024), "ms_per_message_python_dev_machine": round(ms, 2),
-                           "vocabulary": len(vec.vocabulary_), "phone_latency": "NOT MEASURED (needs the cheapest team phone)"}
+                           "buckets": vec.buckets, "phone_latency": "NOT MEASURED (needs the cheapest team phone)"}
 
     # 8. Real test set, once it exists
     # Reported per source: Kenyan team data and foreign public data answer different questions.
@@ -195,7 +195,7 @@ def render(m: dict) -> str:
         "(the text model alone cannot judge these: they need the app's context signals such as unknown sender and not in contacts)",
         f"- Level agreement with expected labels: {pct(sv['level_agreement'])}", "",
         "## 7. Size and speed", "",
-        f"- Model file: {m['size_and_speed']['model_json_kb']} KB, vocabulary {m['size_and_speed']['vocabulary']}",
+        f"- Model file: {m['size_and_speed']['model_json_kb']} KB, {m['size_and_speed']['buckets']} hashed slots, 1-byte weights",
         f"- {m['size_and_speed']['ms_per_message_python_dev_machine']} ms per message (Python, dev machine). Phone latency: {m['size_and_speed']['phone_latency']}", "",
     ]
     if real:

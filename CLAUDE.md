@@ -165,15 +165,15 @@ If allowed, the demo payment screen triggers a Daraja **sandbox** STK Push via `
 Lowest priority: Linda's story is the conversation, not the payment.
 
 ### 5.8 Model artifact: `shared/models/model-<version>.json`
-`{ "version", "created_at", "normalizer_version", "vectorizer": {"analyzer","ngram_range","vocabulary","idf"},
-  "classes", "coef", "intercept", "metadata_features", "thresholds": {"warn": 0.55, "scam": 0.80},
-  "categories": {...}, "metrics": {...} }`
+`{ "version", "created_at", "normalizer_version", "vectorizer": {"analyzer","ngram_range","hash": "fnv1a_64",
+  "buckets": 32768, "idf_scale": 16, "idf_uint8_b64"}, "classes", "coef_scale", "coef_int8_b64", "intercept",
+  "metadata_features", "thresholds": {"warn": 0.55, "scam": 0.80}, "categories": {...}, "metrics": {...} }`
+Lightweight (7.1): letter pieces are hashed into 32,768 slots (FNV-1a 64, the same function as the fingerprint) instead
+of a vocabulary; the idf and the weights are one byte per slot, stored as base64 inside this one JSON file (about 87 KB).
 `metadata_features` is an ordered list of `{name, coef}`; `verified_senders` is embedded; `training` records the data and seed.
 Exact scoring maths: `shared/contracts.md`.
 `make export-model` copies it to `android/app/src/main/assets/model.json` and
 `simulator/models/model.json`. Both must report the same `version`.
-PLANNED (lightweight model, 7.1): hashed character n-grams (FNV-1a, same function in Python and
-Kotlin) instead of a vocabulary, weights quantised to 1 byte in a small binary file beside a JSON header.
 
 ### 5.9 Shared test vectors: `shared/test-vectors.json`
 Each case: `{ "id", "sender", "text", "expected_normalized", "expected_label", "expected_score_min",
@@ -264,7 +264,7 @@ The repo's default branch is `very/optimistic-shannon-rzw9xm`; open pull request
 | Measure | Budget |
 |---|---|
 | APK download size | under 5 MB |
-| Model file | under 300 KB (target after 5.8 PLANNED change; currently about 1 MB) |
+| Model file | under 300 KB (currently about 87 KB; a test checks it) |
 | Memory while running | under about 30 MB |
 | Scoring one SMS | under 20 ms on a budget phone |
 | Battery | event-driven only: no permanent background service; sync a few times a day on network |
@@ -277,14 +277,14 @@ Call screening needs Android 10+; on older phones the app still protects SMS and
 **Done (P0–P2):** walking skeleton, on-device detection and warnings, consent and reports, call
 screening and blocklist sync, radar confirmation with trust weights and poisoning resistance, simulator
 scenarios (blast, rotating, poison, call) and metrics, dashboard, deployment config, CI per folder.
-Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendeley).
+Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendeley); replaced by the lightweight `2026.10.20-1` (same real-test results, 87 KB).
 
 **Remaining, in priority order (P4, 19–22 Oct, then FEATURE FREEZE on 22 Oct):**
 1. Kenyan team data: `ml/data/processed/team_collected.csv`, campaign-split test, retrain, tune thresholds.
 2. ~~`fraudintel/` mock service (5.12) and the gateway merging it.~~ Done.
 3. ~~Verified-caller badges in the gateway and the app.~~ Done (5.13). In production the list comes from 5.12.
 4. ~~Private hash-prefix lookups and hashed sync (5.10, 5.11), then retire 5.3 for phones.~~ Done.
-5. Lightweight model (5.8 PLANNED, 7.1 budgets), Python and Kotlin together.
+5. ~~Lightweight model (5.8, 7.1 budgets), Python and Kotlin together.~~ Done (model `2026.10.20-1`, 87 KB).
 6. Network effect in the simulator: adoption levels (0.5%, 1%, 2%), warnings after scam calls, warning
    SMS to a real basic phone via Africa's Talking (if organisers allow).
 7. USSD checker (5.6). Stretch.

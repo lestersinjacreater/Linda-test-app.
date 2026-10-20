@@ -3,7 +3,7 @@
     "warn": 0.55,
     "scam": 0.8
   },
-  "model_version": "2026.10.19-1",
+  "model_version": "2026.10.20-1",
   "real_test_rows": 1214,
   "validation": {
     "tp": 353,
@@ -32,19 +32,19 @@
     "reversal": 1.0
   },
   "held_out_campaign_detection": {
-    "bongoscam": 0.656140350877193,
-    "fake_mpesa": 0.74375,
+    "bongoscam": 0.631578947368421,
+    "fake_mpesa": 0.71875,
     "fuliza_upgrade": 1.0,
     "job_fee": 1.0,
     "kra_refund": 1.0,
     "loan_fee": 1.0,
-    "mendeley_smishing": 0.37166324435318276,
+    "mendeley_smishing": 0.324435318275154,
     "phishing_link": 1.0,
     "pin_request": 0.75,
     "prize": 1.0,
     "reversal": 0.65
   },
-  "held_out_campaign_average": 0.8337775995663979,
+  "held_out_campaign_average": 0.8249785696039613,
   "obfuscation": {
     "original_detection": 0.9915730337078652,
     "disguised_detection": 0.9915730337078652
@@ -75,12 +75,12 @@
     "missed_scam_ids": [],
     "caution_total": 5,
     "caution_in_band": 0,
-    "level_agreement": 0.8888888888888888
+    "level_agreement": 0.9206349206349206
   },
   "size_and_speed": {
-    "model_json_kb": 1070,
-    "ms_per_message_python_dev_machine": 0.27,
-    "vocabulary": 20000,
+    "model_json_kb": 86,
+    "ms_per_message_python_dev_machine": 0.35,
+    "buckets": 32768,
     "phone_latency": "NOT MEASURED (needs the cheapest team phone)"
   },
   "real_test": {
