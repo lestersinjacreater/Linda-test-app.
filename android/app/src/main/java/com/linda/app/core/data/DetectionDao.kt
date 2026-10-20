@@ -81,11 +81,12 @@ interface BlockedNumberDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(numbers: List<BlockedNumberEntity>)
 
-    @Query("DELETE FROM blocked_numbers WHERE msisdn IN (:msisdns)")
-    suspend fun deleteAll(msisdns: List<String>)
+    @Query("DELETE FROM blocked_numbers WHERE hash IN (:hashes)")
+    suspend fun deleteAll(hashes: List<String>)
 
-    @Query("SELECT * FROM blocked_numbers WHERE msisdn = :msisdn")
-    suspend fun find(msisdn: String): BlockedNumberEntity?
+    /** Pass PhoneHash.of(msisdn), never the number. */
+    @Query("SELECT * FROM blocked_numbers WHERE hash = :hash")
+    suspend fun find(hash: String): BlockedNumberEntity?
 
     @Query("SELECT COUNT(*) FROM blocked_numbers")
     fun observeCount(): Flow<Int>

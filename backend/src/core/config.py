@@ -45,6 +45,10 @@ class Settings:
     fraudintel_url: str = ""
     intel_sync_s: float = 30.0
 
+    # Private lookups and hashed sync (contracts 5.10, 5.11)
+    lookup_rate_per_hour: int = 120  # per device; a phone needs a handful a day, a sweep needs millions
+    sync_recent_days: int = 30       # the offline list only holds numbers confirmed this recently
+
     # Telling the network a sender is confirmed
     notify_retries: int = 3
     notify_backoff_s: float = 1.0
@@ -58,6 +62,8 @@ class Settings:
             telco_url=e.get("TELCO_URL", d.telco_url),
             fraudintel_url=e.get("FRAUDINTEL_URL", d.fraudintel_url).rstrip("/"),
             intel_sync_s=float(e.get("INTEL_SYNC_S", d.intel_sync_s)),
+            lookup_rate_per_hour=int(e.get("LOOKUP_RATE_PER_HOUR", d.lookup_rate_per_hour)),
+            sync_recent_days=int(e.get("SYNC_RECENT_DAYS", d.sync_recent_days)),
             verified_senders_path=Path(e.get("VERIFIED_SENDERS_PATH", str(d.verified_senders_path))),
             verified_callers_path=Path(e.get("VERIFIED_CALLERS_PATH", str(d.verified_callers_path))),
             min_devices=int(e.get("RADAR_MIN_DEVICES", d.min_devices)),
