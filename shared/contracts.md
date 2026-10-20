@@ -45,3 +45,27 @@ Text shorter than 3 characters is one piece; empty text gives `0000000000000000`
 - `GET /history` returns every event of the current run (used to record the dashboard's offline replay: `make record-fallback`).
 - Every scenario starts with a `reset` event and a cleared history, so a dashboard that sees `reset` clears its map and counters.
 - Events carry no message text. Browser calls are allowed from any origin (CORS `*`): the simulator is demo infrastructure with no user data.
+
+## Network effect additions (5.5, root CLAUDE.md item 6)
+- `?adoption=<percent>` on `POST /scenarios/blast|rotating|call` (0 < percent <= 100): a 2,000-phone country
+  (`SIM_FEATURE_SHARE` 0.6 basic phones) and a 500-person blast. Without it, the classic 300-phone demo (10% Linda).
+  Same seed: same phones, recipients and timing at every level; only smartphones adopt, and the lower levels' users
+  are always inside the higher levels'. The population has its own random stream (`population-<seed>`).
+- `POST /scenarios/call`: the SMS blast exactly as `blast`, then the sender phones every second recipient 30 to 120 s
+  after their SMS, plus 40 people who never got it. `?caller=2547XXXXXXXX`: calls only, and the telco asks the gateway
+  about the caller with the server-side risk lookup (5.2) before the first call.
+- On each call: `call_attempt {sender, phone..., known}` (`known` = confirmed by then). A Linda phone emits
+  `call_labelled {label, before_answer: true}` with the app's order: `recent_scam_message` (it caught this sender's SMS),
+  `reported` (confirmed), `suspected` (gateway said suspected or reported). A phone without Linda that was not already
+  warned gets `warning_delivered {channel: "after_call", before_read: false}` right after the call, only if the sender
+  was confirmed when the call started. Calls before confirmation reach those phones unprotected.
+- `warning_delivered` always has `channel` (`sms` | `after_call`) and `real_sms` (true for a `REAL_PHONES` handset).
+- `/metrics` adds `adoption_pct`, `linda_recipients`, `calls` (`placed, to_linda_phones, labelled_before_answer,
+  to_other_phones, already_warned_by_sms, warned_after_call, unprotected, protected_pct`, or null) and
+  `real_phone_sms` (`[{phone, sender, channel, status: sent|failed|skipped}]`).
+- `GET /adoption/odds?levels=0.5,1,2&trials=1000&min_reports=3` -> `{recipients, trials, min_reports, assumes, levels:
+  [{adoption_pct, linda_recipients_avg, confirmed_pct, confirmed_pct_binomial, confirmed_after_s_median,
+  warned_before_read_pct, warned_before_read_pct_linda_only}]}`. Assumes every Linda recipient catches the scam.
+- Real phones (`REAL_PHONES`): basic phones in Nairobi, always among the blast's recipients (a quarter of the way in),
+  never called. Only the WARNING is sent, as a real SMS through Africa's Talking (`AT_USERNAME`, `AT_API_KEY`,
+  `AT_SENDER_ID`), starting "[Linda demo]"; never the scam text. No key: status `skipped`. Their numbers never appear in events.

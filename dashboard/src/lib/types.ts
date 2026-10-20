@@ -19,7 +19,9 @@ export type EventType =
   | "report_failed"
   | "sender_confirmed"
   | "warning_delivered"
-  | "blast_finished";
+  | "blast_finished"
+  | "call_attempt"
+  | "call_labelled";
 
 export interface SimEvent {
   type: EventType;
@@ -43,6 +45,23 @@ export interface SimEvent {
   confirmed_after_s?: number;
   attack?: boolean;
   poison_blocked?: boolean;
+  channel?: "sms" | "after_call";      // warning_delivered: an SMS warning, or one sent right after a scam call
+  real_sms?: boolean;                  // warning_delivered: went to a real phone on the demo table
+  known?: boolean | string;            // call_attempt: the caller was confirmed by then
+  label?: "reported" | "recent_scam_message" | "suspected";  // call_labelled
+  calls?: number;
+  by?: string;                         // sender_confirmed: "gateway" when it was already known
+}
+
+export interface CallMetrics {
+  placed: number;
+  to_linda_phones: number;
+  labelled_before_answer: number;
+  to_other_phones: number;
+  already_warned_by_sms: number;
+  warned_after_call: number;
+  unprotected: number;
+  protected_pct: number | null;
 }
 
 export interface Metrics {
@@ -57,6 +76,9 @@ export interface Metrics {
   confirmed_after_s: number | null;
   warned_by_linda: number;
   warned_by_network: number;
+  adoption_pct?: number | null;
+  linda_recipients?: number;
+  calls?: CallMetrics | null;
 }
 
 export interface FallbackData {

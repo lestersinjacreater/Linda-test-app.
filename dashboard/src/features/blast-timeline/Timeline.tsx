@@ -5,6 +5,7 @@ import type { EventType } from "@/lib/types";
 const DOT: Record<EventType, string> = {
   reset: "#6D7899", blast_started: "#FFC940", sms_delivered: "#FFC940", linda_detected: "#FF2E88", report_sent: "#00E5FF",
   report_failed: "#FF2E88", sender_confirmed: "#00E5FF", warning_delivered: "#35F2A0", blast_finished: "#6D7899",
+  call_attempt: "#FFC940", call_labelled: "#00E5FF",
 };
 
 /** The big clock: seconds since the scam started, and how long until the network protected people. */

@@ -46,7 +46,8 @@ def main() -> None:
     db = ROOT / "backend" / "record_tmp.db"
     db.unlink(missing_ok=True)
     radar = subprocess.Popen(serve + ["--port", str(radar_port)], cwd=ROOT / "backend", stdin=subprocess.DEVNULL,
-                             env={**env, "DATABASE_URL": f"sqlite:///{db}", "TELCO_URL": telco_url, "RADAR_DEMO_TRUSTED_PREFIX": "5111"})
+                             env={**env, "DATABASE_URL": f"sqlite:///{db}", "TELCO_URL": telco_url, "RADAR_DEMO_TRUSTED_PREFIX": "5111",
+                                  "RADAR_DEMO_TRUSTED_TRUST": "0.85"})  # as docker-compose
     telco = subprocess.Popen(serve + ["--port", str(telco_port)], cwd=ROOT / "simulator", stdin=subprocess.DEVNULL,
                              env={**env, "RADAR_URL": radar_url, "SIM_SPEED": "0", "SIM_SEED": "42"})
     try:

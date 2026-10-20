@@ -600,3 +600,64 @@ settings (the same C choices, and ignoring pieces seen fewer than 3 times, which
 model is a faithful port of the old one with hashing instead of a dictionary. The phone latency is still not measured on
 a budget phone.
 
+
+## How phones WITHOUT Linda get protected (the network effect)
+
+**The idea in one line.** Every Linda phone is a sensor. When a few of them catch the same scammer, the gateway confirms the
+number and Safaricom's network (our mock telco, `simulator/`) warns everyone who got a message from it, by SMS, which works
+on any phone, including a basic phone. The telco knows who received from a number; it never needs the message text.
+
+**What the network does once a number is confirmed** (`simulator/src/features/engine/engine.py`):
+1. Warns everyone who already received the scam SMS (`warning_delivered`, `channel: "sms"`).
+2. Warns new recipients the moment the SMS is delivered.
+3. Scam calls: a Linda phone labels the call before it is answered, in the same order as the app (it caught this sender's
+   SMS, then "reported for fraud", then "suspected"). A basic phone cannot show a label on a call, so the network sends
+   a warning SMS right after the call ends (`channel: "after_call"`). Calls made before the number was confirmed reach
+   basic phones unwarned. We report that gap honestly in `/metrics` (`calls.unprotected`).
+4. A number the fraud team already blocked (`POST /scenarios/call?caller=...`): the telco asks the gateway first (5.2), so
+   everyone is protected from the very first call.
+
+**Adoption levels (0.5%, 1%, 2%).** The classic demo has 30 Linda phones out of 300 (10%), which is easy to see on the map
+but unrealistic. `?adoption=1` builds a 2,000-phone country where 1% of PEOPLE run Linda, and the blast reaches 500 of them.
+To make the comparison fair:
+- the same seed gives the same phones, towns, reading habits and recipients at every level;
+- only smartphones can install Linda (basic phones cannot), and each smartphone has a fixed place in the queue to adopt,
+  so the 0.5% users are also in the 1% group, and the 1% users are also in the 2% group;
+- the population has its own random stream. (We first reused the blast's stream, so who got the SMS was tied to who had
+  Linda. We spotted it because the 1% run had 0 Linda recipients where about 5 are expected, and fixed the flaw. The fixed
+  run gives 3, 6 and 10 at 0.5%, 1% and 2%, close to the expected 2.5, 5 and 10.)
+
+**One run is one roll of the dice, so we also show the average.** `GET /adoption/odds` replays the same 500-person blast
+1,000 times per level with different random adopters, using the engine's own delays (`engine/timing.py`). It assumes every
+Linda phone that receives this scam catches it (the model scores the demo campaign about 0.998). Result:
+
+| Linda adoption | Linda phones among 500 recipients (avg) | Blast confirmed | Recipients warned before reading | Linda alone, no network |
+|---|---|---|---|---|
+| 0.5% | 2.5 | 46% | 41% | 0.5% |
+| 1% | 5 | 87% | 81% | 1% |
+| 2% | 10 | 99.9% | 98% | 2% |
+
+The "confirmed" column matches the plain maths (the binomial chance of 3 or more Linda phones among 500), which is where the
+pitch's "88% at 1%" comes from. The last column is the point: on its own, an app protects only its users; with the network,
+1% adoption protects about 80% of the people who got the scam. These numbers come from a simulation, not from Safaricom's
+network: say so.
+
+**A fix needed for "3 phones".** The gateway confirms when the trust-weighted votes reach 2.4. Demo phones started with trust
+0.8, so 3 phones gave 3 × 0.8 × 0.998 = 2.395, just short, and the demo really needed 4. Demo trust is now 0.85 (in
+`docker-compose`, `RADAR_DEMO_TRUSTED_TRUST`), so 3 phones give 2.54, matching the rule we describe. The poisoning protection
+is unchanged: brand-new devices without the demo prefix still start at 0.3 and together can add at most 1.2. An end-to-end
+test checks the real gateway confirms on exactly the 3rd report.
+
+**The real basic phone on the table** (`simulator/src/features/realphones/sms.py`). Numbers in `REAL_PHONES` (in `.env` only,
+never committed) join every blast as basic phones. When the network warns one, the simulator sends a real SMS through Africa's
+Talking with one plain HTTP request (no SDK). Only the warning is sent, never the scam text, and it starts "[Linda demo]" so it
+does not pose as an official Safaricom message: "[Linda demo] 0700 900 011 just sent you an SMS and is reported as a scam. Do
+not send money or share your PIN. Forward scam SMS to 333." The real number never appears in events or on the dashboard.
+Africa's Talking's sandbox only delivers to its web simulator; a real SIM needs a live account with credit, and the
+organisers' OK. No key: nothing is sent and the demo carries on.
+
+**How it is tested.** `simulator/tests/test_network_effect.py`: nested adoption, same recipients at every level, more adoption
+never protects fewer people, odds within 4 points of the binomial, no after-call warning before confirmation, a known caller
+protected from the first call, a suspected caller gets the softer label, the real phone gets exactly one SMS with no scam text,
+real phones do not change the simulated run, no key still runs, the Africa's Talking request shape. `tests/e2e` runs the same
+scenarios against the real gateway. Try it: `make up`, then `make demo-adoption`.

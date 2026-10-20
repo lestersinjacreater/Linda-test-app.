@@ -13,17 +13,20 @@ from src.core.events import EventBus
 from src.features.engine.engine import Engine
 from src.features.engine.radar_client import HttpRadarClient, RadarClient
 from src.features.network.router import router as network_router
+from src.features.realphones.sms import SmsSender, sender_from
 from src.features.scenarios.router import router as scenarios_router
 
 
-def create_app(settings: Optional[Settings] = None, radar: Optional[RadarClient] = None) -> FastAPI:
+def create_app(settings: Optional[Settings] = None, radar: Optional[RadarClient] = None,
+               sms: Optional[SmsSender] = None) -> FastAPI:
     settings = settings or Settings.from_env()
     app = FastAPI(title="Linda mock telco")
     app.state.settings = settings
     # Demo infrastructure with no user data: the dashboard (another origin) may call it from the browser.
     app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
     app.state.bus = EventBus()
-    app.state.engine = Engine(settings, radar or HttpRadarClient(settings.radar_url), app.state.bus)
+    app.state.engine = Engine(settings, radar or HttpRadarClient(settings.radar_url), app.state.bus,
+                              sms or sender_from(settings))
     app.include_router(network_router)
     app.include_router(scenarios_router)
 

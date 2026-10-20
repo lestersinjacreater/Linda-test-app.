@@ -55,7 +55,7 @@ async def test_same_seed_gives_the_same_demo_every_run(make_app):
 async def test_events_use_only_the_documented_types(make_app):
     app, radar, engine = await run_blast(make_app)
     allowed = {"reset", "blast_started", "sms_delivered", "linda_detected", "report_sent", "report_failed",
-               "sender_confirmed", "warning_delivered", "blast_finished"}
+               "sender_confirmed", "warning_delivered", "blast_finished", "call_attempt", "call_labelled"}
     types = {e["type"] for e in app.state.bus.history}
     assert types <= allowed and {"blast_started", "sms_delivered", "linda_detected", "report_sent",
                                  "sender_confirmed", "warning_delivered", "blast_finished"} <= types
@@ -100,7 +100,8 @@ async def test_only_one_scenario_at_a_time_and_reset(make_app, client_for):
         assert (await c.post("/reset")).status_code == 200
         assert (await c.post("/scenarios/poison")).status_code == 200
         assert (await c.post("/reset")).status_code == 200
-        assert (await c.post("/scenarios/call")).status_code == 501
+        assert (await c.post("/scenarios/call")).status_code == 200
+        assert (await c.post("/reset")).status_code == 200
 
 
 async def test_network_endpoints(make_app, client_for):

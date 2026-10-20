@@ -41,8 +41,10 @@ services:
       RADAR_MIN_DEVICES: ${RADAR_MIN_DEVICES:-3}
       RADAR_MIN_SCORE: ${RADAR_MIN_SCORE:-2.4}
       RADAR_NO_TOKEN_TRUST_CAP: ${RADAR_NO_TOKEN_TRUST_CAP:-1.0}
-      # DEMO ONLY: simulator phones start with trust 0.8 (see docs/EXPLAINED.md, step 5). Set empty to switch off.
+      # DEMO ONLY: simulator phones start with this trust (see docs/EXPLAINED.md, step 5). Set the prefix empty to switch off.
+      # 0.85 so that 3 phones confirm (3 x 0.85 x 0.998 = 2.54 >= 2.4).
       RADAR_DEMO_TRUSTED_PREFIX: ${RADAR_DEMO_TRUSTED_PREFIX-5111}
+      RADAR_DEMO_TRUSTED_TRUST: ${RADAR_DEMO_TRUSTED_TRUST:-0.85}
     depends_on:
       postgres: { condition: service_healthy }
       fraudintel: { condition: service_healthy }
@@ -73,6 +75,12 @@ services:
       SIM_SPEED: ${SIM_SPEED:-20}
       SIM_SEED: ${SIM_SEED:-42}
       SIM_DEVICE_PREFIX: ${SIM_DEVICE_PREFIX:-5111}
+      SIM_FEATURE_SHARE: ${SIM_FEATURE_SHARE:-0.6}
+      # The real basic phone on the table (item 6). From .env only; empty means none.
+      REAL_PHONES: ${REAL_PHONES-}
+      AT_USERNAME: ${AT_USERNAME:-sandbox}
+      AT_API_KEY: ${AT_API_KEY-}
+      AT_SENDER_ID: ${AT_SENDER_ID-}
     depends_on:
       radar: { condition: service_healthy }
     healthcheck:

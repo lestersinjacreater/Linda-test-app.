@@ -142,7 +142,11 @@ export function describe(e: SimEvent): string {
     case "report_sent": return e.attack ? `Fake device accused ${e.sender}: radar says "${e.status}"` : `Report sent (no message text): radar says "${e.status}", ${e.devices ?? 0} devices`;
     case "report_failed": return "Report could not reach the radar (kept for retry)";
     case "sender_confirmed": return `RADAR CONFIRMED ${e.sender} after ${e.confirmed_after_s}s`;
-    case "warning_delivered": return `${who}${where} warned by the network${e.before_read ? " before reading" : ""}`;
+    case "warning_delivered":
+      if (e.channel === "after_call") return `${who}${where} warned by SMS right after the scam call${e.real_sms ? " (real phone)" : ""}`;
+      return `${who}${where} warned by the network${e.before_read ? " before reading" : ""}${e.real_sms ? " (real phone)" : ""}`;
+    case "call_attempt": return `${e.sender} is calling a ${who.toLowerCase()}${where}${e.known ? " (number already confirmed)" : ""}`;
+    case "call_labelled": return `${who}${where} labelled the call before answering (${e.label === "recent_scam_message" ? "it sent you a scam SMS" : e.label === "suspected" ? "suspected" : "reported for fraud"})`;
     case "blast_finished": return e.attack ? (e.poison_blocked ? "Attack blocked: innocent number NOT confirmed" : "Attack succeeded (bad!)") : "Blast finished";
   }
 }
