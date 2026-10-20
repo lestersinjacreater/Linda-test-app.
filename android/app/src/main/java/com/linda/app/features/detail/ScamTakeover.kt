@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.linda.app.R
 import com.linda.app.core.ui.components.LindaButton
 import com.linda.app.core.ui.components.RiskIcon
+import com.linda.app.core.ui.theme.LindaText
 import com.linda.app.core.ui.theme.LindaTheme
 import com.linda.app.core.ui.theme.Spacing
 import com.linda.app.features.trace.rememberVerdictHaptic
@@ -52,7 +53,7 @@ fun ScamTakeover(reason: String?, onContinue: () -> Unit, onAlreadySent: () -> U
         Spacer(Modifier.height(Spacing.xl))
         Text(
             stringResource(R.string.takeover_headline),
-            style = MaterialTheme.typography.titleLarge,
+            style = LindaText.takeoverHeadline,
             color = risk.text,
             textAlign = TextAlign.Center,
         )

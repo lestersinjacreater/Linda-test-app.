@@ -24,6 +24,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navArgument
+import com.linda.app.features.alerts.WarningRoute
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -51,14 +52,16 @@ private enum class Destination(
 
 /**
  * [openDetectionId]: set when the user tapped a warning notification, to jump to that message.
+ * [openWhat]: which button they tapped (AlertNotifier.OPEN_*): the warning itself, "See why" or "Report this number".
  * [sharedText]: set when text was shared into Linda from another app, to check it straight away.
  */
 @Composable
-fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
+fun LindaNavHost(openDetectionId: Long? = null, openWhat: String? = null, sharedText: String? = null) {
     val navController = rememberNavController()
-    LaunchedEffect(openDetectionId) {
-        // Opened from a warning notification: a confident scam gets the full-screen alert first.
-        if (openDetectionId != null && openDetectionId >= 0) navController.navigate("detail/$openDetectionId?takeover=true")
+    LaunchedEffect(openDetectionId, openWhat) {
+        // Opened from a warning notification. A tap on the warning: a confident scam gets the full-screen alert first.
+        // "See why" goes straight to the explanation; "Report this number" opens the explanation with the report sheet up.
+        if (openDetectionId != null && openDetectionId >= 0) navController.navigate(WarningRoute.of(openDetectionId, openWhat))
     }
     LaunchedEffect(sharedText) {
         if (!sharedText.isNullOrBlank()) navController.navigate(Destination.Checker.route)
@@ -112,15 +115,17 @@ fun LindaNavHost(openDetectionId: Long? = null, sharedText: String? = null) {
             composable("guardian") { GuardianScreen(onBack = { navController.popBackStack() }) }
             composable("demo") { DemoScreen(onBack = { navController.popBackStack() }) }
             composable(
-                "detail/{id}?takeover={takeover}",
+                "detail/{id}?takeover={takeover}&report={report}",
                 arguments = listOf(
                     navArgument("id") { type = NavType.LongType },
                     navArgument("takeover") { type = NavType.BoolType; defaultValue = false },
+                    navArgument("report") { type = NavType.BoolType; defaultValue = false },
                 ),
             ) { entry ->
                 DetailScreen(
                     detectionId = entry.arguments?.getLong("id") ?: -1L,
                     takeover = entry.arguments?.getBoolean("takeover") ?: false,
+                    openReport = entry.arguments?.getBoolean("report") ?: false,
                     onOpenRecovery = { navController.navigate("recovery/$it") },
                     onBack = { navController.popBackStack() },
                 )

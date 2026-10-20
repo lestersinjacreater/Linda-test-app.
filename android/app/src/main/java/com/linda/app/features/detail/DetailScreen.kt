@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
 
 /** What opens when the user taps a warning: the message, the verdict, every reason, and what to do next (F6). */
 @Composable
-fun DetailScreen(detectionId: Long, takeover: Boolean = false, onOpenRecovery: (Long) -> Unit, onBack: () -> Unit) {
+fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boolean = false, onOpenRecovery: (Long) -> Unit, onBack: () -> Unit) {
     val context = LocalContext.current
     val app = context.applicationContext as LindaApp
     val language = Prefs.effectiveLanguage(context)
@@ -89,7 +89,8 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, onOpenRecovery: (
     val verified = app.detector.verifiedSenders
     val reportable = ReportableDetection(d.level, d.sender, d.category, d.score, d.fingerprint, d.modelVersion, d.receivedAt, d.reportedAt != null)
     val cannotReport = ManualReport.blockedReason(reportable, verified)
-    var showReportDialog by remember { mutableStateOf(false) }
+    // Opened from the notification's "Report this number": the sheet is already up, still showing what will be sent.
+    var showReportDialog by remember(detectionId) { mutableStateOf(openReport && cannotReport == null && !d.markedSafe) }
     var reportNote by remember { mutableStateOf<String?>(null) }
 
     if (showTakeover && d.level == "SCAM" && !d.markedSafe) {

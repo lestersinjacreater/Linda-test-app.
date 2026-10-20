@@ -15,6 +15,10 @@ If it ever conflicts with CLAUDE.md, CLAUDE.md wins and this file is updated.
 > - The Layer Trace shows only what the app really computed (see `docs/EXPLAINED.md`); it never invents a figure.
 > - Folder names under `features/` are NOT renamed to the five layers; the layers are mapped in one place, `LayerTrace`.
 > - Dark mode follows the phone's system setting.
+> - Key-moments pass (2026-10-20, from the design-system and mockup review): outline buttons and text fields use `textSecondary` for their
+>   border (the `border` token is 1.3:1, below the 3:1 a control needs); the takeover headline is 28sp Bold; warning notifications carry no
+>   emoji (the risk colour tints the icon instead) and get "See why" and, for scams, "Report this number" buttons; reports are described to
+>   people as going to "Safaricom's fraud team", not "the radar"; Home adds the Network card (7.10).
 
 ---
 
@@ -203,7 +207,7 @@ Large radius, 24dp padding, risk background tint, 4dp left border in risk colour
 ### 7.4 Scam Alert Takeover
 For high-confidence scams when the user opens the warning:
 - Full-screen sheet, Scam background tint, octagon icon at 64dp.
-- Headline at 24sp: "Stop. This looks like a scam." / "Simama. Huu unaonekana kuwa ulaghai."
+- Headline at 28sp Bold (`LindaText.takeoverHeadline`): "Stop. This looks like a scam." / "Simama. Huu unaonekana kuwa ulaghai."
 - Voice warning plays (TextToSpeech), reading exactly the on-screen headline and top reason.
 - Two short haptic pulses on appearance.
 
@@ -220,10 +224,19 @@ When a message imitates an M-PESA confirmation from a non-M-PESA sender, show a 
 Hidden toggle (tap the logo 7 times). Shows a translucent panel at the bottom of the screen with the Layer Trace in real time and the raw outputs of each layer (normalised text, model score, network signals, final decision, actions taken), in a monospaced font. This is what judges watch during the live demo.
 
 ### 7.9 Standard components
-- **Buttons:** 52dp tall, Medium radius, 24dp horizontal padding. Primary = `green700` fill, white text. Secondary = outline in `border`, `textPrimary`. Pressed: scale 0.97, darken 8%. No hover states. 48dp minimum touch target.
-- **Inputs:** 52dp, Small radius, `surfaceRaised` fill, 1dp `border`; focus 2dp `green500`.
+- **Buttons:** 52dp tall, Medium radius, 24dp horizontal padding. Primary = `green700` fill, white text. Secondary = 1dp outline in `textSecondary` (3:1 or more; `border` is too faint for a control), `textPrimary`. Pressed: scale 0.97, darken 8%. No hover states. 48dp minimum touch target.
+- **Inputs:** 52dp, Small radius, `surfaceRaised` fill, 1dp `textSecondary` outline; focus 2dp `green500`.
+- **Warning notifications:** no emoji in titles. The risk colour (`scamRed`, `cautionAmber`, `green500` for verified callers) tints the small icon and app name. A message warning has a "See why" button (opens the explanation) and, for a Scam, "Report this number" (opens the report sheet, which always shows what will be sent). Tapping the warning itself opens the takeover for a Scam.
 - **Cards:** `surface`, Medium radius, 16dp padding, soft green shadow.
 - **Chips:** Full radius, 32dp tall, Label text.
+
+---
+
+### 7.10 Network card (Home)
+Shown only to people who agreed to send reports (only they help warn others). Mint (`green50`; `surfaceRaised` in dark), Medium radius,
+16dp padding, a small three-phones mark in `primary`, title "You help protect others too" / "Unasaidia kulinda wengine pia" in Heading
+`primary`, body in Body `textPrimary`: "When Linda phones catch the same scammer, Safaricom can warn everyone who got it, even on basic
+phones." No number on it: never a figure we cannot prove.
 
 ---
 
@@ -254,6 +267,7 @@ LINDA speaks like a calm, trusted older sibling: short sentences, plain words, n
 | Caution | "Be careful with this one." | "Kuwa mwangalifu na huu." |
 | Already sent | "Don't panic. Let's act fast." | "Usiogope. Tuchukue hatua haraka." |
 | Empty history | "No scams yet. LINDA is watching." | "Hakuna ulaghai bado. LINDA inalinda." |
+| Where a report goes | "…goes to Safaricom's fraud team" | "…kwa kitengo cha Safaricom cha kupambana na ulaghai" |
 
 Never: blame ("You should have known"), jargon ("classifier confidence"), or ALL CAPS sentences.
 

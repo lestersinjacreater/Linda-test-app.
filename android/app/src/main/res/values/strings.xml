@@ -29,8 +29,8 @@
     <string name="settings_language_label">Language</string>
     <string name="settings_language_value">Follows your phone language (English or Kiswahili).</string>
 
-    <string name="alert_scam_title">🚨 Linda warning: this is likely a scam</string>
-    <string name="alert_caution_title">⚠️ Linda: be careful with this message</string>
+    <string name="alert_scam_title">Linda warning: this is likely a scam</string>
+    <string name="alert_caution_title">Linda: be careful with this message</string>
     <string name="channel_scam">Scam warnings</string>
     <string name="channel_caution">Caution notices</string>
 
@@ -76,14 +76,14 @@
     <string name="battery_xiaomi">Xiaomi, Redmi or Poco: Settings > Apps > Manage apps > Linda > Autostart on, and Battery saver > "No restrictions". Also lock Linda in the recent-apps list.</string>
 
     <string name="consent_title">3. Help protect others (optional)</string>
-    <string name="consent_body">If Linda is sure a message is a scam, it can tell the Linda radar so other people are warned too. A report contains ONLY: the sender\'s phone number, the type of scam, how sure Linda is, a scrambled fingerprint of the message, and an anonymous device code. It NEVER contains the message text, your contacts, or your own phone number. You can turn this off any time in Settings. It is OFF until you tap Agree.</string>
+    <string name="consent_body">If Linda is sure a message is a scam, it can report the number to Safaricom\'s fraud team so other people are warned too. A report contains ONLY: the sender\'s phone number, the type of scam, how sure Linda is, a scrambled fingerprint of the message, and an anonymous device code. It NEVER contains the message text, your contacts, or your own phone number. You can turn this off any time in Settings. It is OFF until you tap Agree.</string>
     <string name="consent_agree">Agree and help protect others</string>
     <string name="consent_decline">No thanks</string>
     <string name="settings_reporting_title">Help protect others</string>
     <string name="settings_reporting_body">Send anonymous scam reports (never the message text) so others are warned.</string>
     <string name="settings_reports_waiting">Reports waiting to send: %1$d</string>
 
-    <string name="call_warning_title">⚠️ Likely scam caller</string>
+    <string name="call_warning_title">Likely scam caller</string>
     <string name="call_warning_recent">This caller sent you a suspected scam message %1$d minutes ago. Do not send money.</string>
     <string name="call_warning_reported">This number was reported by other Linda users as a mobile-money scammer. Do not send money.</string>
 
@@ -251,20 +251,23 @@
     <string name="home_inbox_body">Find scams already hiding in your last 90 days of messages.</string>
 
     <string name="action_report">Report this number</string>
+    <string name="notif_action_why">See why</string>
+    <string name="home_network_title">You help protect others too</string>
+    <string name="home_network_body">When Linda phones catch the same scammer, Safaricom can warn everyone who got it, even on basic phones.</string>
     <string name="report_done">Reported. Thank you for helping protect others.</string>
     <string name="report_dialog_title">Report this number?</string>
-    <string name="report_dialog_intro">This is exactly what will be sent to the Linda radar so other people can be warned:</string>
+    <string name="report_dialog_intro">This is exactly what goes to Safaricom\'s fraud team, so other people can be warned:</string>
     <string name="report_field_number">• The sender\'s number: %1$s</string>
     <string name="report_field_type">• Type of scam: %1$s</string>
     <string name="report_field_sure">• How sure Linda is: %1$d%%</string>
     <string name="report_field_fingerprint">• A scrambled code of the message: %1$s (the message cannot be read from it)</string>
     <string name="report_field_device">• Your anonymous device code: %1$s</string>
     <string name="report_never">Never sent: the message itself, your contacts, or your own phone number.</string>
-    <string name="report_no_server">No radar address is set on this phone yet, so the report will wait until one is set and you are online.</string>
+    <string name="report_no_server">No Linda server address is set on this phone yet, so the report will wait until one is set and you are online.</string>
     <string name="report_send">Send report</string>
     <string name="report_cancel">Cancel</string>
     <string name="report_queued">Report queued. It is sent when you are online.</string>
-    <string name="report_saved_waiting">Report saved. It will be sent once a radar address is set and you are online.</string>
+    <string name="report_saved_waiting">Report saved. It will be sent once a Linda server address is set and you are online.</string>
 
     <!-- Layer Trace (docs/design-system.md sections 6 and 7.1). Swahili unreviewed by a native speaker. -->
     <string name="trace_layer_l">Language</string>
@@ -328,7 +331,7 @@
     <string name="overlay_toast_on">Demo overlay is on</string>
     <string name="overlay_toast_off">Demo overlay is off</string>
     <string name="dev_demo_overlay">Show the demo overlay</string>
-    <string name="call_verified_title">✅ Verified: %1$s</string>
+    <string name="call_verified_title">Verified: %1$s</string>
     <string name="call_verified_text">This is the genuine %1$s number. Even so, never share your M-Pesa PIN with anyone.</string>
     <string name="channel_verified">Verified callers</string>
     <string name="demo_call_safaricom">Simulate a call from Safaricom Customer Care (0722 000 000)</string>

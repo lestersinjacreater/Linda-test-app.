@@ -23,8 +23,8 @@
     <string name="settings_language_label">Lugha</string>
     <string name="settings_language_value">Inafuata lugha ya simu yako (Kiingereza au Kiswahili).</string>
 
-    <string name="alert_scam_title">🚨 Onyo la Linda: huenda huu ni ulaghai</string>
-    <string name="alert_caution_title">⚠️ Linda: kuwa mwangalifu na ujumbe huu</string>
+    <string name="alert_scam_title">Onyo la Linda: huenda huu ni ulaghai</string>
+    <string name="alert_caution_title">Linda: kuwa mwangalifu na ujumbe huu</string>
     <string name="channel_scam">Maonyo ya ulaghai</string>
     <string name="channel_caution">Tahadhari</string>
 
@@ -70,14 +70,14 @@
     <string name="battery_xiaomi">Xiaomi, Redmi au Poco: Mipangilio > Programu > Dhibiti programu > Linda > washa Autostart, na Kiokoa betri > "Bila vikwazo". Pia funga Linda kwenye orodha ya programu za hivi karibuni.</string>
 
     <string name="consent_title">3. Saidia kulinda wengine (si lazima)</string>
-    <string name="consent_body">Linda ikiwa na uhakika kuwa ujumbe ni ulaghai, inaweza kuambia rada ya Linda ili watu wengine waonywe pia. Ripoti ina TU: nambari ya simu ya mtumaji, aina ya ulaghai, kiwango cha uhakika wa Linda, alama iliyochanganywa ya ujumbe, na msimbo wa kifaa usiotambulisha mtu. HAIWI KAMWE na maandishi ya ujumbe, anwani zako, wala nambari yako ya simu. Unaweza kuzima hili wakati wowote kwenye Mipangilio. Imezimwa hadi ubofye Kubali.</string>
+    <string name="consent_body">Linda ikiwa na uhakika kuwa ujumbe ni ulaghai, inaweza kuripoti nambari kwa kitengo cha Safaricom cha kupambana na ulaghai ili watu wengine waonywe pia. Ripoti ina TU: nambari ya simu ya mtumaji, aina ya ulaghai, kiwango cha uhakika wa Linda, alama iliyochanganywa ya ujumbe, na msimbo wa kifaa usiotambulisha mtu. HAIWI KAMWE na maandishi ya ujumbe, anwani zako, wala nambari yako ya simu. Unaweza kuzima hili wakati wowote kwenye Mipangilio. Imezimwa hadi ubofye Kubali.</string>
     <string name="consent_agree">Kubali na saidia kulinda wengine</string>
     <string name="consent_decline">Hapana, asante</string>
     <string name="settings_reporting_title">Saidia kulinda wengine</string>
     <string name="settings_reporting_body">Tuma ripoti za ulaghai zisizotambulisha mtu (kamwe si maandishi ya ujumbe) ili wengine waonywe.</string>
     <string name="settings_reports_waiting">Ripoti zinazosubiri kutumwa: %1$d</string>
 
-    <string name="call_warning_title">⚠️ Huenda anayepiga ni tapeli</string>
+    <string name="call_warning_title">Huenda anayepiga ni tapeli</string>
     <string name="call_warning_recent">Anayepiga alikutumia ujumbe unaoshukiwa kuwa ulaghai dakika %1$d zilizopita. Usitume pesa.</string>
     <string name="call_warning_reported">Nambari hii iliripotiwa na watumiaji wengine wa Linda kuwa tapeli wa pesa za simu. Usitume pesa.</string>
 
@@ -245,20 +245,23 @@
     <string name="home_inbox_body">Tafuta ulaghai ambao tayari umejificha kwenye jumbe zako za siku 90 zilizopita.</string>
 
     <string name="action_report">Ripoti nambari hii</string>
+    <string name="notif_action_why">Nionyeshe kwa nini</string>
+    <string name="home_network_title">Unasaidia kulinda wengine pia</string>
+    <string name="home_network_body">Simu za Linda zikimgundua tapeli yuleyule, Safaricom inaweza kuwaonya wote waliopokea ujumbe wake, hata kwenye simu za kawaida.</string>
     <string name="report_done">Imeripotiwa. Asante kwa kusaidia kulinda wengine.</string>
     <string name="report_dialog_title">Ripoti nambari hii?</string>
-    <string name="report_dialog_intro">Hiki ndicho hasa kitakachotumwa kwa rada ya Linda ili watu wengine waonywe:</string>
+    <string name="report_dialog_intro">Hiki ndicho hasa kitakachotumwa kwa kitengo cha Safaricom cha kupambana na ulaghai ili watu wengine waonywe:</string>
     <string name="report_field_number">• Nambari ya mtumaji: %1$s</string>
     <string name="report_field_type">• Aina ya ulaghai: %1$s</string>
     <string name="report_field_sure">• Kiwango cha uhakika wa Linda: %1$d%%</string>
     <string name="report_field_fingerprint">• Msimbo uliochanganywa wa ujumbe: %1$s (ujumbe hauwezi kusomwa kutoka kwake)</string>
     <string name="report_field_device">• Msimbo wako wa kifaa usiotambulisha mtu: %1$s</string>
     <string name="report_never">Hakitumwi kamwe: ujumbe wenyewe, anwani zako, wala nambari yako ya simu.</string>
-    <string name="report_no_server">Hakuna anwani ya rada kwenye simu hii bado, kwa hivyo ripoti itasubiri hadi iwekwe na uwe mtandaoni.</string>
+    <string name="report_no_server">Hakuna anwani ya seva ya Linda kwenye simu hii bado, kwa hivyo ripoti itasubiri hadi iwekwe na uwe mtandaoni.</string>
     <string name="report_send">Tuma ripoti</string>
     <string name="report_cancel">Ghairi</string>
     <string name="report_queued">Ripoti imewekwa kwenye foleni. Itatumwa ukiwa mtandaoni.</string>
-    <string name="report_saved_waiting">Ripoti imehifadhiwa. Itatumwa mara anwani ya rada ikiwekwa na ukiwa mtandaoni.</string>
+    <string name="report_saved_waiting">Ripoti imehifadhiwa. Itatumwa mara anwani ya seva ya Linda ikiwekwa na ukiwa mtandaoni.</string>
 
     <!-- Layer Trace (docs/design-system.md sections 6 and 7.1). Swahili unreviewed by a native speaker. -->
     <string name="trace_layer_l">Lugha</string>
@@ -322,7 +325,7 @@
     <string name="overlay_toast_on">Paneli ya onyesho imewashwa</string>
     <string name="overlay_toast_off">Paneli ya onyesho imezimwa</string>
     <string name="dev_demo_overlay">Onyesha paneli ya onyesho</string>
-    <string name="call_verified_title">✅ Imethibitishwa: %1$s</string>
+    <string name="call_verified_title">Imethibitishwa: %1$s</string>
     <string name="call_verified_text">Hii ni nambari halisi ya %1$s. Hata hivyo, usimpe mtu yeyote PIN yako ya M-Pesa.</string>
     <string name="channel_verified">Wanaopiga waliothibitishwa</string>
     <string name="demo_call_safaricom">Igiza simu kutoka Huduma kwa Wateja ya Safaricom (0722 000 000)</string>

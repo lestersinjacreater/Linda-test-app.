@@ -50,6 +50,9 @@ object LindaText {
     /** The layer letters L I N D A: Poppins Bold, +8% letter spacing. Always 18sp or larger so white-on-green still passes contrast. */
     val layerLetter = TextStyle(fontFamily = Poppins, fontSize = 20.sp, lineHeight = 24.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.08.em)
 
+    /** The scam takeover headline: one step bigger and bolder than titleLarge, the loudest words in the app. */
+    val takeoverHeadline = TextStyle(fontFamily = Poppins, fontSize = 28.sp, lineHeight = 34.sp, fontWeight = FontWeight.Bold, letterSpacing = (-0.015).em)
+
     /** The LINDA wordmark. */
     val wordmark = TextStyle(fontFamily = Poppins, fontSize = 24.sp, lineHeight = 30.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.08.em)
 }

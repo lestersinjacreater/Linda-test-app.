@@ -20,6 +20,7 @@ import com.linda.app.features.onboarding.OnboardingScreen
 class MainActivity : ComponentActivity() {
     // Set from the launching intent: a tapped warning, or text shared in from another app.
     private var openDetectionId by mutableStateOf<Long?>(null)
+    private var openWhat by mutableStateOf<String?>(null) // which part of the warning: see AlertNotifier.EXTRA_OPEN
     private var sharedText by mutableStateOf<String?>(null)
 
     /** Wrap the context so every screen uses the language chosen in Settings (English or Kiswahili). */
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
                 if (!onboarded) {
                     OnboardingScreen(onDone = { Prefs.setOnboarded(this); onboarded = true })
                 } else {
-                    LindaNavHost(openDetectionId = openDetectionId, sharedText = sharedText)
+                    LindaNavHost(openDetectionId = openDetectionId, openWhat = openWhat, sharedText = sharedText)
                 }
             }
         }
@@ -55,6 +56,7 @@ class MainActivity : ComponentActivity() {
 
     private fun readIntent(intent: Intent?) {
         openDetectionId = intent?.getLongExtra(AlertNotifier.EXTRA_DETECTION_ID, -1L)?.takeIf { it >= 0 }
+        openWhat = intent?.getStringExtra(AlertNotifier.EXTRA_OPEN)
         sharedText = if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             intent.getStringExtra(Intent.EXTRA_TEXT)
         } else null

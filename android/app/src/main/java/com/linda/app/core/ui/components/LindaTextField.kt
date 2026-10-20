@@ -40,7 +40,7 @@ fun LindaTextField(
             unfocusedContainerColor = colors.surfaceRaised,
             errorContainerColor = colors.surfaceRaised,
             focusedBorderColor = green500,
-            unfocusedBorderColor = colors.border,
+            unfocusedBorderColor = colors.textSecondary, // 3:1 or more, so the field is visible without its label
             focusedLabelColor = colors.primary,
         ),
     )
