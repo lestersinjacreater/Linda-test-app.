@@ -11,6 +11,7 @@ setup:
 data:
 	python -I ml/src/features/dataset/synthetic.py
 	python -I ml/src/features/dataset/public.py
+	python -I ml/src/features/dataset/kenya_sms.py
 
 train: data
 	python -I ml/src/features/train/train.py

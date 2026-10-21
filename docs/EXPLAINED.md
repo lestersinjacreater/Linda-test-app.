@@ -757,3 +757,33 @@ Every build from GitHub now has its own number: Settings shows "Linda version 0.
 GitHub run and 89fa57a the commit. The release is titled the same way and the download page shows the build number,
 so you can check that a phone has the newest build. Because the version code goes up every build, Android also
 refuses to install an older file over a newer one instead of quietly going backwards.
+
+## Kenyan messages in the model (model 2026.10.21-1, `ml/src/features/dataset/kenya_sms.py`)
+
+**What changed.** Until now Linda had never been tested on Kenyan messages: its real data was Tanzanian and
+international. We added a public Kenyan SMS set of 736 messages (Salim Mwatsefu, IwazoLab, used with his permission). On the
+117 Kenyan test messages the model never saw, it now catches **42 of 51 scams (82%)**, up from 31 (61%) for the old model.
+It also warns on fewer genuine messages: 14 of 45 instead of 20, and 7 of 21 betting adverts instead of 16.
+
+**Why we re-labelled it.** The file came with labels, but most were set by a keyword script: any message with "now" or
+"today" was a scam, and any message with "mpesa" or "rent" was genuine. So Skiza tunes and prayer subscriptions were
+"scams", and fake "pay rent to our new account" notices were "genuine". Claude read all 637 different messages and labelled
+each one again (scam, genuine, betting advert or unsure). Where the script had set the label, Claude agreed only 62% of the
+time; where a person had, 91%. The team spot-checks 40 of Claude's labels on a shared review page.
+
+**How the honesty rules are kept.**
+- Our labels file (`ml/data/labels/kenya_sms_labels.csv`) holds only a fingerprint of each message and its label, never
+  the text. The messages stay in a git-ignored folder and are never committed.
+- Phone numbers are replaced before training.
+- Near-copies of the same message are kept together, so a copy can never be in training while its twin is in the test.
+- 183 messages look written for the dataset rather than received (short generic lures, one-line chats). They help
+  training but never count in the test, so the Kenyan result is measured on realistic messages only.
+- Unsure messages are left out completely.
+
+**Betting adverts.** A gambling advert is not a scam, so Linda should not warn on it; it is trained as genuine but tagged
+`betting_ad`, and the metrics report it separately. A betting message that pretends money was already sent to you
+("CONFIRMED, you have received KES 70,350 … deposit 99") is labelled a scam, because that is the trick.
+
+**What is still weak.** Ten of the 14 genuine messages it still warns on are one message from Uber ("you could make Ksh 300
+an hour, finish your sign-up"), which reads exactly like a fake-job scam. The test has only 117 messages, so treat 82% as
+"roughly 70 to 90%". More Kenyan messages, especially ones the team collects itself, are the way to improve it.

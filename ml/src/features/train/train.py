@@ -33,7 +33,7 @@ from src.features.normalize.normalize import NORMALIZER_VERSION, normalize  # no
 from src.features.scoring.metadata import FEATURE_NAMES, metadata_features  # noqa: E402
 from src.features.scoring.scorer import bucket_counts, hashed_weights  # noqa: E402
 
-MODEL_VERSION = "2026.10.20-1"
+MODEL_VERSION = "2026.10.21-1"
 SEED = 42
 NGRAM_RANGE = (2, 5)
 BUCKETS = 32768   # 2^15 slots: 32 KB of weights + 32 KB of idf (see ml/reports/metrics.md for the size comparison)
@@ -44,6 +44,7 @@ DATA_PATH = ROOT / "ml" / "data" / "processed" / "synthetic.csv"
 # Real data, used when present (both are git-ignored and rebuilt locally, see ml/data/README.md):
 PUBLIC_PATH = ROOT / "ml" / "data" / "processed" / "public.csv"  # Bongoscam + Mendeley
 TEAM_PATH = ROOT / "ml" / "data" / "processed" / "team_collected.csv"  # scrubbed Kenyan messages
+KENYA_PATH = ROOT / "ml" / "data" / "processed" / "kenya_sms.csv"  # Mwatsefu/IwazoLab Kenyan SMS, our labels
 ARTIFACT_PATH = ROOT / "ml" / "artifacts" / "model.json"
 VERIFIED_PATH = ROOT / "shared" / "verified_senders.json"
 
@@ -53,11 +54,11 @@ def load_verified() -> set[str]:
 
 
 def load_rows() -> list[dict]:
-    """Synthetic rows always; real public and team rows whenever their files exist."""
+    """Synthetic rows always; real public, Kenyan and team rows whenever their files exist."""
     if not DATA_PATH.exists():
         write_csv(DATA_PATH, generate())
     rows = read_csv(DATA_PATH)
-    for path in (PUBLIC_PATH, TEAM_PATH):
+    for path in (PUBLIC_PATH, KENYA_PATH, TEAM_PATH):
         if path.exists():
             rows += read_csv(path)
     return rows

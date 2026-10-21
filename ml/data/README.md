@@ -1,8 +1,8 @@
 # Linda training data
 
-Status: **real public data in use; no Kenyan data yet.** Training uses synthetic templates plus two real public datasets
-(Tanzanian Swahili and international English). Real, scrubbed Kenyan messages from the team are still being gathered and
-are the most important missing piece: until they exist, no test result is a result on Kenyan scams.
+Status: **real Kenyan data in use.** Training uses synthetic templates, two foreign public datasets (Tanzanian Swahili and
+international English) and a public Kenyan SMS set (Salim Mwatsefu, IwazoLab, used with permission) that Claude re-labelled
+by hand. Messages collected by the team itself are still welcome: they would be the first Kenyan data we gathered ourselves.
 
 ## Getting the real data (each person, on their own machine)
 
@@ -12,6 +12,10 @@ Raw and processed real data are git-ignored. To rebuild them:
 2. Download the Mendeley "SMS Phishing Dataset" (Mishra and Soni), unzip it, and save `Dataset_5971.csv` as
    `ml/data/raw/mendeley_smishing.csv`.
 3. Run `make data` (builds `processed/synthetic.csv` and `processed/public.csv`), then `make train`.
+
+4. Kenyan SMS: download `data/raw/scam_detection_labeled.csv` from github.com/Salimmwatsefu/NLP-Scam-Detection and save it
+   as `ml/data/raw/kenya_sms_mwatsefu.csv`. `make data` builds `processed/kenya_sms.csv` from it using OUR labels in
+   `ml/data/labels/kenya_sms_labels.csv` (fingerprints and labels, no text), not the file's own keyword-script labels.
 
 Kenyan team messages go in `processed/team_collected.csv` with the schema below (`source` = `team_collected`).
 The trainer picks the file up automatically; put whole scam campaigns in `test` so the score shows how

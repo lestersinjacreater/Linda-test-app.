@@ -143,6 +143,10 @@ def main() -> None:
             res["false_alarm_rate"] = rate(res["fp"], res["fp"] + res["tn"])
             res["n"] = len(idx)
             m["real_test"][src] = res
+        # Betting adverts are trained as "not a scam". How often does Linda still warn on them?
+        bet = [i for i, r in enumerate(real_test) if r["campaign"] == "betting_ad"]
+        if bet:
+            m["betting_ads_test"] = {"n": len(bet), "warned": sum(1 for i in bet if st[i] >= WARN)}
 
     REPORTS.mkdir(parents=True, exist_ok=True)
     (REPORTS / "metrics.json").write_text(json.dumps(m, indent=2), encoding="utf-8")
@@ -153,7 +157,7 @@ def main() -> None:
 def render(m: dict) -> str:
     v, sv = m["validation"], m["shared_vectors"]
     real = m.get("real_test", {})
-    kenyan = "team_collected" in real
+    kenyan = "team_collected" in real or "kenya_sms" in real
     if not real:
         banner = [
             "> **READ THIS FIRST.** There is **no real test data yet** (real test rows: 0).",
@@ -163,7 +167,8 @@ def render(m: dict) -> str:
     else:
         banner = [
             f"> **READ THIS FIRST.** Section 8 is the only section measured on **real messages the model never saw** ({m['real_test_rows']} rows).",
-            "> " + ("It includes real Kenyan messages collected by the team." if kenyan else
+            "> " + ("It includes real Kenyan messages (kenya_sms: the Mwatsefu/IwazoLab public set, labels reviewed by "
+                    "Claude and spot-checked by the team; generated-looking messages are kept out of the test)." if kenyan else
                     "There is **no Kenyan test data yet**: the real test rows are Tanzanian Swahili (Bongoscam) and "
                     "international English (Mendeley). Quote them as such, not as results on Kenyan scams."),
             "> Sections 1 to 6 mix synthetic and real messages and show the pipeline works.", "",
@@ -204,6 +209,11 @@ def render(m: dict) -> str:
         for src, r in real.items():
             lines.append(f"| {src} | {r['n']} | {pct(r['precision'])} | {pct(r['recall'])} | {pct(r['f1'])} | {pct(r['false_alarm_rate'])} |")
         lines.append("")
+        if "betting_ads_test" in m:
+            b = m["betting_ads_test"]
+            lines += [f"Betting adverts in the test (counted as not-a-scam above): Linda's text model warns on "
+                      f"**{b['warned']} of {b['n']}**. In the app, adverts from a registered sender name are not warned on "
+                      "unless they carry a link or another scam sign, so this is the worst case.", ""]
     return "\n".join(lines)
 
 
