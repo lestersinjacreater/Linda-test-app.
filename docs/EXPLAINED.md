@@ -703,3 +703,16 @@ tests do not catch. Both files are signed with the same key, so either installs 
 `linda.apk` on a real phone, the download page switches to it. If the shrunk app ever crashes where the debug one does
 not, the fix is a "keep" rule in `android/app/proguard-rules.pro`. Crash traces keep their line numbers, so they still
 point at the right line.
+
+## The download page, redesigned (`site/index.html`)
+
+**What changed.** The page now uses Linda's own look (the greens, the banded shield and the notched card from
+`docs/design-system.md`), follows the phone's light or dark setting, and tells today's story: scam texts flagged before
+opening, scam callers labelled, real Safaricom numbers verified, one-tap reports to Safaricom's fraud team, and protection
+for people without the app. A drawn phone shows the three moments people will see.
+
+**Why it is built this way.** Everything is in one HTML file with no outside fonts, images or scripts, so it loads fast on
+a slow connection and leaks nothing to other sites (the only call is to GitHub for the build date and size). The phone
+picture is HTML, not a screenshot, so it is light, sharp and in both languages. Every English line still has its
+Kiswahili twin, the download button is a plain link that works with JavaScript off, and the tests in `tests/site/`
+check all of this on every change.

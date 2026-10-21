@@ -6,6 +6,10 @@ hosted free by **GitHub Pages**. Nothing runs on a server, and nothing needs ins
 ## What people see
 
 - A big **Download Linda for Android** button, in English or Kiswahili (a button switches language).
+- A drawn phone lock screen showing what Linda does: a scam SMS warning, a call "Reported for fraud", and
+  "Verified: Safaricom Customer Care" on 0722 000 000. It is plain HTML (no images), so it stays sharp and is translated too.
+- Four short cards (scam texts, scam callers, verified badge, one-tap reports) and the network effect: Linda users
+  help Safaricom warn everyone who got a scam, even on basic phones.
 - Install steps for a phone, the list of permissions and why, an honest "is it safe?" note (a hackathon prototype, not in the Play Store).
 - On a computer or iPhone: a note to open the page on an Android phone, and a **QR code** to scan.
 - When the newest build was made, its size, and (if GitHub provides it) the file's SHA-256 fingerprint.
