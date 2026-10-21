@@ -1,34 +1,36 @@
 # Linda model metrics
 
-Model `2026.10.20-1` · thresholds warn 0.55 / scam 0.8
+Model `2026.10.21-1` · thresholds warn 0.55 / scam 0.8
 
-> **READ THIS FIRST.** Section 8 is the only section measured on **real messages the model never saw** (1214 rows).
-> There is **no Kenyan test data yet**: the real test rows are Tanzanian Swahili (Bongoscam) and international English (Mendeley). Quote them as such, not as results on Kenyan scams.
+> **READ THIS FIRST.** Section 8 is the only section measured on **real messages the model never saw** (1331 rows).
+> It includes real Kenyan messages (kenya_sms: the Mwatsefu/IwazoLab public set, labels reviewed by Claude and spot-checked by the team; generated-looking messages are kept out of the test).
 > Sections 1 to 6 mix synthetic and real messages and show the pipeline works.
 
 ## 1. Validation set (wordings the model never saw)
 
-- Precision 100.0% · Recall 99.2% · F1 99.6%
-- Confusion matrix: TP 353 · FP 0 · FN 3 · TN 737
-- **False-alarm rate on hard negatives:** 0.0% of 180 (target under 2%)
+- Precision 98.7% · Recall 98.1% · F1 98.4%
+- Confusion matrix: TP 369 · FP 5 · FN 7 · TN 765
+- **False-alarm rate on hard negatives:** 2.6% of 190 (target under 2%)
 - **False-alarm rate on verified-sender messages (M-Pesa, banks, KPLC, KRA):** 0.0% of 140 (target 0%)
 
 ## 2. Held-out campaigns (train without the campaign, then try to catch it)
 
 | Campaign | Detected |
 |---|---|
-| bongoscam | 63.2% |
-| fake_mpesa | 71.9% |
+| bongoscam | 77.9% |
+| fake_mpesa | 100.0% |
 | fuliza_upgrade | 100.0% |
-| job_fee | 100.0% |
+| job_fee | 95.2% |
 | kra_refund | 100.0% |
-| loan_fee | 100.0% |
-| mendeley_smishing | 32.4% |
-| phishing_link | 100.0% |
-| pin_request | 75.0% |
-| prize | 100.0% |
-| reversal | 65.0% |
-| **average** | **82.5%** |
+| loan_fee | 95.8% |
+| mendeley_smishing | 73.1% |
+| other | 29.3% |
+| phishing_link | 89.0% |
+| pin_request | 100.0% |
+| prize | 99.0% |
+| reversal | 54.0% |
+| sent_by_mistake | 85.7% |
+| **average** | **84.5%** |
 
 ## 3. Per-category recall (validation)
 
@@ -41,6 +43,7 @@ Model `2026.10.20-1` · thresholds warn 0.55 / scam 0.8
 | kra_refund | 100.0% |
 | loan_fee | 100.0% |
 | mendeley_smishing | 95.8% |
+| other | 75.0% |
 | phishing_link | 100.0% |
 | pin_request | 100.0% |
 | prize | 100.0% |
@@ -48,22 +51,23 @@ Model `2026.10.20-1` · thresholds warn 0.55 / scam 0.8
 
 ## 4. Obfuscation robustness (validation scams)
 
-- Original: 99.2% · Disguised (leetspeak, spacing, emoji): 99.2%
+- Original: 98.1% · Disguised (leetspeak, spacing, emoji): 97.6%
 
 ## 5. Fairness sanity check by language (validation)
 
 | Language | Messages | Scam recall | False-alarm rate |
 |---|---|---|---|
-| en | 751 | 98.6% | 0.0% |
+| en | 786 | 96.9% | 0.5% |
+| mixed | 11 | 100.0% | 16.7% |
 | sheng | 60 | - | 0.0% |
-| sw | 282 | 99.5% | 0.0% |
+| sw | 289 | 99.0% | 1.3% |
 
 ## 6. Hand-written shared test vectors (never trained on)
 
 - SAFE messages wrongly warned: **0 of 27** 
 - Scams caught: 31 of 31; missed: none
 - CAUTION cases scoring in the caution band: 0 of 5 (the text model alone cannot judge these: they need the app's context signals such as unknown sender and not in contacts)
-- Level agreement with expected labels: 92.1%
+- Level agreement with expected labels: 88.9%
 
 ## 7. Size and speed
 
@@ -75,5 +79,8 @@ Model `2026.10.20-1` · thresholds warn 0.55 / scam 0.8
 | Source | Messages | Precision | Recall | F1 | False-alarm rate |
 |---|---|---|---|---|---|
 | bongoscam | 109 | 100.0% | 100.0% | 100.0% | 0.0% |
+| kenya_sms | 117 | 66.7% | 82.4% | 73.7% | 31.8% |
 | mendeley_smishing | 1105 | 97.0% | 94.1% | 95.5% | 0.2% |
-| all | 1214 | 97.6% | 95.3% | 96.4% | 0.2% |
+| all | 1331 | 84.2% | 90.4% | 87.2% | 1.9% |
+
+Betting adverts in the test (counted as not-a-scam above): Linda's text model warns on **7 of 21**. In the app, adverts from a registered sender name are not warned on unless they carry a link or another scam sign, so this is the worst case.

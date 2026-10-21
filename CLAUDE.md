@@ -280,10 +280,12 @@ Call screening needs Android 10+; on older phones the app still protects SMS and
 **Done (P0–P2):** walking skeleton, on-device detection and warnings, consent and reports, call
 screening and blocklist sync, radar confirmation with trust weights and poisoning resistance, simulator
 scenarios (blast, rotating, poison, call) and metrics, dashboard, deployment config, CI per folder.
-Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendeley); replaced by the lightweight `2026.10.20-1` (same real-test results, 87 KB).
+Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendeley); replaced by the lightweight `2026.10.20-1` (same real-test results, 87 KB), then by `2026.10.21-1`, which adds a
+public Kenyan SMS set re-labelled by Claude (82% of Kenyan test scams caught, up from 61%; see `ml/reports/metrics.md`).
 
 **Remaining, in priority order (P4, 19–22 Oct, then FEATURE FREEZE on 22 Oct):**
-1. Kenyan team data: `ml/data/processed/team_collected.csv`, campaign-split test, retrain, tune thresholds.
+1. Kenyan data: public Kenyan set added (`kenya_sms`, model `2026.10.21-1`). Still to do: team spot-check of the labels,
+   and the team's own messages in `ml/data/processed/team_collected.csv`.
 2. ~~`fraudintel/` mock service (5.12) and the gateway merging it.~~ Done.
 3. ~~Verified-caller badges in the gateway and the app.~~ Done (5.13). In production the list comes from 5.12.
 4. ~~Private hash-prefix lookups and hashed sync (5.10, 5.11), then retire 5.3 for phones.~~ Done.
