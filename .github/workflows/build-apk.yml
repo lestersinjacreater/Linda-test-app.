@@ -75,6 +75,6 @@ jobs:
           gh release delete latest-build --cleanup-tag --yes || true
           gh release create latest-build linda.apk linda-debug.apk \
             --prerelease \
-            --title "Latest build" \
+            --title "Latest build #$GITHUB_RUN_NUMBER (${GITHUB_SHA::7})" \
             --target "$GITHUB_SHA" \
-            --notes "Automated build of commit $GITHUB_SHA on branch $GITHUB_REF_NAME. linda.apk is the small shrunk build; linda-debug.apk is the full debug build (same signature, either installs over the other)."
+            --notes "Build #$GITHUB_RUN_NUMBER of commit $GITHUB_SHA on branch $GITHUB_REF_NAME. Settings in the app shows the same number (Linda version 0.1.$GITHUB_RUN_NUMBER). linda.apk is the small shrunk build; linda-debug.apk is the full debug build (same signature, either installs over the other)."

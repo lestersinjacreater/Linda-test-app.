@@ -5,6 +5,12 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+// Every CI build gets its own number (GitHub's run number) and commit, so Settings shows exactly which build is
+// installed ("Linda version 0.1.58 (89fa57a)") and Android refuses to put an older build over a newer one.
+// A build on a laptop has no run number and says "0.1.0 (local)".
+val ciRunNumber: Int? = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull()
+val ciCommit: String = System.getenv("GITHUB_SHA")?.take(7) ?: "local"
+
 android {
     namespace = "com.linda.app"
     compileSdk = 35
@@ -13,8 +19,8 @@ android {
         applicationId = "com.linda.app"
         minSdk = 26 // must run on cheap phones
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = ciRunNumber ?: 1
+        versionName = if (ciRunNumber != null) "0.1.$ciRunNumber ($ciCommit)" else "0.1.0 (local)"
     }
 
     // A fixed debug key that is committed on purpose. It protects nothing (it is

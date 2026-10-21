@@ -81,6 +81,53 @@ class DetectorTest {
         assertEquals("prize", v.category)
     }
 
+    /** Lester's bug (21 Oct): real business texts were warned on. A registered sender is not warned on wording alone. */
+    @Test fun ordinaryBusinessTextsAreNotWarnedOnEvenAsAFirstMessage() {
+        val texts = listOf(
+            "BETIKA" to "Deposit now and get 100% bonus up to Ksh 5,000! Paybill 290290. T&Cs apply.",
+            "TALA" to "Good news! Your Tala limit has been increased to Ksh 8,000. Open the app to apply.",
+            "HELB" to "Dear student, your HELB loan of Ksh 30,000 has been disbursed to your account.",
+            "eCitizen" to "Your payment of KES 1,050 for passport application has been received.",
+            "22444" to "You have won airtime worth Ksh 100 in this week's promotion.",
+        )
+        for ((sender, text) in texts) {
+            assertEquals(sender, RiskLevel.SAFE, analyse(text, sender).level)
+            assertEquals(sender, RiskLevel.SAFE, analyse(text, sender, inContacts = false, first = true).level)
+        }
+    }
+
+    @Test fun aNameThatCopiesABankIsNeverMoreThanCautionOnWordingAlone() {
+        val text = "Dear Customer, your account has been credited with KES 15,000. Ref 12345"
+        val v = analyse(text, "Equity Bank", inContacts = false, first = true)
+        assertEquals(RiskLevel.CAUTION, v.level)
+        assertFalse(v.reasons.contains(ReasonCatalogue.UNKNOWN_SENDER))
+    }
+
+    @Test fun scamsFromBusinessNamesAreStillCaughtWhenTheyCarryAScamSign() {
+        val brand = analyse(
+            "CONGRATULATIONS! You have won Ksh 15,000 in the Safaricom Mega Draw. Send Ksh 200 processing fee to claim your prize.",
+            "INFO",
+        )
+        assertEquals(RiskLevel.SCAM, brand.level)
+        val payPerson = analyse(
+            "Your number won Ksh 50,000 in our lucky draw! Pay Ksh 250 tax to 0700000363 to receive your winnings.",
+            "OFFERS",
+        )
+        assertEquals(RiskLevel.SCAM, payPerson.level)
+        val spoofed = analyse(
+            "QK7RT2XY9P Confirmed. You have received Ksh2,500.00 from JOHN KAMAU on 12/10/26 at 4:12 PM. New M-PESA balance is Ksh3,140.00.",
+            "MPESA_CARE",
+        )
+        assertEquals(RiskLevel.SCAM, spoofed.level)
+    }
+
+    @Test fun onlyPhoneNumbersGetTheFirstMessageNudge() {
+        val text = "Hi, I saw your number online. Can you call me? I have a business proposal for you."
+        val phone = "254700000021"
+        assertTrue(analyse(text, phone, inContacts = false, first = true).score > analyse(text, phone).score)
+        assertEquals(analyse(text, "BIZOFFERS").score, analyse(text, "BIZOFFERS", inContacts = false, first = true).score, 0f)
+    }
+
     @Test fun fingerprintIsTheSimHashOfTheNormalisedText() {
         val text = "Nimekutumia 2,500 kimakosa, tafadhali nirudishie haraka"
         assertEquals(SimHash.simhash64(Normalizer.normalize(text)), analyse(text, "254700000001").fingerprint)

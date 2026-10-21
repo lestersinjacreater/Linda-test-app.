@@ -6,6 +6,10 @@ package com.linda.app.features.detection
  * Context signals (unknown sender, not in contacts, first message) nudge the score a little. They can
  * move a borderline message up to CAUTION; they cannot turn an innocent message into a SCAM, and they
  * never touch a message from a verified sender (M-Pesa, bank, KPLC, KRA), so those are never warned on.
+ *
+ * Registered senders (business names like BETIKA, short codes like 22444) are not warned on for their
+ * wording alone, only when a scam sign is also present ([Senders]). That stops false alarms on real
+ * bank alerts, loan reminders and promos, which the model saw too few of in training.
  */
 class LindaDetector(private val scorer: ModelScorer, private val config: FusionConfig = FusionConfig()) : ScamDetector {
 
@@ -26,7 +30,11 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
         val isVerified = detail.meta.getValue("sender_verified") == 1.0
         val fake = detail.meta.getValue("fake_mpesa") == 1.0
 
-        val unknownFirst = input.senderInContacts == false && input.firstMessageFromSender == true
+        val kind = Senders.kindOf(input.sender, scorer.verifiedSenders)
+        val registered = Senders.isRegistered(kind)
+        // "A stranger's first message" is a warning sign for a phone number, not for a business name or short code:
+        // every business that ever texts you sends a first message, and Scan my inbox sees all of them as first.
+        val unknownFirst = input.senderInContacts == false && input.firstMessageFromSender == true && !registered
         var score = detail.probability
         if (!isVerified) {
             if (unknownFirst) score += config.unknownSenderBump
@@ -34,10 +42,15 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
         }
         score = score.coerceIn(0.0, 1.0)
 
-        val level = when {
+        var level = when {
             score >= scorer.scamThreshold -> RiskLevel.SCAM
             score >= scorer.warnThreshold -> RiskLevel.CAUTION
             else -> RiskLevel.SAFE
+        }
+        // A registered sender (business name or short code): wording alone does not warn (see Senders for why).
+        // A name that copies a brand is impersonation, so it can still warn, but only as CAUTION on wording alone.
+        if (registered && level != RiskLevel.SAFE && !Senders.hasStrongSign(input.body, detail.meta)) {
+            level = if (kind == SenderKind.LOOKALIKE) RiskLevel.CAUTION else RiskLevel.SAFE
         }
         if (level == RiskLevel.SAFE) {
             // Harmless messages are the vast majority, so do no extra work for them: no fingerprint (only warnings are reported).

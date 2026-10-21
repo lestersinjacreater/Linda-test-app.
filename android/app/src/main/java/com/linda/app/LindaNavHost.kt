@@ -1,8 +1,10 @@
 package com.linda.app
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,8 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.demo.DemoOverlayPanel
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -42,12 +44,12 @@ import com.linda.app.features.settings.SettingsScreen
 private enum class Destination(
     val route: String,
     @StringRes val label: Int,
-    @StringRes val glyph: Int,
+    @DrawableRes val icon: Int, // line icons drawn for Linda in res/drawable (no emoji, no icon library)
 ) {
-    Home("home", R.string.nav_home, R.string.nav_glyph_home),
-    Checker("checker", R.string.nav_check, R.string.nav_glyph_check),
-    History("history", R.string.nav_history, R.string.nav_glyph_history),
-    Settings("settings", R.string.nav_settings, R.string.nav_glyph_settings),
+    Home("home", R.string.nav_home, R.drawable.ic_nav_home),
+    Checker("checker", R.string.nav_check, R.drawable.ic_nav_check),
+    History("history", R.string.nav_history, R.drawable.ic_nav_history),
+    Settings("settings", R.string.nav_settings, R.drawable.ic_nav_settings),
 }
 
 /**
@@ -84,7 +86,8 @@ fun LindaNavHost(openDetectionId: Long? = null, openWhat: String? = null, shared
                                 restoreState = true
                             }
                         },
-                        icon = { Text(text = stringResource(destination.glyph), fontSize = 22.sp) },
+                        // No description: the label under the icon already says what it is.
+                        icon = { Icon(painterResource(destination.icon), contentDescription = null) },
                         label = { Text(text = stringResource(destination.label), style = MaterialTheme.typography.labelMedium) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedTextColor = MaterialTheme.colorScheme.primary,
