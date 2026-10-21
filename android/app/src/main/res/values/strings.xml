@@ -8,12 +8,6 @@
     <string name="nav_history">History</string>
     <string name="nav_settings">Settings</string>
 
-    <!-- Symbols shown above the navigation labels. Not translated. -->
-    <string name="nav_glyph_home" translatable="false">🛡</string>
-    <string name="nav_glyph_check" translatable="false">🔎</string>
-    <string name="nav_glyph_history" translatable="false">🕘</string>
-    <string name="nav_glyph_settings" translatable="false">⚙</string>
-
     <string name="logo_description">Linda shield logo</string>
 
     <string name="home_status_title">LINDA is protecting you.</string>

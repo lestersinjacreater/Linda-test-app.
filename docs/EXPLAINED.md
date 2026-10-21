@@ -716,3 +716,44 @@ a slow connection and leaks nothing to other sites (the only call is to GitHub f
 picture is HTML, not a screenshot, so it is light, sharp and in both languages. Every English line still has its
 Kiswahili twin, the download button is a plain link that works with JavaScript off, and the tests in `tests/site/`
 check all of this on every change.
+
+## Business senders are not warned on for their wording alone (`features/detection/Senders.kt`)
+
+**The problem (found 21 Oct).** On a real phone Linda warned on ordinary business texts: bank alerts from
+"Equity Bank", loan reminders from TALA, HELB disbursements, betting promos. The model is not broken; it learned
+a shortcut. In our synthetic training data every genuine business text came from one of about ten sender names
+(all on the verified list), and every other sender name (WINNERS, PROMO, INFO...) was a scam. The public datasets
+have no sender at all. So "money words from a sender not on the list" looked like a scam.
+
+**What Linda does now.** A message from a sender NAME (letters, like BETIKA) or a short code (3 to 6 digits,
+like 22444) is a registered sender: in Kenya those must be registered before they can send, and the scams we
+know come from ordinary 07XX and 01XX numbers. For a registered sender, the wording alone no longer raises a
+warning. Linda still warns when there is a sign that is a scam whoever sends it:
+
+- a link, or a fake M-Pesa confirmation (the model's own checks);
+- the word PIN;
+- the Safaricom, M-Pesa or Fuliza name used by someone who is not them;
+- a personal phone number in the text (a real business is paid by Paybill or Till, not to a person).
+
+A sender name that copies a protected brand (MPESA_CARE, SAFARICOM1, "Equity Bank") is impersonation, so it can
+still be warned on, but only as "be careful" (CAUTION) on wording alone. Registered senders also no longer get the
+"stranger's first message" nudge: every business that texts you sends a first message.
+
+**What it does not change.** Messages from phone numbers are scored exactly as before, and so are verified senders.
+All shared test vectors still pass, and on our own synthetic data no scam that was caught before is missed now (that
+is the data the model trained on, so it shows no step backwards, not how good Linda is). On 20 business and chat
+texts we wrote ourselves in common Kenyan formats, warnings fell from 13 to 6, and none of the 6 is a SCAM.
+
+**What is still to do.** The real fix is data: real Kenyan business texts from the team's own inboxes (scrubbed)
+as "must not flag" examples, then retrain. And the team should add their banks' exact sender names to
+`shared/verified_senders.json`, with where each was seen, so "Equity Bank" style alerts stop getting CAUTION.
+
+## The bottom bar has drawn icons, and every build has a number
+
+The four tabs used emoji (shield, magnifier, clock, gear). They are now simple line drawings in
+`res/drawable/ic_nav_*.xml`, drawn for Linda, so they look the same on every phone and follow the theme colours.
+
+Every build from GitHub now has its own number: Settings shows "Linda version 0.1.58 (89fa57a)", where 58 is the
+GitHub run and 89fa57a the commit. The release is titled the same way and the download page shows the build number,
+so you can check that a phone has the newest build. Because the version code goes up every build, Android also
+refuses to install an older file over a newer one instead of quietly going backwards.
