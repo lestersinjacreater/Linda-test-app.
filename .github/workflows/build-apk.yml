@@ -1,8 +1,10 @@
 name: Build APK
 
 # Builds and tests the Android app on every push and pull request.
-# On the default branch (or when run by hand) it also publishes the debug APK to the
-# "latest-build" pre-release, so teammates can download it onto their phones.
+# On the default branch (or when run by hand) it also publishes to the "latest-build" pre-release:
+#   linda.apk        the SHRUNK build (R8 removes unused code and resources): small and quick to download.
+#   linda-debug.apk  the full debug build, kept so existing links work and as a fallback if the shrunk one misbehaves.
+# Both are signed with the same committed key, so either installs over the other.
 
 on:
   push:
@@ -40,20 +42,27 @@ jobs:
             gradle wrapper --gradle-version 8.9
           fi
 
-      - name: Unit tests and debug APK
+      - name: Unit tests, debug APK and shrunk APK
         working-directory: android
-        run: ./gradlew testDebugUnitTest assembleDebug --stacktrace
+        run: ./gradlew testDebugUnitTest assembleDebug assembleRelease --stacktrace
 
-      - name: Check APK size (limit 15 MB)
+      - name: Check APK sizes (debug under 15 MB; shrunk build budget 5 MB, root CLAUDE.md 7.1)
         run: |
-          size=$(stat -c%s android/app/build/outputs/apk/debug/app-debug.apk)
-          echo "APK size: $((size / 1024)) KB"
-          test "$size" -lt $((15 * 1024 * 1024))
+          debug=$(stat -c%s android/app/build/outputs/apk/debug/app-debug.apk)
+          shrunk=$(stat -c%s android/app/build/outputs/apk/release/app-release.apk)
+          echo "Debug APK:  $((debug / 1024)) KB"
+          echo "Shrunk APK: $((shrunk / 1024)) KB"
+          echo "### APK sizes" >> "$GITHUB_STEP_SUMMARY"
+          echo "Debug: $((debug / 1024)) KB · Shrunk: $((shrunk / 1024)) KB (budget 5120 KB)" >> "$GITHUB_STEP_SUMMARY"
+          test "$debug" -lt $((15 * 1024 * 1024))
+          if [ "$shrunk" -ge $((5 * 1024 * 1024)) ]; then echo "::warning::Shrunk APK is over the 5 MB budget"; fi
 
       - uses: actions/upload-artifact@v4
         with:
-          name: linda-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: linda-apks
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/release/app-release.apk
 
       - name: Publish to the latest-build pre-release
         # Publish from the repository's DEFAULT branch, whatever it is called, or when run by hand.
@@ -61,10 +70,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          cp android/app/build/outputs/apk/release/app-release.apk linda.apk
           cp android/app/build/outputs/apk/debug/app-debug.apk linda-debug.apk
           gh release delete latest-build --cleanup-tag --yes || true
-          gh release create latest-build linda-debug.apk \
+          gh release create latest-build linda.apk linda-debug.apk \
             --prerelease \
             --title "Latest build" \
             --target "$GITHUB_SHA" \
-            --notes "Automated debug build of commit $GITHUB_SHA on branch $GITHUB_REF_NAME. Download linda-debug.apk and install it on your phone."
+            --notes "Automated build of commit $GITHUB_SHA on branch $GITHUB_REF_NAME. linda.apk is the small shrunk build; linda-debug.apk is the full debug build (same signature, either installs over the other)."
