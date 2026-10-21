@@ -4,23 +4,41 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Get Linda for Android</title>
-<meta name="description" content="Linda warns you about mobile-money scam messages before they fool you. Download the Android app.">
-<meta name="theme-color" content="#0B0F1A">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 8 14v16c0 15 10 26 24 30 14-4 24-15 24-30V14z' fill='%2300E5FF'/%3E%3C/svg%3E">
+<meta name="description" content="Linda warns you about scam texts and calls the moment they reach your phone, and tells you why. Download the Android app.">
+<meta name="theme-color" content="#F6F8F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#08130D" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='30 20 48 68'%3E%3CclipPath id='c'%3E%3Cpath d='M54,24 L78,33 L78,54 C78,69 68,79 54,84 C40,79 30,69 30,54 L30,33 Z'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23c)'%3E%3Crect x='30' y='20' width='10' height='70' fill='%23B7E4C7'/%3E%3Crect x='39.6' y='20' width='10' height='70' fill='%2374C69D'/%3E%3Crect x='49.2' y='20' width='10' height='70' fill='%232DBE6C'/%3E%3Crect x='58.8' y='20' width='10' height='70' fill='%2300A651'/%3E%3Crect x='68.4' y='20' width='10' height='70' fill='%23007A3D'/%3E%3C/g%3E%3C/svg%3E">
 <style>
+  /* Colours are the Linda design system tokens (docs/design-system.md), light and dark. */
   :root {
-    --bg:#0B0F1A; --card:#151B2E; --cyan:#00E5FF; --pink:#FF2E88; --amber:#FFC940;
-    --text:#F2F5FA; --muted:#A6B0C6; --line:#26304D;
+    --bg:#F6F8F7; --surface:#FFFFFF; --raised:#EEF2F0; --text:#0F1A14; --muted:#5B6B62; --line:#DCE4DF;
+    --primary:#007A3D; --on-primary:#FFFFFF; --primary-hover:#00602F; --accent:#00A651; --tint:#E8F6EE;
+    --scam:#E4002B; --scam-tint:#FDE8EC;
+    --band:#00602F; --on-band:#FFFFFF; --band-muted:#D6F0E0;
+    --shadow:0 4px 16px rgba(0,96,47,.10);
+    --head: Poppins, "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#08130D; --surface:#11211A; --raised:#1A2E24; --text:#F2F7F4; --muted:#9DB0A5; --line:#2A4035;
+      --primary:#2DBE6C; --on-primary:#08130D; --primary-hover:#74C69D; --accent:#2DBE6C; --tint:#143425;
+      --scam:#FF4D6A; --scam-tint:#3A1219;
+      --band:#11211A; --on-band:#F2F7F4; --band-muted:#9DB0A5;
+      --shadow:0 4px 16px rgba(0,0,0,.35);
+    }
   }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   html { -webkit-text-size-adjust: 100%; }
-  body { margin:0; background:var(--bg); color:var(--text); font:18px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
-  main { max-width: 720px; margin: 0 auto; padding: 20px 16px 56px; }
-  a { color: var(--cyan); }
+  body { margin:0; background:var(--bg); color:var(--text); font:18px/1.55 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  a { color: var(--primary); }
+  a:hover { color: var(--primary-hover); }
   /* bigger text gets tighter letter-spacing and leading; body text stays at normal */
-  h1 { font-size: 2rem; line-height: 1.15; letter-spacing: -.02em; margin: 8px 0 8px; }
-  h2 { font-size: 1.35rem; letter-spacing: -.01em; margin: 40px 0 12px; }
+  h1, h2, h3 { font-family: var(--head); }
+  h1 { font-size: clamp(2.1rem, 6vw, 3.4rem); line-height: 1.08; letter-spacing: -.025em; margin: 14px 0 14px; font-weight: 700; }
+  h2 { font-size: clamp(1.45rem, 3.4vw, 1.9rem); line-height: 1.2; letter-spacing: -.015em; margin: 0 0 16px; font-weight: 700; }
+  h3 { font-size: 1.1rem; line-height: 1.3; margin: 0 0 6px; font-weight: 600; }
   p { margin: 0 0 12px; }
   .muted { color: var(--muted); }
   .small { font-size: .9rem; }
@@ -28,151 +46,307 @@
   /* language: show only the chosen language. Content is plain HTML in both, so the page works without JavaScript. */
   html[data-lang="en"] [lang="sw"], html[data-lang="sw"] [lang="en"] { display: none !important; }
 
-  .top { display:flex; align-items:center; gap:12px; justify-content:space-between; }
-  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.3rem; letter-spacing:.02em; }
-  .brand svg { width:36px; height:36px; }
-  .lang { background:transparent; color:var(--text); border:1px solid var(--line); border-radius:999px; padding:8px 16px; min-height:44px; font:inherit; font-size:.95rem; cursor:pointer; }
-  .lang:hover, .lang:focus-visible { border-color: var(--cyan); outline: none; }
+  /* top bar */
+  .top { display:flex; align-items:center; gap:12px; justify-content:space-between; padding: 16px 0; }
+  .brand { display:flex; align-items:center; gap:10px; font-family:var(--head); font-weight:700; font-size:1.4rem; letter-spacing:.08em; }
+  .brand svg { width:30px; height:42px; }
+  .lang { background:var(--surface); color:var(--text); border:1px solid var(--muted); border-radius:999px; padding:8px 18px; min-height:48px; font:inherit; font-size:.95rem; font-weight:500; cursor:pointer; }
+  .lang:hover, .lang:focus-visible { border-color: var(--primary); outline: none; }
 
-  .hero { padding: 28px 0 8px; }
-  .tag { color: var(--muted); font-size: 1.1rem; }
+  /* hero: words and the download on the left, what Linda looks like on the right */
+  .hero { display:grid; grid-template-columns: minmax(0, 1fr); gap: 40px; padding: 8px 0 56px; align-items:center; }
+  @media (min-width: 880px) { .hero { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 48px; padding-top: 32px; } }
+  .eyebrow { display:inline-flex; align-items:center; gap:8px; min-height:32px; padding:4px 14px; border-radius:999px; background:var(--tint); color:var(--primary); font-size:.88rem; font-weight:600; margin:0; }
+  .eyebrow::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--accent); flex:none; }
+  .tag { color: var(--muted); font-size: 1.12rem; max-width: 34em; }
 
-  .card { background: var(--card); border-radius: 22px; padding: 22px; }
-  .download { margin-top: 16px; border: 1px solid var(--line); }
-  .btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; min-height:64px; padding:14px 20px;
-         background:var(--cyan); color:#00131A; font-weight:800; font-size:1.25rem; text-decoration:none; border-radius:16px; }
-  .btn:hover, .btn:focus-visible { filter: brightness(1.08); outline: 3px solid #fff3; outline-offset: 3px; }
+  /* the download card has the Linda notch in its bottom-right corner */
+  .download { margin-top: 24px; background:var(--surface); border-radius: 20px; padding: 20px 20px 24px; box-shadow: var(--shadow);
+              clip-path: polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%); }
+  .btn { display:flex; align-items:center; justify-content:center; gap:12px; width:100%; min-height:64px; padding:14px 20px;
+         background:var(--primary); color:var(--on-primary); font-weight:700; font-size:1.22rem; text-decoration:none; border-radius:16px; }
+  .btn:hover { background:var(--primary-hover); color:var(--on-primary); }
+  .btn:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
   .btn svg { width:26px; height:26px; flex:none; }
   /* feedback the instant a finger lands, not when it lifts */
-  .btn, .lang { transition: transform 100ms ease-out; }
+  .btn, .lang { transition: transform 100ms ease-out, background-color 150ms ease-out; }
   .btn:active, .lang:active { transform: scale(.97); }
   @media (prefers-reduced-motion: reduce) { .btn, .lang { transition: none; } .btn:active, .lang:active { transform: none; } }
-  .meta { margin-top: 12px; color: var(--muted); font-size: .95rem; text-align: center; }
-  .notice { display:none; margin-top:16px; padding:14px 16px; border-radius:14px; background:#2A2410; border:1px solid var(--amber); color:#FFE9A8; }
+  .meta { margin: 12px 0 0; color: var(--muted); font-size: .95rem; text-align: center; font-variant-numeric: tabular-nums; }
+  .notice { display:none; margin-top:16px; padding:14px 16px; border-radius:14px; background:var(--tint); border-left:4px solid var(--accent); font-size:1rem; }
   html:not(.is-android) .notice { display:block; }
   html.is-android .qr { display:none; }
-  .qr { display:flex; align-items:center; gap:16px; margin-top:16px; }
-  .qr img { width:132px; height:132px; background:#fff; border-radius:12px; padding:8px; flex:none; }
+  .qr { display:flex; align-items:center; gap:16px; margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+  .qr img { width:120px; height:120px; background:#fff; border-radius:12px; padding:8px; flex:none; border:1px solid var(--line); }
 
+  /* phone picture: drawn with HTML, so it stays sharp, light and in both languages */
+  .phone { justify-self:center; width: min(320px, 100%); border-radius: 44px; padding: 12px;
+           background: #0F1A14; box-shadow: 0 24px 60px rgba(0,96,47,.22), inset 0 0 0 2px #2A4035; }
+  .screen { border-radius: 34px; overflow:hidden; padding: 14px 12px 22px; min-height: 560px;
+            background: linear-gradient(165deg, #00602F 0%, #007A3D 45%, #0E3B26 100%); color:#fff;
+            display:flex; flex-direction:column; gap:10px; }
+  .status { display:flex; justify-content:space-between; font-size:.75rem; font-weight:600; opacity:.9; padding: 0 10px; }
+  .clock { text-align:center; font-family:var(--head); font-size:3.2rem; font-weight:600; line-height:1; letter-spacing:-.02em; margin: 16px 0 4px; font-variant-numeric: tabular-nums; }
+  .date { text-align:center; font-size:.85rem; opacity:.85; margin-bottom: 12px; }
+  .note { background: rgba(255,255,255,.97); color:#0F1A14; border-radius: 18px; padding: 12px 14px; font-size:.82rem; line-height:1.4; }
+  .note .app { display:flex; align-items:center; gap:6px; font-size:.72rem; color:#5B6B62; margin-bottom:4px; }
+  .note .app svg { width:11px; height:16px; }
+  .note b { display:block; font-size:.92rem; margin-bottom:2px; }
+  .note.scam { box-shadow: inset 5px 0 0 #E4002B; padding-left: 18px; }
+  .note.scam b { color:#D0002A; }
+  .note .acts { display:flex; gap:18px; margin-top:8px; font-weight:600; color:#007A3D; font-size:.8rem; }
+  .chip { display:inline-flex; align-items:center; gap:6px; margin-top:4px; padding:4px 10px; border-radius:999px; font-size:.76rem; font-weight:600; }
+  .chip.bad { background:#FDE8EC; color:#D0002A; }
+  .chip.good { background:#E8F6EE; color:#007A3D; }
+  .chip svg { width:13px; height:13px; flex:none; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* sections */
+  section.block { padding: 48px 0; border-top: 1px solid var(--line); }
+  .lead { color: var(--muted); max-width: 36em; margin-bottom: 24px; }
+  .features { display:grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  @media (min-width: 680px) { .features { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .feature { background:var(--surface); border-radius:16px; padding:20px; box-shadow:var(--shadow); display:flex; gap:16px; align-items:flex-start; }
+  .feature p { margin:0; color:var(--muted); font-size:1rem; }
+  .icon { flex:none; width:48px; height:48px; border-radius:14px; background:var(--tint); display:flex; align-items:center; justify-content:center; }
+  .icon svg { width:26px; height:26px; }
+  .icon.warn { background:var(--scam-tint); }
+  .icon.warn svg { stroke: var(--scam); }
+  .icon .ink { stroke: var(--primary); }
+
+  /* the network band: the one deep green moment on the page */
+  .band { background: var(--band); color: var(--on-band); border-radius: 24px; padding: 28px 24px; display:grid; gap: 20px; align-items:center; margin-top: 24px; }
+  @media (min-width: 760px) { .band { grid-template-columns: auto minmax(0, 1fr); padding: 32px 40px; gap: 36px; } }
+  .band h2 { margin-bottom: 8px; color: var(--on-band); }
+  .band p { margin:0; color: var(--band-muted); }
+  .band svg { width: 132px; height: 96px; }
+
+  /* install steps and permissions side by side on a computer */
+  .two { display:grid; grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  @media (min-width: 880px) { .two { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; } }
+  .card { background: var(--surface); border-radius: 16px; padding: 4px 20px; box-shadow: var(--shadow); }
   ol.steps { list-style:none; counter-reset:s; padding:0; margin:0; }
-  ol.steps li { counter-increment:s; display:flex; gap:14px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--line); }
+  ol.steps li { counter-increment:s; display:flex; gap:14px; align-items:flex-start; padding:16px 0; border-bottom:1px solid var(--line); }
   ol.steps li:last-child { border-bottom:0; }
-  ol.steps li::before { content:counter(s); flex:none; width:38px; height:38px; border-radius:50%; background:var(--pink); color:#fff; font-weight:800;
-                        display:flex; align-items:center; justify-content:center; }
-  ol.steps b { display:block; }
+  ol.steps li::before { content:counter(s); flex:none; width:36px; height:36px; border-radius:50%; background:var(--primary); color:var(--on-primary);
+                        font-family:var(--head); font-weight:700; display:flex; align-items:center; justify-content:center; }
+  ol.steps b { display:block; margin-bottom:2px; }
+  ol.steps .muted { font-size: 1rem; }
 
-  table { width:100%; border-collapse:collapse; font-size:.98rem; }
-  th, td { text-align:left; vertical-align:top; padding:10px 8px; border-bottom:1px solid var(--line); }
-  th { color:var(--muted); font-weight:600; }
-  td:first-child { white-space:nowrap; font-weight:600; }
-  .never { border-left: 4px solid var(--cyan); padding-left: 14px; }
-  details { border-bottom:1px solid var(--line); padding:12px 0; }
-  summary { cursor:pointer; font-weight:700; min-height:32px; }
-  footer { margin-top:44px; color:var(--muted); font-size:.92rem; }
-  code { background:#0F1526; padding:2px 6px; border-radius:6px; font-size:.9em; white-space:nowrap; }
+  /* permissions as rows, so they read well on a narrow phone */
+  dl { margin:0; }
+  .perm { padding: 14px 0; border-bottom:1px solid var(--line); }
+  .perm dt { font-weight:600; }
+  .perm dd { margin:0; color:var(--muted); font-size:1rem; }
+  .never { display:flex; gap:12px; align-items:flex-start; margin: 4px -8px 16px; padding:16px; border-radius:14px; background:var(--tint); }
+  .never svg { width:28px; height:28px; flex:none; margin-top:2px; }
+  .never p { margin:0; }
+
+  /* is it safe */
+  .safe > p { max-width: 40em; }
+  details { border-bottom:1px solid var(--line); padding:14px 0; }
+  details:last-child { border-bottom:0; }
+  summary { cursor:pointer; font-weight:600; min-height:32px; }
+  summary::marker { color: var(--primary); }
+  details p { margin-top: 10px; }
+
+  footer { padding: 32px 0 56px; border-top:1px solid var(--line); color:var(--muted); font-size:.92rem; }
+  footer .brand { font-size:1rem; margin-bottom: 8px; color: var(--text); }
+  footer .brand svg { width:18px; height:26px; }
+  code { background:var(--raised); padding:2px 6px; border-radius:6px; font-size:.9em; white-space:nowrap; }
   #sha { white-space:normal; word-break:break-all; }
-  @media (max-width:520px) { .qr { flex-direction:column; align-items:flex-start; } td:first-child { white-space:normal; } }
+  @media (max-width:520px) { .qr { flex-direction:column; align-items:flex-start; } .screen { min-height: 0; } }
+  @media (max-width:420px) { .btn { font-size: 1.1rem; gap: 10px; padding: 14px 16px; } }
 </style>
 </head>
 <body>
-<main>
-  <div class="top">
-    <div class="brand">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4 8 14v16c0 15 10 26 24 30 14-4 24-15 24-30V14z" fill="#00E5FF"/><path d="m22 32 7 7 14-15" fill="none" stroke="#0B0F1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      LINDA
-    </div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="mk"><path d="M54,24 L78,33 L78,54 C78,69 68,79 54,84 C40,79 30,69 30,54 L30,33 Z"/></clipPath>
+    <g id="mark" clip-path="url(#mk)"><rect x="30" y="20" width="8.8" height="70" fill="#B7E4C7"/><rect x="39.6" y="20" width="8.8" height="70" fill="#74C69D"/><rect x="49.2" y="20" width="8.8" height="70" fill="#2DBE6C"/><rect x="58.8" y="20" width="8.8" height="70" fill="#00A651"/><rect x="68.4" y="20" width="8.8" height="70" fill="#007A3D"/></g>
+    <g id="tick"><path d="M50,6 L88,20 L88,50 C88,74 70,90 50,96 C30,90 12,74 12,50 L12,20 Z" fill="#00A651"/><path d="M32,50 L45,63 L69,38" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></g>
+  </defs>
+</svg>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><svg viewBox="30 20 48 68" aria-hidden="true"><use href="#mark"/></svg>LINDA</div>
     <button class="lang" id="lang" type="button" aria-label="Change language / Badilisha lugha">
       <span lang="en">Kiswahili</span><span lang="sw">English</span>
     </button>
-  </div>
+  </header>
 
+  <main>
   <section class="hero">
-    <h1><span lang="en">Stop scam messages before they fool you.</span><span lang="sw">Zuia jumbe za ulaghai kabla hazijakudanganya.</span></h1>
-    <p class="tag"><span lang="en">Linda checks each text on your own phone and warns you, with the reason, before you lose money. It works with no internet.</span><span lang="sw">Linda inakagua kila ujumbe kwenye simu yako na kukuonya, pamoja na sababu, kabla hujapoteza pesa. Inafanya kazi bila intaneti.</span></p>
+    <div>
+      <p class="eyebrow"><span lang="en">Free Android app · English and Kiswahili</span><span lang="sw">Programu ya bure ya Android · Kiswahili na Kiingereza</span></p>
+      <h1><span lang="en">Know it's a scam before you open it.</span><span lang="sw">Jua ni ulaghai kabla hujaufungua.</span></h1>
+      <p class="tag"><span lang="en">Linda brings Safaricom's fraud protection onto your phone. It warns you about scam texts and calls the moment they arrive, and tells you why, before you lose money.</span><span lang="sw">Linda inaleta ulinzi wa Safaricom dhidi ya ulaghai kwenye simu yako. Inakuonya kuhusu jumbe na simu za ulaghai pindi zinapofika, na kukueleza kwa nini, kabla hujapoteza pesa.</span></p>
 
-    <div class="card download">
-      <a class="btn" id="apk" href="https://github.com/lestersinjacreater/Linda-test-app./releases/download/latest-build/linda-debug.apk" rel="noopener">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span lang="en">Download Linda for Android</span><span lang="sw">Pakua Linda kwa Android</span>
-      </a>
-      <p class="meta" id="meta">
-        <span lang="en">Free · Android 8.0 or newer</span><span lang="sw">Bure · Android 8.0 au mpya zaidi</span>
-      </p>
+      <div class="download">
+        <a class="btn" id="apk" href="https://github.com/lestersinjacreater/Linda-test-app./releases/download/latest-build/linda-debug.apk" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span lang="en">Download Linda for Android</span><span lang="sw">Pakua Linda kwa Android</span>
+        </a>
+        <p class="meta" id="meta">
+          <span lang="en">Free · Android 8.0 or newer</span><span lang="sw">Bure · Android 8.0 au mpya zaidi</span>
+        </p>
 
-      <div class="notice" id="notice">
-        <span lang="en"><b>Open this page on your Android phone</b> to install Linda. Scan the code below with your phone's camera. Linda does not work on iPhone or on a computer.</span>
-        <span lang="sw"><b>Fungua ukurasa huu kwenye simu yako ya Android</b> ili kusakinisha Linda. Piga picha ya msimbo ulio hapa chini kwa kamera ya simu yako. Linda haifanyi kazi kwenye iPhone wala kompyuta.</span>
+        <div class="notice" id="notice">
+          <span lang="en"><b>Open this page on your Android phone</b> to install Linda. Linda does not work on iPhone or on a computer.</span>
+          <span lang="sw"><b>Fungua ukurasa huu kwenye simu yako ya Android</b> ili kusakinisha Linda. Linda haifanyi kazi kwenye iPhone wala kompyuta.</span>
+        </div>
+        <div class="qr" id="qr">
+          <img id="qrimg" src="qr.svg" alt="QR code that opens this page on a phone" width="120" height="120">
+          <p class="muted small" style="margin:0"><span lang="en"><b>On a computer?</b> Point your phone's camera at this code to open this page on your phone.</span><span lang="sw"><b>Uko kwenye kompyuta?</b> Elekeza kamera ya simu yako kwenye msimbo huu ili kufungua ukurasa huu kwenye simu.</span></p>
+        </div>
       </div>
-      <div class="qr" id="qr">
-        <img id="qrimg" src="qr.svg" alt="QR code that opens this page on a phone" width="132" height="132" onerror="document.getElementById('qr').hidden=true">
-        <p class="muted small" style="margin:0"><span lang="en">Scan with your phone's camera to open this page on your phone.</span><span lang="sw">Piga picha kwa kamera ya simu yako ili kufungua ukurasa huu kwenye simu.</span></p>
+    </div>
+
+    <!-- What Linda looks like on a phone. Decorative: the same facts are written out in the next section. -->
+    <div class="phone" aria-hidden="true">
+      <div class="screen">
+        <div class="status"><span class="num">16:12</span><span>Safaricom 4G</span></div>
+        <div class="clock">16:12</div>
+        <div class="date"><span lang="en">Tuesday 20 October</span><span lang="sw">Jumanne, 20 Oktoba</span></div>
+
+        <div class="note scam">
+          <div class="app"><svg viewBox="30 20 48 68"><use href="#mark"/></svg>LINDA · <span lang="en">now</span><span lang="sw">sasa hivi</span></div>
+          <b><span lang="en">Likely scam: fake M-PESA message</span><span lang="sw">Huenda ni ulaghai: ujumbe bandia wa M-PESA</span></b>
+          <span lang="en">Pretends to be M-PESA but came from a personal number. You have not received any money.</span><span lang="sw">Unajifanya kuwa M-PESA lakini umetoka kwa nambari ya mtu binafsi. Hujapokea pesa yoyote.</span>
+          <div class="acts"><span lang="en">See why</span><span lang="sw">Nionyeshe kwa nini</span><span lang="en">Report</span><span lang="sw">Ripoti</span></div>
+        </div>
+
+        <div class="note">
+          <div class="app"><span lang="en">Incoming call</span><span lang="sw">Simu inayoingia</span></div>
+          <b class="num">0700 000 123</b>
+          <span class="chip bad"><svg viewBox="0 0 100 100"><polygon points="92.5,67.6 67.6,92.5 32.4,92.5 7.5,67.6 7.5,32.4 32.4,7.5 67.6,7.5 92.5,32.4" fill="#E4002B"/><line x1="50" y1="26" x2="50" y2="55" stroke="#fff" stroke-width="10" stroke-linecap="round"/><circle cx="50" cy="72" r="6.5" fill="#fff"/></svg><span lang="en">Reported for fraud by 14 people</span><span lang="sw">Imeripotiwa kwa ulaghai na watu 14</span></span>
+        </div>
+
+        <div class="note">
+          <div class="app"><span lang="en">Incoming call</span><span lang="sw">Simu inayoingia</span></div>
+          <b class="num">0722 000 000</b>
+          <span class="chip good"><svg viewBox="0 0 100 100"><use href="#tick"/></svg><span lang="en">Verified: Safaricom Customer Care</span><span lang="sw">Imethibitishwa: Huduma kwa Wateja ya Safaricom</span></span>
+        </div>
       </div>
     </div>
   </section>
 
-  <section>
-    <h2><span lang="en">Install in 4 steps</span><span lang="sw">Sakinisha kwa hatua 4</span></h2>
-    <div class="card">
-      <ol class="steps">
-        <li><div>
-          <b><span lang="en">Tap the blue Download button.</span><span lang="sw">Gusa kitufe cha buluu cha Pakua.</span></b>
-          <span class="muted"><span lang="en">If your phone says this type of file can be harmful, choose <i>Download anyway</i>. That is normal for apps that are not from the Play Store.</span><span lang="sw">Simu ikisema aina hii ya faili inaweza kudhuru, chagua <i>Pakua hata hivyo</i>. Hilo ni la kawaida kwa programu zisizotoka Play Store.</span></span>
-        </div></li>
-        <li><div>
-          <b><span lang="en">Open the file <code>linda-debug.apk</code>.</span><span lang="sw">Fungua faili <code>linda-debug.apk</code>.</span></b>
-          <span class="muted"><span lang="en">Tap the download notification, or find it in your <i>Downloads</i> folder.</span><span lang="sw">Gusa arifa ya upakuaji, au uitafute kwenye folda ya <i>Downloads</i>.</span></span>
-        </div></li>
-        <li><div>
-          <b><span lang="en">Allow installing from this source.</span><span lang="sw">Ruhusu usakinishaji kutoka chanzo hiki.</span></b>
-          <span class="muted"><span lang="en">Android asks once: switch on <i>Allow from this source</i> for your browser, then go back and tap <i>Install</i>.</span><span lang="sw">Android huuliza mara moja: washa <i>Ruhusu kutoka chanzo hiki</i> kwa kivinjari chako, kisha rudi na ugonge <i>Sakinisha</i>.</span></span>
-        </div></li>
-        <li><div>
-          <b><span lang="en">Open Linda and follow the welcome screen.</span><span lang="sw">Fungua Linda na ufuate skrini ya karibu.</span></b>
-          <span class="muted"><span lang="en">Allow the permissions, and use the battery steps shown for your phone brand so Linda keeps working with the screen off.</span><span lang="sw">Ruhusu ruhusa, na utumie hatua za betri zinazoonyeshwa kwa chapa ya simu yako ili Linda ifanye kazi skrini ikiwa imezimwa.</span></span>
-        </div></li>
-      </ol>
+  <section class="block">
+    <h2><span lang="en">What Linda does for you</span><span lang="sw">Linda inakufanyia nini</span></h2>
+    <p class="lead"><span lang="en">Linda warns. You decide. It never blocks or deletes anything.</span><span lang="sw">Linda inaonya. Wewe unaamua. Haizuii wala kufuta chochote kamwe.</span></p>
+    <div class="features">
+      <div class="feature">
+        <div class="icon warn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H8l-4 4z"/><path d="M12 8v3.5M12 14h.01"/></svg></div>
+        <div>
+          <h3><span lang="en">Scam texts flagged before you open them</span><span lang="sw">Jumbe za ulaghai zinatambuliwa kabla hujazifungua</span></h3>
+          <p><span lang="en">Linda checks each SMS on your own phone and warns on the notification, with the reason. It even works with no internet.</span><span lang="sw">Linda inakagua kila SMS kwenye simu yako na kukuonya kwenye arifa, pamoja na sababu. Inafanya kazi hata bila intaneti.</span></p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="icon warn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></div>
+        <div>
+          <h3><span lang="en">Scam callers labelled before you answer</span><span lang="sw">Wapigaji matapeli wanatambulishwa kabla hujajibu</span></h3>
+          <p><span lang="en">A call from a number reported to Safaricom's fraud team shows a warning while the phone is still ringing.</span><span lang="sw">Simu kutoka kwa nambari iliyoripotiwa kwa kitengo cha Safaricom cha kupambana na ulaghai inaonyesha onyo wakati simu bado inalia.</span></p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#tick"/></svg></div>
+        <div>
+          <h3><span lang="en">Real Safaricom numbers get a verified badge</span><span lang="sw">Nambari halisi za Safaricom zinapata alama ya uthibitisho</span></h3>
+          <p><span lang="en">So a caller pretending to be Customer Care cannot fool you. Only numbers on the official list get the badge.</span><span lang="sw">Ili mpigaji anayejifanya Huduma kwa Wateja asikudanganye. Nambari zilizo kwenye orodha rasmi pekee ndizo hupata alama hii.</span></p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ink" d="M5 21V4h11l-1.5 4L16 12H5"/></svg></div>
+        <div>
+          <h3><span lang="en">Report a scammer in one tap</span><span lang="sw">Ripoti tapeli kwa mguso mmoja</span></h3>
+          <p><span lang="en">Your report goes to Safaricom's fraud team with the number and the type of scam, never the message itself.</span><span lang="sw">Ripoti yako inaenda kwa kitengo cha Safaricom cha kupambana na ulaghai ikiwa na nambari na aina ya ulaghai, kamwe si ujumbe wenyewe.</span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="band">
+      <svg viewBox="0 0 132 96" aria-hidden="true">
+        <g stroke="#74C69D" stroke-width="2" stroke-dasharray="3 5" fill="none"><path d="M66 48 20 18M66 48 112 18M66 48 20 78M66 48 112 78M66 48 66 10M66 48 66 86"/></g>
+        <circle cx="66" cy="48" r="15" fill="#2DBE6C"/><path d="M59 48l5 5 9-10" fill="none" stroke="#00602F" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <g fill="#B7E4C7"><circle cx="20" cy="18" r="7"/><circle cx="112" cy="18" r="7"/><circle cx="20" cy="78" r="7"/><circle cx="112" cy="78" r="7"/><circle cx="66" cy="10" r="6"/><circle cx="66" cy="86" r="6"/></g>
+      </svg>
+      <div>
+        <h2><span lang="en">You protect other people too</span><span lang="sw">Unawalinda watu wengine pia</span></h2>
+        <p><span lang="en">When a few Linda phones catch the same scammer, Safaricom can warn everyone who got the scam, on any phone, even a basic one, within minutes.</span><span lang="sw">Simu chache za Linda zikimnasa tapeli yule yule, Safaricom inaweza kuwaonya wote waliopokea ulaghai huo, kwenye simu yoyote, hata ya kawaida, ndani ya dakika chache.</span></p>
+      </div>
     </div>
   </section>
 
-  <section>
-    <h2><span lang="en">What Linda asks for, and why</span><span lang="sw">Linda inaomba nini, na kwa nini</span></h2>
-    <div class="card">
-      <table>
-        <tr><th><span lang="en">Permission</span><span lang="sw">Ruhusa</span></th><th><span lang="en">Why</span><span lang="sw">Kwa nini</span></th></tr>
-        <tr><td><span lang="en">Receive text messages</span><span lang="sw">Kupokea jumbe</span></td><td><span lang="en">To check each new text on your phone. Messages are never sent anywhere.</span><span lang="sw">Kukagua kila ujumbe mpya kwenye simu yako. Jumbe hazitumwi popote.</span></td></tr>
-        <tr><td><span lang="en">Read text messages</span><span lang="sw">Kusoma jumbe</span></td><td><span lang="en">Only for "Scan my inbox", when you tap Scan.</span><span lang="sw">Kwa "Kagua kikasha changu" tu, unapogonga Kagua.</span></td></tr>
-        <tr><td><span lang="en">Contacts</span><span lang="sw">Anwani</span></td><td><span lang="en">To tell if a sender is someone you know. Never uploaded.</span><span lang="sw">Kujua kama mtumaji ni mtu unayemjua. Hazipakiwi kamwe.</span></td></tr>
-        <tr><td><span lang="en">Notifications</span><span lang="sw">Arifa</span></td><td><span lang="en">To show you the warning.</span><span lang="sw">Kukuonyesha onyo.</span></td></tr>
-        <tr><td><span lang="en">Send text messages</span><span lang="sw">Kutuma jumbe</span></td><td><span lang="en">Only if you turn on <i>Family Guardian</i>, to tell your chosen family member.</span><span lang="sw">Ikiwa tu utawasha <i>Mlezi wa Familia</i>, kumjulisha mwanafamilia uliyemchagua.</span></td></tr>
-        <tr><td><span lang="en">Call screening</span><span lang="sw">Ukaguzi wa simu</span></td><td><span lang="en">Only if you turn on caller warnings. Linda never blocks a call.</span><span lang="sw">Ikiwa tu utawasha onyo la wapigaji. Linda haizuii simu kamwe.</span></td></tr>
-        <tr><td><span lang="en">Internet</span><span lang="sw">Intaneti</span></td><td><span lang="en">Optional. Only for anonymous scam reports you agree to, and for the list of known scam numbers.</span><span lang="sw">Si lazima. Kwa ripoti zisizotambulisha mtu unazokubali tu, na orodha ya nambari za ulaghai zinazojulikana.</span></td></tr>
-      </table>
-      <p class="never" style="margin-top:16px"><b><span lang="en">Linda never sends the text of your messages anywhere.</span><span lang="sw">Linda haitumi maandishi ya jumbe zako popote kamwe.</span></b>
-        <span class="muted"><span lang="en"> No ads. No tracking.</span><span lang="sw"> Hakuna matangazo. Hakuna ufuatiliaji.</span></span></p>
+  <section class="block two">
+    <div>
+      <h2><span lang="en">Install in 4 steps</span><span lang="sw">Sakinisha kwa hatua 4</span></h2>
+      <div class="card">
+        <ol class="steps">
+          <li><div>
+            <b><span lang="en">Tap the green Download button.</span><span lang="sw">Gusa kitufe cha kijani cha Pakua.</span></b>
+            <span class="muted"><span lang="en">If your phone says this type of file can be harmful, choose <i>Download anyway</i>. That is normal for apps that are not from the Play Store.</span><span lang="sw">Simu ikisema aina hii ya faili inaweza kudhuru, chagua <i>Pakua hata hivyo</i>. Hilo ni la kawaida kwa programu zisizotoka Play Store.</span></span>
+          </div></li>
+          <li><div>
+            <b><span lang="en">Open the file <code>linda-debug.apk</code>.</span><span lang="sw">Fungua faili <code>linda-debug.apk</code>.</span></b>
+            <span class="muted"><span lang="en">Tap the download notification, or find it in your <i>Downloads</i> folder.</span><span lang="sw">Gusa arifa ya upakuaji, au uitafute kwenye folda ya <i>Downloads</i>.</span></span>
+          </div></li>
+          <li><div>
+            <b><span lang="en">Allow installing from this source.</span><span lang="sw">Ruhusu usakinishaji kutoka chanzo hiki.</span></b>
+            <span class="muted"><span lang="en">Android asks once: switch on <i>Allow from this source</i> for your browser, then go back and tap <i>Install</i>.</span><span lang="sw">Android huuliza mara moja: washa <i>Ruhusu kutoka chanzo hiki</i> kwa kivinjari chako, kisha rudi na ugonge <i>Sakinisha</i>.</span></span>
+          </div></li>
+          <li><div>
+            <b><span lang="en">Open Linda and follow the welcome screen.</span><span lang="sw">Fungua Linda na ufuate skrini ya karibu.</span></b>
+            <span class="muted"><span lang="en">Allow the permissions, and use the battery steps shown for your phone brand so Linda keeps working with the screen off.</span><span lang="sw">Ruhusu ruhusa, na utumie hatua za betri zinazoonyeshwa kwa chapa ya simu yako ili Linda ifanye kazi skrini ikiwa imezimwa.</span></span>
+          </div></li>
+        </ol>
+      </div>
+    </div>
+
+    <div>
+      <h2><span lang="en">What Linda asks for, and why</span><span lang="sw">Linda inaomba nini, na kwa nini</span></h2>
+      <div class="card">
+        <dl>
+          <div class="perm"><dt><span lang="en">Receive text messages</span><span lang="sw">Kupokea jumbe</span></dt><dd><span lang="en">To check each new text on your phone. Messages are never sent anywhere.</span><span lang="sw">Kukagua kila ujumbe mpya kwenye simu yako. Jumbe hazitumwi popote.</span></dd></div>
+          <div class="perm"><dt><span lang="en">Read text messages</span><span lang="sw">Kusoma jumbe</span></dt><dd><span lang="en">Only for "Scan my inbox", when you tap Scan.</span><span lang="sw">Kwa "Kagua kikasha changu" tu, unapogonga Kagua.</span></dd></div>
+          <div class="perm"><dt><span lang="en">Contacts</span><span lang="sw">Anwani</span></dt><dd><span lang="en">To tell if a sender is someone you know. Never uploaded.</span><span lang="sw">Kujua kama mtumaji ni mtu unayemjua. Hazipakiwi kamwe.</span></dd></div>
+          <div class="perm"><dt><span lang="en">Notifications</span><span lang="sw">Arifa</span></dt><dd><span lang="en">To show you the warning.</span><span lang="sw">Kukuonyesha onyo.</span></dd></div>
+          <div class="perm"><dt><span lang="en">Send text messages</span><span lang="sw">Kutuma jumbe</span></dt><dd><span lang="en">Only if you turn on <i>Family Guardian</i>, to tell your chosen family member.</span><span lang="sw">Ikiwa tu utawasha <i>Mlezi wa Familia</i>, kumjulisha mwanafamilia uliyemchagua.</span></dd></div>
+          <div class="perm"><dt><span lang="en">Call screening</span><span lang="sw">Ukaguzi wa simu</span></dt><dd><span lang="en">Only if you turn on caller warnings. Linda never blocks a call.</span><span lang="sw">Ikiwa tu utawasha onyo la wapigaji. Linda haizuii simu kamwe.</span></dd></div>
+          <div class="perm"><dt><span lang="en">Internet</span><span lang="sw">Intaneti</span></dt><dd><span lang="en">Optional. Only for reports you agree to and for checking callers, using scrambled codes instead of full numbers.</span><span lang="sw">Si lazima. Kwa ripoti unazokubali na kukagua wapigaji tu, kwa kutumia misimbo iliyofichwa badala ya nambari kamili.</span></dd></div>
+        </dl>
+        <div class="never">
+          <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#tick"/></svg>
+          <p><b><span lang="en">Linda never sends the text of your messages anywhere.</span><span lang="sw">Linda haitumi maandishi ya jumbe zako popote kamwe.</span></b>
+            <span class="muted"><span lang="en"> No ads. No tracking.</span><span lang="sw"> Hakuna matangazo. Hakuna ufuatiliaji.</span></span></p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section>
+  <section class="block safe">
     <h2><span lang="en">Is it safe to install?</span><span lang="sw">Je, ni salama kusakinisha?</span></h2>
-    <div class="card">
-      <p><span lang="en">Linda is a <b>prototype made for a hackathon</b>. It is not in the Play Store, which is why Android shows a warning. The app is built automatically from the public source code, and you can read all of it.</span><span lang="sw">Linda ni <b>mfano uliotengenezwa kwa hackathon</b>. Haipo kwenye Play Store, ndiyo maana Android inaonyesha onyo. Programu hujengwa kiotomatiki kutoka kwa msimbo wa chanzo wa umma, na unaweza kuusoma wote.</span></p>
+    <p><span lang="en">Linda is a <b>prototype made for a hackathon</b>. It is not in the Play Store, which is why Android shows a warning. The app is built automatically from the public source code, and you can read all of it.</span><span lang="sw">Linda ni <b>mfano uliotengenezwa kwa hackathon</b>. Haipo kwenye Play Store, ndiyo maana Android inaonyesha onyo. Programu hujengwa kiotomatiki kutoka kwa msimbo wa chanzo wa umma, na unaweza kuusoma wote.</span></p>
+    <div class="card" style="margin-top:20px">
+      <details>
+        <summary><span lang="en">Something went wrong?</span><span lang="sw">Kuna tatizo?</span></summary>
+        <p class="muted"><span lang="en"><b>Download stuck near the end:</b> wait a minute, then look in your <i>Downloads</i> folder; on office Wi-Fi, try mobile data. <b>"App not installed":</b> an older copy from a different build may be on your phone. Uninstall Linda, then install again. <b>No Install button:</b> go back and allow installing from this source (step 3). <b>Linda stops working when the screen is off:</b> follow the battery steps for your phone brand in the app's welcome screen.</span><span lang="sw"><b>Upakuaji umekwama karibu na mwisho:</b> subiri dakika moja, kisha angalia folda ya <i>Downloads</i>; ukiwa kwenye Wi-Fi ya ofisi, jaribu data ya simu. <b>"Programu haijasakinishwa":</b> huenda nakala ya zamani kutoka muundo tofauti iko kwenye simu yako. Ondoa Linda, kisha usakinishe tena. <b>Hakuna kitufe cha Sakinisha:</b> rudi na uruhusu usakinishaji kutoka chanzo hiki (hatua ya 3). <b>Linda inaacha kufanya kazi skrini ikizimwa:</b> fuata hatua za betri za chapa ya simu yako kwenye skrini ya karibu ya programu.</span></p>
+      </details>
       <details>
         <summary><span lang="en">Check the file was not changed (advanced)</span><span lang="sw">Hakikisha faili haikubadilishwa (kwa wataalamu)</span></summary>
         <p class="muted"><span lang="en">The SHA-256 fingerprint of the file you should have downloaded:</span><span lang="sw">Alama ya vidole ya SHA-256 ya faili unayopaswa kuwa umepakua:</span></p>
         <p><code id="sha">—</code></p>
       </details>
-      <details>
-        <summary><span lang="en">Something went wrong?</span><span lang="sw">Kuna tatizo?</span></summary>
-        <p class="muted"><span lang="en"><b>"App not installed":</b> an older copy from a different build may be on your phone. Uninstall Linda, then install again. <b>No Install button:</b> go back and allow installing from this source (step 3). <b>Linda stops working when the screen is off:</b> follow the battery steps for your phone brand in the app's welcome screen.</span><span lang="sw"><b>"Programu haijasakinishwa":</b> huenda nakala ya zamani kutoka muundo tofauti iko kwenye simu yako. Ondoa Linda, kisha usakinishe tena. <b>Hakuna kitufe cha Sakinisha:</b> rudi na uruhusu usakinishaji kutoka chanzo hiki (hatua ya 3). <b>Linda inaacha kufanya kazi skrini ikizimwa:</b> fuata hatua za betri za chapa ya simu yako kwenye skrini ya karibu ya programu.</span></p>
-      </details>
     </div>
   </section>
+  </main>
 
   <footer>
-    <p><span lang="en">Linda · "Kaa Rada stops the payment. Linda stops the conversation." · Built for the Safaricom interns' Intelligence Unleashed hackathon.</span><span lang="sw">Linda · "Kaa Rada inazuia malipo. Linda inazuia mazungumzo." · Imetengenezwa kwa hackathon ya Intelligence Unleashed ya wanafunzi wa Safaricom.</span></p>
+    <div class="brand"><svg viewBox="30 20 48 68" aria-hidden="true"><use href="#mark"/></svg>LINDA</div>
+    <p><span lang="en">Kaa Rada protects the payment. Linda protects the conversation, earlier. Built for the Safaricom interns' Intelligence Unleashed hackathon.</span><span lang="sw">Kaa Rada inalinda malipo. Linda inalinda mazungumzo, mapema zaidi. Imetengenezwa kwa hackathon ya Intelligence Unleashed ya wanafunzi wa Safaricom.</span></p>
     <p><a href="https://github.com/lestersinjacreater/Linda-test-app." rel="noopener"><span lang="en">Source code and all releases on GitHub</span><span lang="sw">Msimbo wa chanzo na matoleo yote kwenye GitHub</span></a></p>
   </footer>
-</main>
+</div>
 
 <script>
 (function () {
@@ -192,6 +366,12 @@
 
   // Show the install notice and QR code unless this really is an Android phone.
   if (/Android/i.test(navigator.userAgent)) doc.classList.add("is-android");
+
+  // Hide the QR box if the code image is missing (the Pages workflow makes qr.svg).
+  var qrimg = document.getElementById("qrimg");
+  function noQr() { document.getElementById("qr").hidden = true; }
+  qrimg.addEventListener("error", noQr);
+  if (qrimg.complete && qrimg.naturalWidth === 0) noQr();
 
   // Show when the newest build was made. If GitHub cannot be reached the button above still works.
   function say(en, sw) {
