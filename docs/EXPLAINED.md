@@ -687,3 +687,19 @@ kulinda wengine pia", the Network card body and "kitengo cha Safaricom cha kupam
 **Tested by:** `WarningRouteTest` (each button opens the right screen; titles have no emoji in either language; the new
 wording exists in English and Swahili; no "rada" left in the consent or report text). The screens themselves are checked
 in the APK that CI builds.
+
+## The small APK (R8 shrinking)
+
+**What:** CI now also builds the release version of the app with R8, Android's standard shrinker (part of the Android
+build tools, so no new library). R8 deletes code the app never calls, mostly unused parts of the big libraries, renames
+what is left to short names, and drops unused images and layouts. The debug build is about 10.8 MB, mostly the libraries'
+code. The shrunk build is published as `linda.apk` next to the old `linda-debug.apk`.
+
+**Why:** a smaller file downloads faster on a slow phone connection, and root CLAUDE.md 7.1 sets a 5 MB budget. CI prints
+both sizes on every run and warns if the shrunk one is over 5 MB.
+
+**Why both files for now:** shrinking can, rarely, remove something a library looks up by name at run time, which unit
+tests do not catch. Both files are signed with the same key, so either installs over the other. Once the team has tried
+`linda.apk` on a real phone, the download page switches to it. If the shrunk app ever crashes where the debug one does
+not, the fix is a "keep" rule in `android/app/proguard-rules.pro`. Crash traces keep their line numbers, so they still
+point at the right line.
