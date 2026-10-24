@@ -91,6 +91,18 @@ class Tour:
                 self.swipe_up()
         return None
 
+    def tap_exact(self, words: str, scrolls: int = 4) -> bool:
+        """Tap an element whose whole text is exactly these words (so "Kiswahili" never hits "Prize scam (Kiswahili)")."""
+        for i in range(scrolls + 1):
+            for n in self.screen_nodes():
+                if n["text"] == words:
+                    self.shell(f"input tap {n['x']} {n['y']}")
+                    time.sleep(1.5)
+                    return True
+            if i < scrolls:
+                self.swipe_up()
+        return False
+
     def tap_text(self, words: str, scrolls: int = 4) -> bool:
         n = self.find(words, scrolls)
         if n is None:
@@ -268,10 +280,13 @@ class Tour:
         self.shell("cmd statusbar collapse")
 
     def swahili(self) -> None:
-        self.shell("input keyevent KEYCODE_BACK")
-        time.sleep(1)
-        self.tap_text("Settings", scrolls=0)
-        switched = self.tap_text("Kiswahili")
+        # Leave Demo mode: press Back until the Settings screen (its "Language" heading) is showing.
+        for _ in range(3):
+            if "Language" in self.screen_text():
+                break
+            self.shell("input keyevent KEYCODE_BACK")
+            time.sleep(1.5)
+        switched = self.tap_exact("Kiswahili")
         time.sleep(3)  # the screen is rebuilt in the new language
         # Settings itself and the bottom bar must now be in Kiswahili ("Mipangilio", "Lugha", "Nyumbani").
         sw = self.wait_for(lambda: all(w in self.screen_text() for w in ("Lugha", "Nyumbani")), 8)
