@@ -40,7 +40,7 @@ fun LearningSettings() {
         Column(modifier = Modifier.weight(1f)) {
             Text(stringResource(R.string.learning_mpesa_switch), style = MaterialTheme.typography.bodyLarge)
             Text(
-                stringResource(R.string.learning_mpesa_count, remembered),
+                context.resources.getQuantityString(R.plurals.learning_mpesa_count, remembered, remembered),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

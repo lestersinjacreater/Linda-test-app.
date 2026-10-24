@@ -344,11 +344,16 @@
     <string name="learning_title">What Linda learns on this phone</string>
     <string name="learning_body">Linda remembers the amounts your real M-Pesa messages say you received (for 30 days), so it can tell when someone lies that they sent you money. It keeps only the time, the amount and a scrambled transaction code, never the message. Nothing leaves your phone.</string>
     <string name="learning_mpesa_switch">Learn from my M-Pesa messages</string>
-    <string name="learning_mpesa_count">%1$d real payments remembered</string>
     <string name="learning_inbox_off">Linda learns from new M-Pesa messages as they arrive. Allow "read messages" (Scan my inbox) so it can also check your recent ones.</string>
     <string name="learning_forget">Forget what Linda learned</string>
     <string name="learning_forgotten">Done. Linda forgot every payment it had remembered.</string>
     <string name="trace_n_memory_none">Checked your real M-Pesa messages: this money never arrived</string>
     <string name="trace_n_memory_real">A real payment of this amount did arrive on your M-Pesa</string>
     <string name="trace_n_memory_same">Matches a real M-Pesa message on this phone</string>
+    <string name="detail_why_safe">Why LINDA thinks this is safe</string>
+    <string name="checker_safe_note_real_mpesa">Linda found this exact message among the real M-Pesa messages on your phone.</string>
+    <plurals name="learning_mpesa_count">
+        <item quantity="one">%1$d real payment remembered</item>
+        <item quantity="other">%1$d real payments remembered</item>
+    </plurals>
 </resources>
