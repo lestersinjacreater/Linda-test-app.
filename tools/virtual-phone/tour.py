@@ -116,6 +116,12 @@ class Tour:
         self.shell(f"input swipe {w // 2} {int(h * 0.75)} {w // 2} {int(h * 0.30)} 300")
         time.sleep(0.8)
 
+    def swipe_down(self) -> None:
+        """Scroll back towards the top of the screen."""
+        w, h = self.size()
+        self.shell(f"input swipe {w // 2} {int(h * 0.30)} {w // 2} {int(h * 0.75)} 300")
+        time.sleep(0.8)
+
     def size(self) -> tuple[int, int]:
         m = re.search(r"(\d+)x(\d+)", self.shell("wm size"))
         return (int(m.group(1)), int(m.group(2))) if m else (1080, 2400)
@@ -280,13 +286,16 @@ class Tour:
         self.shell("cmd statusbar collapse")
 
     def swahili(self) -> None:
-        # Leave Demo mode: press Back until the Settings screen (its "Language" heading) is showing.
-        for _ in range(3):
-            if "Language" in self.screen_text():
+        # Leave Demo mode with one Back (it returns to Settings, scrolled down to the version line),
+        # then scroll up to the language choices at the top.
+        self.shell("input keyevent KEYCODE_BACK")
+        time.sleep(1.5)
+        switched = False
+        for _ in range(5):
+            if self.tap_exact("Kiswahili", scrolls=0):
+                switched = True
                 break
-            self.shell("input keyevent KEYCODE_BACK")
-            time.sleep(1.5)
-        switched = self.tap_exact("Kiswahili")
+            self.swipe_down()
         time.sleep(3)  # the screen is rebuilt in the new language
         # Settings itself and the bottom bar must now be in Kiswahili ("Mipangilio", "Lugha", "Nyumbani").
         sw = self.wait_for(lambda: all(w in self.screen_text() for w in ("Lugha", "Nyumbani")), 8)
