@@ -62,6 +62,7 @@ import com.linda.app.core.ui.theme.green900
 import com.linda.app.core.util.Prefs
 import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.demo.TapCounter
+import com.linda.app.features.permissions.SmsAccessHelp
 
 /**
  * Home (docs/design-system.md 7.2): the five-arc shield ring, "LINDA is protecting you", and the month's count.
@@ -162,6 +163,10 @@ fun HomeScreen(onOpenInbox: () -> Unit, onOpenRecovery: () -> Unit, viewModel: H
                 )
                 Spacer(Modifier.height(Spacing.lg))
                 LindaButton(stringResource(R.string.home_fix_button), onClick = { fix(problem) })
+                if (problem == Problem.READ_MESSAGES && Problem.READ_MESSAGES in asked) {
+                    Spacer(Modifier.height(Spacing.lg))
+                    SmsAccessHelp()
+                }
             }
             Spacer(Modifier.height(Spacing.xl))
             Text(caught.toString(), style = LindaText.bigNumber, color = colors.primary)

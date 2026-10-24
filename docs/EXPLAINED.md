@@ -787,3 +787,20 @@ time; where a person had, 91%. The team spot-checks 40 of Claude's labels on a s
 **What is still weak.** Ten of the 14 genuine messages it still warns on are one message from Uber ("you could make Ksh 300
 an hour, finish your sign-up"), which reads exactly like a fake-job scam. The test has only 117 messages, so treat 82% as
 "roughly 70 to 90%". More Kenyan messages, especially ones the team collects itself, are the way to improve it.
+
+## When Android blocks SMS access (`features/permissions/`)
+
+**The problem.** On Android 13 and newer, an app installed from a browser gets "restricted settings", and since
+Android 15 that includes SMS. When Linda asks, Android refuses straight away and shows no pop-up, so the person taps
+Allow and nothing happens. Then scam warnings, Scan my inbox and Family Guardian all look broken.
+
+**What Linda does now.** Wherever SMS access was refused (Home after "Fix this", the welcome screen, Scan my inbox,
+Family Guardian), it shows a short card with the unlock steps for that phone's Android version and an **Open App info**
+button: tap ⋮, choose "Allow restricted settings", then Permissions, SMS, Allow. Phones older than Android 13 skip the
+⋮ step, because they do not have it. The download page has the same steps, plus what to do when Android says
+"package appears to be invalid" (the download was incomplete).
+
+**Why it is built this way.** Android gives an app no way to tell "the person said no" from "Android blocked it", and
+no way to unlock it from inside the app. So Linda shows the steps whenever SMS is still off after asking, and sends the
+person to the one screen where they can fix it. `SmsAccess.steps()` is plain logic with a unit test; the card only
+displays it.
