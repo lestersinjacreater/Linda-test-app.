@@ -38,6 +38,7 @@ import com.linda.app.core.util.formatDateTime
 import com.linda.app.core.ui.components.LindaButton
 import com.linda.app.core.ui.components.LindaCard
 import com.linda.app.core.ui.theme.LindaTheme
+import com.linda.app.features.permissions.SmsAccessHelp
 
 /**
  * "Scan my inbox" (F8). Reads the last 90 days of texts ON THE PHONE, checks each one like a live message, and lists
@@ -69,7 +70,10 @@ fun InboxScreen(onOpenDetail: (Long) -> Unit, onBack: () -> Unit, viewModel: Inb
                 Text(stringResource(R.string.inbox_intro), style = MaterialTheme.typography.bodyLarge)
                 Text(stringResource(R.string.inbox_privacy), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 if (s is InboxState.Failed) Text(stringResource(R.string.inbox_failed), color = LindaTheme.colors.textPrimary)
-                if (denied) Text(stringResource(R.string.inbox_permission_denied), color = LindaTheme.colors.textPrimary)
+                if (denied) {
+                    Text(stringResource(R.string.inbox_permission_denied), color = LindaTheme.colors.textPrimary)
+                    SmsAccessHelp()
+                }
                 LindaButton(stringResource(R.string.inbox_scan_button), onClick = { scanClicked() }, modifier = Modifier.fillMaxWidth())
             }
 

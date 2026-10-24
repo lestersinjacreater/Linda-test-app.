@@ -332,4 +332,12 @@
     <string name="demo_call_verified">Verified badge shown: %1$s.</string>
     <string name="call_warning_suspected">This number has been reported as a possible scammer. Be careful: never send money or share your PIN.</string>
     <string name="demo_call_suspected">Call warning shown: number reported, not yet confirmed.</string>
+    <string name="sms_help_title">Did Android block Linda from your text messages?</string>
+    <string name="sms_help_body">If no pop-up appeared, or the SMS switch is greyed out, Android is blocking it because Linda was installed from a browser, not the Play Store. You can unlock it once:</string>
+    <string name="sms_help_step_open">Tap Open App info below.</string>
+    <string name="sms_help_step_restricted">Tap ⋮ at the top right, then Allow restricted settings, and confirm with your PIN or fingerprint.</string>
+    <string name="sms_help_step_permission">Open Permissions, then SMS, and choose Allow.</string>
+    <string name="sms_help_step_back">Come back to Linda.</string>
+    <string name="sms_help_no_menu">No ⋮ option? Tap SMS once first, close the message that appears, then look for ⋮ again.</string>
+    <string name="sms_help_button">Open App info</string>
 </resources>

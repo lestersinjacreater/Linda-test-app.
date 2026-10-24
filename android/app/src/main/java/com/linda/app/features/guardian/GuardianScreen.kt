@@ -49,6 +49,7 @@ import com.linda.app.core.ui.components.LindaButton
 import com.linda.app.core.ui.components.LindaCard
 import com.linda.app.core.ui.components.LindaTextField
 import com.linda.app.core.ui.theme.LindaTheme
+import com.linda.app.features.permissions.SmsAccessHelp
 
 /**
  * Family Guardian setup (F11). The protected person decides everything here: who the guardian is, what name the alert
@@ -68,6 +69,7 @@ fun GuardianScreen(onBack: () -> Unit) {
     var enabled by remember { mutableStateOf(Prefs.guardianEnabled(context)) }
     var note by remember { mutableStateOf<String?>(null) }
     var permissionGranted by remember { mutableStateOf(GuardianService.hasSmsPermission(context)) }
+    var smsRefused by remember { mutableStateOf(false) }
 
     val fieldsOk = PhoneNumbers.toMsisdn(number) != null && name.isNotBlank()
 
@@ -79,6 +81,7 @@ fun GuardianScreen(onBack: () -> Unit) {
 
     val askPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         permissionGranted = granted
+        smsRefused = !granted
         if (granted) turnOn() else note = context.getString(R.string.guardian_permission_needed)
     }
 
@@ -132,6 +135,7 @@ fun GuardianScreen(onBack: () -> Unit) {
             Text(stringResource(R.string.guardian_permission_removed), color = LindaTheme.colors.textPrimary)
         }
         note?.let { Text(it, color = LindaTheme.colors.textPrimary) }
+        if (smsRefused || (enabled && !GuardianService.hasSmsPermission(context))) SmsAccessHelp()
 
         LindaButton(stringResource(R.string.guardian_test_button), onClick = {
                 scope.launch {

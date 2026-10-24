@@ -18,6 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -25,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.linda.app.R
 import com.linda.app.core.util.Prefs
 import com.linda.app.features.reporting.ConsentCard
+import com.linda.app.features.permissions.SmsAccessHelp
 import com.linda.app.core.ui.components.LindaButton
 import com.linda.app.core.ui.components.LindaLogo
 
@@ -40,7 +45,11 @@ fun OnboardingScreen(onDone: () -> Unit) {
         add(Manifest.permission.READ_CONTACTS)
         if (Build.VERSION.SDK_INT >= 33) add(Manifest.permission.POST_NOTIFICATIONS)
     }.toTypedArray()
-    val askPermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { }
+    // Android 15 can refuse SMS without any pop-up for apps installed from a browser: then explain how to unlock it.
+    var smsRefused by remember { mutableStateOf(false) }
+    val askPermissions = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+        smsRefused = result[Manifest.permission.RECEIVE_SMS] == false
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
@@ -53,6 +62,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
         Text(stringResource(R.string.onboarding_permissions_title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.onboarding_permissions_body), style = MaterialTheme.typography.bodyLarge)
         LindaButton(stringResource(R.string.onboarding_allow), onClick = { askPermissions.launch(permissions) }, modifier = Modifier.fillMaxWidth())
+        if (smsRefused) SmsAccessHelp()
 
         Text(stringResource(R.string.onboarding_battery_title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(brandInstructions()), style = MaterialTheme.typography.bodyLarge)

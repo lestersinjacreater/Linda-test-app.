@@ -332,4 +332,12 @@
     <string name="demo_call_verified">Alama ya uthibitisho imeonyeshwa: %1$s.</string>
     <string name="call_warning_suspected">Nambari hii imeripotiwa kuwa huenda ni tapeli. Kuwa mwangalifu: usitume pesa wala kutoa PIN yako.</string>
     <string name="demo_call_suspected">Onyo la simu limeonyeshwa: nambari imeripotiwa, bado haijathibitishwa.</string>
+    <string name="sms_help_title">Je, Android imezuia Linda kusoma jumbe zako?</string>
+    <string name="sms_help_body">Ikiwa hakuna dirisha lililotokea, au swichi ya SMS imefifia, Android inaizuia kwa sababu Linda ilisakinishwa kutoka kivinjari, si Play Store. Unaweza kuifungua mara moja:</string>
+    <string name="sms_help_step_open">Gusa Fungua maelezo ya programu hapa chini.</string>
+    <string name="sms_help_step_restricted">Gusa ⋮ juu kulia, kisha Allow restricted settings (Ruhusu mipangilio yenye vikwazo), na uthibitishe kwa PIN au alama ya kidole.</string>
+    <string name="sms_help_step_permission">Fungua Permissions (Ruhusa), kisha SMS, na uchague Allow (Ruhusu).</string>
+    <string name="sms_help_step_back">Rudi kwenye Linda.</string>
+    <string name="sms_help_no_menu">Hakuna chaguo la ⋮? Gusa SMS mara moja kwanza, funga ujumbe unaotokea, kisha utafute ⋮ tena.</string>
+    <string name="sms_help_button">Fungua maelezo ya programu</string>
 </resources>
