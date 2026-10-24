@@ -16,6 +16,7 @@ import os
 import re
 import sys
 import time
+import traceback
 import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
@@ -80,14 +81,14 @@ def valid_number(text: str) -> bool:
 
 # ---------- GitHub ----------
 class GitHub:
-    def __init__(self, repo: str, token: str):
-        self.repo, self.token = repo, token
+    def __init__(self, repo: str, token: str, api: str = "https://api.github.com"):
+        self.repo, self.token, self.api = repo, token, api  # api can point at a fake GitHub in tests
         self.etags: dict[str, tuple[str, object]] = {}
 
     def call(self, method: str, url: str, body=None, raw: bytes | None = None, ctype: str = "application/json",
              cache: bool = False):
-        if not url.startswith("https://"):
-            url = f"https://api.github.com/repos/{self.repo}{url}"
+        if url.startswith("/"):
+            url = f"{self.api}/repos/{self.repo}{url}"
         data = raw if raw is not None else (json.dumps(body).encode() if body is not None else None)
         req = urllib.request.Request(url, data=data, method=method)
         req.add_header("Authorization", f"Bearer {self.token}")
@@ -107,6 +108,8 @@ class GitHub:
             if e.code == 304 and url in self.etags:
                 return self.etags[url][1]
             if e.code == 404 and method in ("GET", "DELETE"):
+                return None
+            if e.code == 422 and method == "DELETE":  # deleting a tag that is already gone
                 return None
             raise RuntimeError(f"GitHub {method} {url}: {e.code} {e.read().decode()[:300]}") from e
 
@@ -273,6 +276,23 @@ class Session:
         self.gh.comment(issue, "\n".join(body))
 
 
+def redact(text: str) -> str:
+    """Never post the screen key, even inside an error message or a log line."""
+    key = os.environ.get("LIVE_PHONE_KEY", "")
+    return text.replace(key, "<key>") if key else text
+
+
+def log_tails(out: Path) -> str:
+    """The last lines of the helpers' logs, for a session that went wrong (the key is blanked out)."""
+    parts = []
+    for name in ("cloudflared.log", "ws-scrcpy.log", "gate.log", "screen-check.txt"):
+        f = out / name
+        if f.exists():
+            lines = f.read_text(errors="replace").splitlines()[-12:]
+            parts.append(f"--- {name}\n" + "\n".join(lines))
+    return redact("\n".join(parts).replace("`", "'"))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Live phone command listener")
     ap.add_argument("--apk", required=True)
@@ -281,9 +301,18 @@ def main() -> int:
     ap.add_argument("--out", default="live-phone-out")
     args = ap.parse_args()
     gh = GitHub(os.environ["GITHUB_REPOSITORY"], os.environ["GITHUB_TOKEN"])
+    issue = gh.issue()
+    try:
+        return run_session(args, gh, issue)
+    except Exception:  # noqa: BLE001 - say what went wrong where the team is looking, then fail the run
+        gh.comment(issue, "Live phone **failed** and has stopped:\n\n```\n"
+                   + redact(traceback.format_exc()[-2500:]) + "\n" + log_tails(Path(args.out)) + "\n```")
+        raise
+
+
+def run_session(args, gh: GitHub, issue: int) -> int:
     phone = Phone(Path(args.out))
     session = Session(phone, gh, args.apk)
-    issue = gh.issue()
     release = gh.fresh_release(os.environ.get("GITHUB_SHA", "HEAD"))
     phone.prepare()
     ok, out, role = phone.install_linda(args.apk)
@@ -299,7 +328,7 @@ def main() -> int:
             except Exception as e:  # noqa: BLE001
                 pics.append(f"({pic.name} upload failed: {e})")
         check = ("\n\n<details><summary>Screen self-check (a browser on the runner opened the link)</summary>\n\n```\n"
-                 + (phone.out / "screen-check.txt").read_text() + "```\n" + " ".join(pics) + "\n</details>")
+                 + log_tails(phone.out) + "\n```\n" + " ".join(pics) + "\n</details>")
 
     minutes = max(5, min(args.minutes, 300))
     started = datetime.now(timezone.utc)

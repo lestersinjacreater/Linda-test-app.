@@ -103,6 +103,84 @@ def test_stop_ends_the_session():
     assert s.stopped
 
 
+# ---------- the GitHub side, against a fake GitHub ----------
+@pytest.fixture
+def fake_github(monkeypatch):
+    import json
+    import threading
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    monkeypatch.setenv("no_proxy", "127.0.0.1")
+    monkeypatch.setenv("NO_PROXY", "127.0.0.1")
+    seen = {"posts": [], "deletes": [], "etag_hits": 0}
+
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def send(self, code, obj=None, headers=()):
+            body = json.dumps(obj).encode() if obj is not None else b""
+            self.send_response(code)
+            for k, v in headers:
+                self.send_header(k, v)
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_GET(self):
+            if "/issues?" in self.path:
+                return self.send(200, [{"number": 7, "title": "Something else"},
+                                       {"number": 9, "title": "Live phone", "pull_request": {}},
+                                       {"number": 20, "title": "Live phone"}])
+            if "/comments" in self.path:
+                if self.headers.get("If-None-Match") == '"v1"':
+                    seen["etag_hits"] += 1
+                    return self.send(304)
+                return self.send(200, [{"id": 1, "body": "/phone shot"}], [("ETag", '"v1"')])
+            return self.send(404, {"message": "Not Found"})  # no old session release
+
+        def do_DELETE(self):
+            seen["deletes"].append(self.path)
+            self.send(422, {"message": "Reference does not exist"})  # the tag is already gone
+
+        def do_POST(self):
+            seen["posts"].append((self.path, json.loads(self.rfile.read(int(self.headers["Content-Length"])))))
+            self.send(201, {"id": 5, "number": 20})
+
+    srv = HTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    from listen import GitHub
+    yield GitHub("o/r", "token", api=f"http://127.0.0.1:{srv.server_port}"), seen
+    srv.shutdown()
+
+
+def test_finds_the_live_phone_issue_not_a_pull_request(fake_github):
+    gh, _ = fake_github
+    assert gh.issue() == 20
+
+
+def test_new_session_release_even_when_the_old_tag_is_gone(fake_github):
+    gh, seen = fake_github
+    gh.fresh_release("abc1234")
+    assert seen["deletes"] == ["/repos/o/r/git/refs/tags/live-phone-session"]
+    assert seen["posts"][-1][1]["tag_name"] == "live-phone-session"
+
+
+def test_polling_reuses_the_answer_when_nothing_changed(fake_github):
+    gh, seen = fake_github
+    first = gh.new_comments(20, "2026-10-24T00:00:00Z")
+    again = gh.new_comments(20, "2026-10-24T00:00:00Z")
+    assert first == again == [{"id": 1, "body": "/phone shot"}] and seen["etag_hits"] == 1
+
+
+def test_the_key_is_never_posted(monkeypatch, tmp_path):
+    from listen import log_tails, redact
+    monkeypatch.setenv("LIVE_PHONE_KEY", "linda-mango-river-42")
+    (tmp_path / "ws-scrcpy.log").write_text("Listening on:\n http://127.0.0.1:8000/linda-mango-river-42/\n")
+    assert "linda-mango-river-42" not in redact("open /linda-mango-river-42/ now")
+    assert "linda-mango-river-42" not in log_tails(tmp_path) and "<key>" in log_tails(tmp_path)
+
+
 # ---------- the key gate in front of the screen ----------
 def test_gate_needs_the_key_as_the_first_part_of_the_path():
     key = "linda-mango-river-42"

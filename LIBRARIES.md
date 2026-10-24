@@ -54,6 +54,16 @@ The licence lets us bundle and ship the fonts in the app; it does not allow sell
 | Gradle | 8.9 | Apache 2.0 | Build tool (via the Gradle wrapper). |
 | GitHub Actions: `checkout`, `setup-java`, `setup-python`, `setup-gradle`, `upload-artifact` | v4/v5 | MIT | CI that builds the APK and runs the tests. |
 
+### The virtual phone and the live phone (`tools/virtual-phone/`; nothing here ships in the app)
+
+| Tool | Version | Licence | Why |
+|---|---|---|---|
+| `reactivecircus/android-emulator-runner` (GitHub Action) | v2 | Apache 2.0 | Starts an Android 14 emulator on GitHub's runners for the tour and the live phone. |
+| `actions/setup-node` (GitHub Action) | v4 | MIT | Node 22 to build and run ws-scrcpy. |
+| ws-scrcpy (NetrisTV) | commit `cd6cea6` (0.9.0-dev) | MIT | Live phone: shows and controls the emulator's screen in a browser. Built in CI with its remote shell, file browser and dev tools switched off. |
+| cloudflared | 2026.9.3 | Apache 2.0 | Live phone: a free temporary https address (quick tunnel) so the screen can be opened from anywhere. Sits behind our key gate (`gate.py`). |
+| Playwright for Python | 1.56.0 | Apache 2.0 | Optional live-phone self-check: a headless browser opens the screen link and screenshots it. CI only. |
+
 ## Backend, simulator, dashboard
 
 | Library | Version | Licence | Used in | Why |

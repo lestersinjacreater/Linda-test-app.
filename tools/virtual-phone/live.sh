@@ -22,10 +22,11 @@ fi
 
 if [ -n "${LIVE_PHONE_KEY:-}" ]; then
   # ws-scrcpy serves the page and its live connection under /<key>/ (on 127.0.0.1:8000).
-  (cd ws-scrcpy/dist && WS_SCRCPY_PATHNAME="/$LIVE_PHONE_KEY/" node index.js > "../../$OUT/ws-scrcpy.log" 2>&1 &)
+  # (Each helper gets no input and writes to its own log, so none of them holds the step open.)
+  (cd ws-scrcpy/dist && WS_SCRCPY_PATHNAME="/$LIVE_PHONE_KEY/" node index.js < /dev/null > "../../$OUT/ws-scrcpy.log" 2>&1 &)
   # The gate is the only thing the tunnel reaches: no key in the path, no connection.
-  python3 tools/virtual-phone/gate.py --listen 8080 --to 8000 > "$OUT/gate.log" 2>&1 &
-  ./cloudflared tunnel --no-autoupdate --url http://127.0.0.1:8080 > "$OUT/cloudflared.log" 2>&1 &
+  python3 tools/virtual-phone/gate.py --listen 8080 --to 8000 < /dev/null > "$OUT/gate.log" 2>&1 &
+  ./cloudflared tunnel --no-autoupdate --url http://127.0.0.1:8080 < /dev/null > "$OUT/cloudflared.log" 2>&1 &
   for _ in $(seq 1 60); do
     URL=$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' "$OUT/cloudflared.log" | head -1)
     [ -n "$URL" ] && break
@@ -43,3 +44,9 @@ else
 fi
 
 python3 tools/virtual-phone/listen.py --apk "$APK" --minutes "${MINUTES:-60}" --screen-url "$SCREEN_URL" --out "$OUT"
+status=$?
+# Stop the screen, the gate and the tunnel, so the step (and the emulator) ends as soon as the session is over.
+pkill -f "node index.js" || true
+pkill -f "virtual-phone/gate.py" || true
+pkill -f "cloudflared tunnel" || true
+exit $status
