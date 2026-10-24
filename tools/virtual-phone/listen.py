@@ -189,7 +189,7 @@ class Session:
         if cmd == "tap":
             if not args:
                 raise ValueError("use: /phone tap Settings")
-            if p.tap_exact(args, scrolls=0) or p.tap_text(args, scrolls=2):
+            if p.tap_exact(args, scrolls=0) or p.tap_text(args, scrolls=4):  # scrolls down to find it
                 return f"Tapped “{args}”."
             raise ValueError(f"nothing with the words “{args}” on screen (try /phone tapxy x y)")
         if cmd == "tapxy":
@@ -251,7 +251,8 @@ class Session:
             return
         lines, show_help = [], False
         for cmd, args in commands:
-            shown = f"`/phone {cmd}{' ' + args if args else ''}`"[:120]
+            short = args if len(args) <= 70 else args[:67] + "..."  # shorten inside the backticks, not across them
+            shown = f"`/phone {cmd}{' ' + short if short else ''}`".replace("``", "`")
             try:
                 lines.append(f"- {shown}: {self.run(cmd, args)}")
             except Exception as e:  # noqa: BLE001 - report it and keep the session alive

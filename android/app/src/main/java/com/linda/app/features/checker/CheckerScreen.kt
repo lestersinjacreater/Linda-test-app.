@@ -14,15 +14,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.linda.app.R
 import com.linda.app.core.ui.components.LevelChip
 import com.linda.app.core.util.Prefs
@@ -35,9 +32,6 @@ import com.linda.app.features.detail.VerdictCard
 import com.linda.app.core.ui.theme.LindaTheme
 import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.trace.rememberVerdictHaptic
-import com.linda.app.features.sms.MessageProcessor
-import com.linda.app.features.sms.ProcessResult
-import kotlinx.coroutines.launch
 import com.linda.app.core.ui.components.LindaButton
 import com.linda.app.core.ui.components.LindaTextField
 
@@ -46,29 +40,18 @@ import com.linda.app.core.ui.components.LindaTextField
  * Needs no SMS permission. There is no sender, so the verdict rests on the words alone.
  */
 @Composable
-fun CheckerScreen(sharedText: String?) {
+fun CheckerScreen(sharedText: String?, state: CheckerViewModel = viewModel()) {
     val context = LocalContext.current
     val language = Prefs.effectiveLanguage(context)
-    val scope = rememberCoroutineScope()
-    var text by remember { mutableStateOf("") }
-    var result by remember { mutableStateOf<ProcessResult?>(null) }
-    var checking by remember { mutableStateOf(false) }
+    // Text and verdict live in the view model, so turning the phone or changing language keeps them.
+    val text = state.text
+    val result = state.result
+    val checking = state.checking
 
-    fun check(body: String) {
-        if (body.isBlank()) return
-        checking = true
-        scope.launch {
-            result = MessageProcessor(context).process(body, sender = null, receivedAt = System.currentTimeMillis(), source = "checker", notify = false)
-            checking = false
-        }
-    }
-
-    // Text shared from another app arrives pre-filled and is checked straight away.
+    // Text shared from another app arrives pre-filled and is checked straight away (once: coming back to this
+    // tab with the same shared text must not check it, and save it to History, a second time).
     LaunchedEffect(sharedText) {
-        if (!sharedText.isNullOrBlank()) {
-            text = sharedText
-            check(sharedText)
-        }
+        if (!sharedText.isNullOrBlank() && sharedText != state.text) state.check(sharedText)
     }
 
     Column(
@@ -79,11 +62,11 @@ fun CheckerScreen(sharedText: String?) {
         Text(stringResource(R.string.checker_help), color = MaterialTheme.colorScheme.onSurfaceVariant)
         LindaTextField(
             value = text,
-            onValueChange = { text = it; result = null },
+            onValueChange = { state.edit(it) },
             modifier = Modifier.fillMaxWidth().heightIn(min = 140.dp),
             label = { Text(stringResource(R.string.checker_hint)) },
         )
-        LindaButton(stringResource(R.string.checker_button), onClick = { check(text) }, modifier = Modifier.fillMaxWidth(), enabled = text.isNotBlank() && !checking)
+        LindaButton(stringResource(R.string.checker_button), onClick = { state.check(text) }, modifier = Modifier.fillMaxWidth(), enabled = text.isNotBlank() && !checking)
 
         result?.let { r ->
             val v = r.verdict
