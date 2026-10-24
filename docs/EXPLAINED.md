@@ -822,3 +822,28 @@ receiver and call screening run. `uiautomator dump` lists the words on screen, s
 
 **Limits.** An emulator is not a cheap phone: it does not kill background apps, and installing with adb skips Play
 Protect and restricted settings. A real-phone check before the demo is still needed.
+
+### The live phone (`.github/workflows/live-phone.yml`)
+
+**What it is.** The same emulator, kept on for up to five hours so a person can use it from a browser, and so
+anyone on the team (or Claude) can fire real scam texts and calls at it by posting `/phone` commands on the repo's
+"Live phone" issue. The phone replies on the issue with a screenshot and the text on screen.
+
+**Why.** The tour checks a fixed script; testing a new feature needs hands. Before this, the only way to try a change
+by hand was to download and install the APK on a real phone.
+
+**How it works, in plain terms.**
+- *The screen:* ws-scrcpy (an open-source tool) streams the emulator's screen to a web page and sends clicks back.
+- *The key:* ws-scrcpy has no password, so our small `gate.py` sits in front of it and refuses every connection whose
+  address does not start with the team's secret key (`LIVE_PHONE_KEY`). cloudflared gives the gate a temporary
+  public address, so the page opens from any phone or laptop.
+- *The commands:* `listen.py` reads new comments on the issue every five seconds. It obeys only the repo owner and
+  collaborators (anyone can comment on a public repo), runs each `/phone` line with the same adb helpers as the tour,
+  and answers with the result.
+
+**Judges might ask "is this safe?"** The phone holds only fake numbers and test messages; the screen needs the
+secret key; strangers' commands are ignored; and the session switches itself off when its time is up.
+
+**What it has found so far.** Turning the phone sideways emptied the Check screen (the pasted message and its
+verdict were kept in `remember`, which Android throws away when it rebuilds the screen). They now live in
+`CheckerViewModel`, which survives rotation and a language change.
