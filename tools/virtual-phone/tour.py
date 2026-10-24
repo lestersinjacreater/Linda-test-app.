@@ -1,7 +1,7 @@
 """The virtual phone tour: installs Linda on an Android emulator and checks the main features like a person would.
 
 It runs in GitHub Actions (.github/workflows/virtual-phone.yml), on an emulator that the workflow has already started.
-It uses only adb and the Python standard library:
+It uses only adb and the Python standard library (helpers in phone.py):
   - `adb emu sms send` and `adb emu gsm call` make the emulator receive a REAL text and a REAL call, so Linda's actual
     SMS receiver and call screening run, not demo mode;
   - `uiautomator dump` lists what is on screen (Compose exposes its texts to it), so the tour finds buttons by their
@@ -17,13 +17,11 @@ Run (with an emulator or a phone connected):
 """
 import argparse
 import re
-import subprocess
 import sys
 import time
-import xml.etree.ElementTree as ET
 from pathlib import Path
 
-PKG = "com.linda.app"
+from phone import PKG, Phone
 SCAMMER = "0700000777"   # fake placeholder number (DemoSamples.SCAMMER_NUMBER)
 FRIEND = "0700000026"
 FAKE_MPESA = ("QK7RT2XY9P Confirmed. You have received Ksh2,500.00 from JOHN KAMAU on 12/10/26 at 4:12 PM. "
@@ -34,119 +32,12 @@ CALL_TITLE = "Likely scam caller"
 VERIFIED_TITLE = "Verified: Safaricom Customer Care"
 
 
-class Tour:
+class Tour(Phone):
+    """The checks. The adb helpers (tap, find, screenshot, ...) come from phone.py."""
+
     def __init__(self, out: Path):
-        self.out = out
-        self.out.mkdir(parents=True, exist_ok=True)
+        super().__init__(out)
         self.results: list[tuple[str, bool, str, str]] = []  # (check, passed, detail, screenshot)
-        self.shots = 0
-
-    # ---------- adb helpers ----------
-    def adb(self, *args: str, check: bool = False, timeout: int = 60) -> str:
-        p = subprocess.run(["adb", *args], capture_output=True, text=True, timeout=timeout)
-        if check and p.returncode != 0:
-            raise RuntimeError(f"adb {' '.join(args)} failed: {p.stderr.strip() or p.stdout.strip()}")
-        return (p.stdout or "") + (p.stderr or "")
-
-    def shell(self, cmd: str, timeout: int = 60) -> str:
-        return self.adb("shell", cmd, timeout=timeout)
-
-    def screenshot(self, name: str) -> str:
-        self.shots += 1
-        fname = f"{self.shots:02d}-{name}.png"
-        with open(self.out / fname, "wb") as f:
-            f.write(subprocess.run(["adb", "exec-out", "screencap", "-p"], capture_output=True, timeout=60).stdout)
-        return fname
-
-    def screen_nodes(self) -> list[dict]:
-        """Every on-screen element with text or a description, and its centre."""
-        self.shell("uiautomator dump /sdcard/ui.xml")
-        xml = self.adb("exec-out", "cat", "/sdcard/ui.xml")
-        start = xml.find("<?xml")
-        if start < 0:
-            return []
-        try:
-            root = ET.fromstring(xml[start:xml.rfind(">") + 1])
-        except ET.ParseError:
-            return []
-        nodes = []
-        for n in root.iter("node"):
-            text = (n.get("text") or "") + " " + (n.get("content-desc") or "")
-            m = re.match(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", n.get("bounds") or "")
-            if text.strip() and m:
-                x1, y1, x2, y2 = map(int, m.groups())
-                nodes.append({"text": text.strip(), "x": (x1 + x2) // 2, "y": (y1 + y2) // 2})
-        return nodes
-
-    def screen_text(self) -> str:
-        return "\n".join(n["text"] for n in self.screen_nodes())
-
-    def find(self, words: str, scrolls: int = 4) -> dict | None:
-        """Find an element containing these words, scrolling down a few times if needed."""
-        for i in range(scrolls + 1):
-            for n in self.screen_nodes():
-                if words.lower() in n["text"].lower():
-                    return n
-            if i < scrolls:
-                self.swipe_up()
-        return None
-
-    def tap_exact(self, words: str, scrolls: int = 4) -> bool:
-        """Tap an element whose whole text is exactly these words (so "Kiswahili" never hits "Prize scam (Kiswahili)")."""
-        for i in range(scrolls + 1):
-            for n in self.screen_nodes():
-                if n["text"] == words:
-                    self.shell(f"input tap {n['x']} {n['y']}")
-                    time.sleep(1.5)
-                    return True
-            if i < scrolls:
-                self.swipe_up()
-        return False
-
-    def tap_text(self, words: str, scrolls: int = 4) -> bool:
-        n = self.find(words, scrolls)
-        if n is None:
-            return False
-        self.shell(f"input tap {n['x']} {n['y']}")
-        time.sleep(1.5)
-        return True
-
-    def swipe_up(self) -> None:
-        w, h = self.size()
-        self.shell(f"input swipe {w // 2} {int(h * 0.75)} {w // 2} {int(h * 0.30)} 300")
-        time.sleep(0.8)
-
-    def swipe_down(self) -> None:
-        """Scroll back towards the top of the screen."""
-        w, h = self.size()
-        self.shell(f"input swipe {w // 2} {int(h * 0.30)} {w // 2} {int(h * 0.75)} 300")
-        time.sleep(0.8)
-
-    def size(self) -> tuple[int, int]:
-        m = re.search(r"(\d+)x(\d+)", self.shell("wm size"))
-        return (int(m.group(1)), int(m.group(2))) if m else (1080, 2400)
-
-    def notifications(self) -> str:
-        return self.shell("dumpsys notification --noredact")
-
-    def count(self, title: str) -> int:
-        return self.notifications().count(title)
-
-    def wait_for(self, fn, seconds: float = 20, every: float = 1.0) -> bool:
-        end = time.time() + seconds
-        while time.time() < end:
-            if fn():
-                return True
-            time.sleep(every)
-        return False
-
-    def open_app(self) -> None:
-        self.shell(f"monkey -p {PKG} -c android.intent.category.LAUNCHER 1")
-        time.sleep(3)
-
-    def go_home(self) -> None:
-        self.shell("input keyevent KEYCODE_HOME")
-        time.sleep(1)
 
     # ---------- recording ----------
     def check(self, name: str, passed: bool, detail: str = "", shot: str = "") -> None:
@@ -164,15 +55,7 @@ class Tour:
 
     # ---------- the checks ----------
     def install(self, apk: str) -> None:
-        self.adb("uninstall", PKG)
-        out = self.adb("install", "-r", "-g", apk, timeout=180)  # -g grants SMS, contacts and notifications
-        ok = "Success" in out
-        # Linda labels calls only if it holds the call-screening role; a person grants it in Settings.
-        self.shell(f"cmd role add-role-holder android.app.role.CALL_SCREENING {PKG}")
-        self.shell(f"dumpsys deviceidle whitelist +{PKG}")  # like the battery step in the welcome screen
-        # The role is granted in the background, so give it a few seconds to show up.
-        role = self.wait_for(
-            lambda: PKG in self.shell("cmd role get-role-holders android.app.role.CALL_SCREENING"), 10)
+        ok, out, role = self.install_linda(apk)
         self.check("Install with permissions and call-screening role", ok and role,
                    f"install: {'Success' if ok else out.strip()[-200:]}; call-screening role: {role}")
 
@@ -330,11 +213,7 @@ def main() -> int:
     ap.add_argument("--out", default="virtual-phone-out")
     args = ap.parse_args()
     t = Tour(Path(args.out))
-    t.adb("wait-for-device", timeout=300)
-    t.wait_for(lambda: t.shell("getprop sys.boot_completed").strip() == "1", 300, 3)
-    t.shell("settings put global window_animation_scale 0")
-    t.shell("input keyevent KEYCODE_WAKEUP")
-    t.shell("wm dismiss-keyguard")
+    t.prepare()
     t.step("Install", lambda: t.install(args.apk))
     t.step("Welcome and Home", t.welcome_and_home)
     t.step("Scam SMS", t.scam_sms)
