@@ -223,6 +223,8 @@ fun traceLineText(line: TraceLine): String = when (line.code) {
     "n_new_number" -> stringResource(R.string.trace_n_new_number)
     "n_first_money" -> stringResource(R.string.trace_n_first_money)
     "n_known_sender" -> stringResource(R.string.trace_n_known_sender)
+    "n_taps_scam" -> stringResource(R.string.trace_n_taps_scam)
+    "n_taps_safe" -> stringResource(R.string.trace_n_taps_safe)
     "n_link" -> stringResource(R.string.trace_n_link)
     "n_blocklist" -> stringResource(R.string.trace_n_blocklist)
     "n_pasted" -> stringResource(R.string.trace_n_pasted)

@@ -19,11 +19,11 @@ import kotlinx.coroutines.launch
 class LindaApp : Application() {
     val database: LindaDatabase by lazy { LindaDatabase.create(this) }
 
-    /** Loaded once from assets/model.json (about 87 KB). Everything that scores a message goes through this. */
-    val detector: ScamDetector by lazy {
-        val json = assets.open("model.json").bufferedReader().use { it.readText() }
-        LindaDetector(ModelScorer(json))
+    /** Loaded once from assets/model.json (about 87 KB). Everything that scores a message goes through [detector]. */
+    val scorer: ModelScorer by lazy {
+        ModelScorer(assets.open("model.json").bufferedReader().use { it.readText() })
     }
+    val detector: ScamDetector by lazy { LindaDetector(scorer) }
 
     override fun onCreate() {
         super.onCreate()

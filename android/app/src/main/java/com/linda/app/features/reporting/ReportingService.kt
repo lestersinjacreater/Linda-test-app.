@@ -1,5 +1,6 @@
 package com.linda.app.features.reporting
 
+import com.linda.app.features.learning.LearningStore
 import android.content.Context
 import com.linda.app.LindaApp
 import com.linda.app.core.data.ReportQueueEntity
@@ -36,5 +37,7 @@ object ReportingService {
         )
         app.database.detectionDao().markReported(detectionId, System.currentTimeMillis())
         ReportWorker.schedule(context)
+        // Learn from your taps: messages that look like this one get a little more suspicious (on this phone only).
+        app.database.detectionDao().getById(detectionId)?.let { LearningStore.learnFromTap(context, it.body, it.sender, isScam = true) }
     }
 }

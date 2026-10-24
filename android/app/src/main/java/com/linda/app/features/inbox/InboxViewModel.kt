@@ -65,7 +65,7 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
         val now = System.currentTimeMillis()
         LearningStore.backfillOnce(app, now)
         val memory = LearningStore.snapshot(app, now, MpesaMemory.RETENTION_MS)
-        val scanner = InboxScanner(app.detector, { ContactsLookup.isInContacts(app, it) }, { it in allowed }, memory)
+        val scanner = InboxScanner(app.detector, { ContactsLookup.isInContacts(app, it) }, { it in allowed }, memory, LearningStore.personalModel(app))
 
         var scanned = 0
         val cursor = app.contentResolver.query(

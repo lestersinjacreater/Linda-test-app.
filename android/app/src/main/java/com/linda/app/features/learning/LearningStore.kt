@@ -9,6 +9,11 @@ import com.linda.app.LindaApp
 import com.linda.app.core.data.MpesaReceiptEntity
 import com.linda.app.core.data.SeenSenderEntity
 import com.linda.app.core.util.PhoneNumbers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.File
 
 /**
  * The phone side of the M-Pesa memory: where receipts are stored (Room) and when they are read.
@@ -142,8 +147,63 @@ object LearningStore {
         if (senders.markSeen(SeenSenderEntity(sender, at, count = 1, warned = w)) == -1L) senders.countAgain(sender, w)
     }
 
+    // ---------- Learn from your taps ----------
+
+    private const val PERSONAL_FILE = "personal_model.json" // slot numbers and weights only, in the app's private files
+    @Volatile private var personalCache: PersonalModel? = null
+    private val personalCount = MutableStateFlow(-1)
+
+    /** The person's personal layer, or null when learning is switched off. Loaded once, then kept in memory. */
+    fun personalModel(ctx: Context): PersonalModel? {
+        if (!enabled(ctx)) return null
+        personalCache?.let { return it }
+        val file = File(ctx.applicationContext.filesDir, PERSONAL_FILE)
+        val model = try {
+            if (!file.exists()) PersonalModel() else {
+                val o = JSONObject(file.readText())
+                val slots = o.getJSONArray("slots")
+                val weights = o.getJSONArray("weights")
+                PersonalModel((0 until slots.length()).associate { slots.getInt(it) to weights.getDouble(it) }, o.getInt("examples"))
+            }
+        } catch (e: Exception) {
+            PersonalModel() // a damaged file is simply started again
+        }
+        personalCache = model
+        personalCount.value = model.examples
+        return model
+    }
+
+    /**
+     * "Mark as safe" ([isScam] = false) or a confirmed "Report" ([isScam] = true) on a message: the personal layer learns
+     * from it. Messages from a verified sender are never learned from (they are never warned on anyway).
+     */
+    suspend fun learnFromTap(ctx: Context, body: String, sender: String?, isScam: Boolean) {
+        val current = personalModel(ctx) ?: return
+        val scorer = (ctx.applicationContext as LindaApp).scorer
+        val detail = scorer.explain(body, sender)
+        if (detail.meta["sender_verified"] == 1.0) return
+        val updated = current.learn(detail.slots, detail.logit, isScam)
+        val o = JSONObject()
+        val entries = updated.weights.entries.toList()
+        o.put("examples", updated.examples)
+        o.put("slots", JSONArray(entries.map { it.key }))
+        o.put("weights", JSONArray(entries.map { it.value }))
+        File(ctx.applicationContext.filesDir, PERSONAL_FILE).writeText(o.toString())
+        personalCache = updated
+        personalCount.value = updated.examples
+    }
+
+    /** How many taps the personal layer has learned from (for Settings). */
+    fun observeTaps(ctx: Context): StateFlow<Int> {
+        if (personalCount.value < 0) personalCount.value = personalModel(ctx)?.examples ?: 0
+        return personalCount
+    }
+
     /** "Forget what Linda learned": deletes every receipt and starts listening afresh from now. */
     suspend fun forget(ctx: Context, now: Long = System.currentTimeMillis()) {
+        File(ctx.applicationContext.filesDir, PERSONAL_FILE).delete()
+        personalCache = null
+        personalCount.value = 0
         (ctx.applicationContext as LindaApp).database.senderDao().forgetAll()
         dao(ctx).forgetAllReceipts()
         // BACKFILLED stays set, so Linda does not quietly read the whole inbox again; it relearns as messages arrive.

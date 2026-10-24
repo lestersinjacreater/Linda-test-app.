@@ -343,7 +343,7 @@
     <!-- What Linda learns on this phone (features/learning) -->
     <string name="learning_title">Linda hujifunza nini kwenye simu hii</string>
     <string name="learning_body">Linda hukumbuka kiasi ambacho ujumbe wako halisi wa M-Pesa unasema ulipokea (kwa siku 30), ili ijue mtu anapodanganya kwamba alikutumia pesa. Huweka saa, kiasi na nambari ya muamala iliyofichwa tu, kamwe si ujumbe wenyewe. Hakuna kinachotoka kwenye simu yako.</string>
-    <string name="learning_mpesa_switch">Jifunze kutoka ujumbe wangu wa M-Pesa</string>
+    <string name="learning_mpesa_switch">Ruhusu Linda ijifunze kwenye simu hii</string>
     <string name="learning_inbox_off">Linda hujifunza kutoka ujumbe mpya wa M-Pesa unapoingia. Ruhusu "kusoma ujumbe" (Kagua kikasha changu) ili iangalie pia ule wa karibuni.</string>
     <string name="learning_forget">Sahau Linda ilichojifunza</string>
     <string name="learning_forgotten">Imekamilika. Linda imesahau malipo yote iliyokuwa ikikumbuka.</string>
@@ -360,4 +360,11 @@
     <string name="trace_n_first_money">Ujumbe wa kwanza kutoka kwa nambari hii, na unaomba pesa</string>
     <string name="trace_n_known_sender">Umekuwa ukiwasiliana na nambari hii kwa muda</string>
     <string name="learning_senders_body">Pia hutambua nambari unazowasiliana nazo kweli (uliwatumia ujumbe, au wamekutumia kwa wiki kadhaa), ili isiwe na wasiwasi nazo sana na iwe macho zaidi na wageni wanaoomba pesa. Huhesabu tu na kuweka tarehe, kamwe si ujumbe wenyewe.</string>
+    <string name="learning_taps_body">Pia hujifunza kutoka unachobonyeza: ukiweka alama ya salama au ukiripoti ujumbe, ujumbe unaofanana hupimwa tofauti kidogo, kwenye simu hii tu.</string>
+    <plurals name="learning_taps_count">
+        <item quantity="one">Imejifunza kutoka mara %1$d uliyobonyeza.</item>
+        <item quantity="other">Imejifunza kutoka mara %1$d ulizobonyeza.</item>
+    </plurals>
+    <string name="trace_n_taps_scam">Uliripoti ujumbe kama huu awali</string>
+    <string name="trace_n_taps_safe">Uliweka alama ya salama kwenye ujumbe kama huu awali</string>
 </resources>
