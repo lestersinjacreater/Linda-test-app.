@@ -286,10 +286,16 @@ class Tour:
         self.shell("cmd statusbar collapse")
 
     def swahili(self) -> None:
-        # Leave Demo mode with one Back (it returns to Settings, scrolled down to the version line),
-        # then scroll up to the language choices at the top.
-        self.shell("input keyevent KEYCODE_BACK")
+        # Leave Demo mode with Back (it returns to Settings, scrolled down to the version line). A Back sent while the
+        # notification shade is still closing, or a heads-up call is showing, gets swallowed, so press it only while
+        # Demo mode is still on screen, at most three times, so the tour never backs out of the app.
         time.sleep(1.5)
+        for _ in range(3):
+            if "Demo mode" not in self.screen_text():
+                break
+            self.shell("input keyevent KEYCODE_BACK")
+            time.sleep(1.5)
+        # Then scroll up to the language choices at the top.
         switched = False
         for _ in range(5):
             if self.tap_exact("Kiswahili", scrolls=0):
