@@ -15,6 +15,11 @@ import com.linda.app.features.learning.MpesaMemory
  * Registered senders (business names like BETIKA, short codes like 22444) are not warned on for their
  * wording alone, only when a scam sign is also present ([Senders]). That stops false alarms on real
  * bank alerts, loan reminders and promos, which the model saw too few of in training.
+ *
+ * M-Pesa memory (features/learning): a message that claims money arrived ("I sent you 2,500 by mistake", or a
+ * confirmation) is checked against the person's real M-Pesa messages. "No such money arrived" makes a stranger's
+ * text a SCAM, with that fact as the first reason. The memory only ever raises a warning, with one exception: a
+ * pasted copy of the person's own genuine M-Pesa message (same transaction code) is confirmed as real.
  */
 class LindaDetector(private val scorer: ModelScorer, private val config: FusionConfig = FusionConfig()) : ScamDetector {
 

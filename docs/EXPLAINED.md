@@ -847,3 +847,38 @@ secret key; strangers' commands are ignored; and the session switches itself off
 **What it has found so far.** Turning the phone sideways emptied the Check screen (the pasted message and its
 verdict were kept in `remember`, which Android throws away when it rebuilds the screen). They now live in
 `CheckerViewModel`, which survives rotation and a language change.
+
+## M-Pesa memory: Linda learns your real payments, on your phone (`features/learning/`)
+
+**What it does.** The most common Kenyan scam is "Nimekutumia 2,500 kimakosa, nirudishie": "I sent you money by
+mistake, send it back". Linda now remembers the payments your REAL M-Pesa messages say you received, and checks the
+claim against them:
+- **No such money arrived** (and Linda saw every M-Pesa message in the last 2 days): the message is a SCAM, and the
+  first reason says so: "Your real M-Pesa messages show no Ksh 2,500 received in the last 2 days."
+- **A real Ksh 2,500 did arrive**: still a warning, because "send it back to me" is the trick. If it truly was a
+  mistake, the sender asks Safaricom to reverse it.
+- **You paste one of your own genuine M-Pesa messages** into Check ("is this real?"): Linda recognises its transaction
+  code and says it is real. Before, the same words were judged on wording alone.
+
+**What it keeps, and what it never keeps.** Only three facts per genuine "you have received" message from the real
+`MPESA` sender: the time, the amount, and a hash (scrambled fingerprint) of the transaction code. Never the message,
+never who sent the money, never your balance. 30 days, then forgotten. It never leaves the phone: reports to the
+gateway are unchanged. Settings → "What Linda learns on this phone" shows how many payments it remembers, has a switch,
+and "Forget what Linda learned".
+
+**How it learns.** From each new M-Pesa text as it arrives. If you allowed "read messages" (Scan my inbox), it also
+reads the last 30 days of M-Pesa messages once, and re-reads the recent ones right before saying "no money arrived".
+
+**Why it can be trusted (judges will ask).**
+- *It only claims what it saw.* Linda says "no such money arrived" only for a time window it saw completely (it read
+  the inbox back that far, or has been listening since). On a phone where it just got installed without inbox access,
+  it stays quiet for 2 days instead of guessing.
+- *Friends are safe.* "I sent you 500 for lunch" is not checked at all: a message only counts as a claim when it also
+  says "by mistake" or asks for the money back.
+- *Banks and businesses are skipped*: they really do announce payments. The real M-Pesa sender is never flagged.
+- *It only makes warnings stronger*, never weaker, except confirming your own pasted M-Pesa message.
+
+**How it works, in plain terms.** `MpesaReceipts` reads a genuine receipt (English or Kiswahili). `MoneyClaims` finds
+a "money arrived" claim and its amount ("2,500", "Ksh 2,500", "2500/="), ignoring times, dates and phone numbers.
+`MpesaMemory.check` compares them. All three are plain Kotlin, unit-tested in `MpesaMemoryTest`. The detector
+(`LindaDetector`) uses the answer; `LearningStore` holds the receipts in the on-device database.
