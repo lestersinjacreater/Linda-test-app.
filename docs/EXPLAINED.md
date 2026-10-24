@@ -843,3 +843,7 @@ by hand was to download and install the APK on a real phone.
 
 **Judges might ask "is this safe?"** The phone holds only fake numbers and test messages; the screen needs the
 secret key; strangers' commands are ignored; and the session switches itself off when its time is up.
+
+**What it has found so far.** Turning the phone sideways emptied the Check screen (the pasted message and its
+verdict were kept in `remember`, which Android throws away when it rebuilds the screen). They now live in
+`CheckerViewModel`, which survives rotation and a language change.

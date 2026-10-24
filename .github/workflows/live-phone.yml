@@ -15,8 +15,6 @@ on:
         description: "Self-check: a browser on the runner opens the screen and posts screenshots"
         type: boolean
         default: false
-  push: # TEMPORARY: lets Claude test the session from this branch before it is merged; removed before review
-    branches: [feature/live-phone]
 
 permissions:
   contents: write # the session's screenshots go to a pre-release
@@ -74,7 +72,7 @@ jobs:
           python-version: "3.12"
 
       - name: Playwright for the screen self-check
-        if: inputs.check_screen || github.event_name == 'push'
+        if: inputs.check_screen
         run: pip install playwright==1.56.0
 
       - name: Enable KVM
@@ -88,8 +86,8 @@ jobs:
         env:
           LIVE_PHONE_KEY: ${{ secrets.LIVE_PHONE_KEY }}
           GITHUB_TOKEN: ${{ github.token }}
-          MINUTES: ${{ inputs.minutes || '25' }}
-          CHECK_SCREEN: ${{ inputs.check_screen || github.event_name == 'push' }}
+          MINUTES: ${{ inputs.minutes }}
+          CHECK_SCREEN: ${{ inputs.check_screen }}
         with:
           api-level: 34
           target: google_apis
