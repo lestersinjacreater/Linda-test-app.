@@ -340,4 +340,15 @@
     <string name="sms_help_step_back">Rudi kwenye Linda.</string>
     <string name="sms_help_no_menu">Hakuna chaguo la ⋮? Gusa SMS mara moja kwanza, funga ujumbe unaotokea, kisha utafute ⋮ tena.</string>
     <string name="sms_help_button">Fungua maelezo ya programu</string>
+    <!-- What Linda learns on this phone (features/learning) -->
+    <string name="learning_title">Linda hujifunza nini kwenye simu hii</string>
+    <string name="learning_body">Linda hukumbuka kiasi ambacho ujumbe wako halisi wa M-Pesa unasema ulipokea (kwa siku 30), ili ijue mtu anapodanganya kwamba alikutumia pesa. Huweka saa, kiasi na nambari ya muamala iliyofichwa tu, kamwe si ujumbe wenyewe. Hakuna kinachotoka kwenye simu yako.</string>
+    <string name="learning_mpesa_switch">Jifunze kutoka ujumbe wangu wa M-Pesa</string>
+    <string name="learning_mpesa_count">Malipo halisi %1$d yanakumbukwa</string>
+    <string name="learning_inbox_off">Linda hujifunza kutoka ujumbe mpya wa M-Pesa unapoingia. Ruhusu "kusoma ujumbe" (Kagua kikasha changu) ili iangalie pia ule wa karibuni.</string>
+    <string name="learning_forget">Sahau Linda ilichojifunza</string>
+    <string name="learning_forgotten">Imekamilika. Linda imesahau malipo yote iliyokuwa ikikumbuka.</string>
+    <string name="trace_n_memory_none">Imeangalia ujumbe wako halisi wa M-Pesa: pesa hizi hazikuwahi kuingia</string>
+    <string name="trace_n_memory_real">Malipo halisi ya kiasi hiki yaliingia kwenye M-Pesa yako</string>
+    <string name="trace_n_memory_same">Unalingana na ujumbe halisi wa M-Pesa kwenye simu hii</string>
 </resources>

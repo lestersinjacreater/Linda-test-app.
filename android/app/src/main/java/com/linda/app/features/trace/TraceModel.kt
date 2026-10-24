@@ -65,6 +65,10 @@ object LayerTraceBuilder {
         if ("unknown_sender" in input.reasonCodes) lines += TraceLine("n_unknown")
         if ("link" in input.reasonCodes || input.category == "phishing_link") lines += TraceLine("n_link")
         if (input.onBlocklist) lines += TraceLine("n_blocklist")
+        // M-Pesa memory: the claim checked against the person's real M-Pesa messages (features/learning).
+        if ("memory_no_payment" in input.reasonCodes) lines += TraceLine("n_memory_none")
+        if ("memory_real_payment" in input.reasonCodes) lines += TraceLine("n_memory_real")
+        if ("memory_same_as_real" in input.reasonCodes) lines += TraceLine("n_memory_same")
         if (lines.isEmpty()) lines += TraceLine(if (input.isPasted) "n_pasted" else "n_none")
         val signals = lines.none { it.code == "n_none" || it.code == "n_pasted" }
         return LayerResult(Layer.NETWORK, flagged = risky && signals, lines = lines)

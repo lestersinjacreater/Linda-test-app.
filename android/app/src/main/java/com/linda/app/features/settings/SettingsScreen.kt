@@ -47,6 +47,7 @@ import com.linda.app.core.util.Prefs
 import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.alerts.VoiceWarnings
 import com.linda.app.features.demo.DemoOverlay
+import com.linda.app.features.learning.LearningSettings
 import com.linda.app.features.sync.BlocklistSyncWorker
 import com.linda.app.core.ui.components.LindaButton
 import com.linda.app.core.ui.components.LindaTextField
@@ -101,6 +102,9 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit) {
         Text(stringResource(R.string.settings_guardian_title), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.settings_guardian_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         LindaButton(stringResource(R.string.settings_guardian_open), onClick = onOpenGuardian, modifier = Modifier.fillMaxWidth(), secondary = true)
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+        LearningSettings() // what Linda learns on this phone, and Forget
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {

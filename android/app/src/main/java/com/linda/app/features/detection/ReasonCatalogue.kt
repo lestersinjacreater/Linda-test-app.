@@ -71,6 +71,37 @@ object ReasonCatalogue {
         "Mtumaji hayuko kwenye anwani zako na huu ni ujumbe wake wa kwanza.",
     )
 
+    // ---- M-Pesa memory (features/learning): the claim checked against the person's real M-Pesa messages ----
+    // Codes start with "memory_" so the Layer Trace can show them.
+
+    /** A text message says money arrived, and Linda saw every real M-Pesa message of the last 2 days: none brought it. */
+    fun memoryNoPayment(amount: String) = Reason(
+        "memory_no_payment",
+        "Your real M-Pesa messages show no $amount received in the last 2 days. Nobody sent you this money. Do not send anything back.",
+        "Ujumbe wako halisi wa M-Pesa hauonyeshi $amount iliyopokelewa katika siku 2 zilizopita. Hakuna aliyekutumia pesa hizi. Usirudishe chochote.",
+    )
+
+    /** Pasted text has no date, so the check covers the whole 30-day memory. */
+    fun memoryNoPaymentPasted(amount: String) = Reason(
+        "memory_no_payment",
+        "Linda checked your real M-Pesa messages from the last 30 days: no $amount arrived like this.",
+        "Linda imeangalia ujumbe wako halisi wa M-Pesa wa siku 30 zilizopita: hakuna $amount iliyoingia hivi.",
+    )
+
+    /** A real payment of the claimed amount did arrive, and the message asks for it back. */
+    fun memoryRealPayment(amount: String) = Reason(
+        "memory_real_payment",
+        "A real $amount did arrive on your M-Pesa. If it truly was a mistake, the sender asks Safaricom to reverse it. Never send it back yourself.",
+        "$amount halisi ziliingia kwenye M-Pesa yako. Ikiwa kweli ni makosa, mtumaji aombe Safaricom airudishe. Usizirudishe wewe mwenyewe.",
+    )
+
+    /** Pasted text with the transaction code of a genuine M-Pesa message on this phone. */
+    val MEMORY_SAME_AS_REAL = Reason(
+        "memory_same_as_real",
+        "This matches a real M-Pesa message on your phone (same transaction code).",
+        "Huu unalingana na ujumbe halisi wa M-Pesa kwenye simu yako (nambari ileile ya muamala).",
+    )
+
     fun forCategory(category: String): Reason = BY_CATEGORY.getValue(if (category in BY_CATEGORY) category else "other")
 
     /** "Words like ..." built from the n-grams that pushed the score up most. */

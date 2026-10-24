@@ -71,3 +71,11 @@ data class GuardianAlertEntity(
     val status: String,         // "sent" (handed to the phone's SMS system) or "failed"
     val isTest: Boolean = false,
 )
+
+/**
+ * One payment the person really received, read from a genuine M-Pesa message (features/learning). Only the time,
+ * the amount and a hash of the transaction code are kept: never the message, the sender of the money or the balance.
+ * Kept for 30 days. The code hash is the key, so reading the same message twice stores it once.
+ */
+@Entity(tableName = "mpesa_receipts")
+data class MpesaReceiptEntity(@PrimaryKey val codeHash: String, val at: Long, val amountCents: Long)
