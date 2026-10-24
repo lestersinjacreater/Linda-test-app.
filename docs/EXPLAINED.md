@@ -804,3 +804,21 @@ button: tap ⋮, choose "Allow restricted settings", then Permissions, SMS, Allo
 no way to unlock it from inside the app. So Linda shows the steps whenever SMS is still off after asking, and sends the
 person to the one screen where they can fix it. `SmsAccess.steps()` is plain logic with a unit test; the card only
 displays it.
+
+## The virtual phone (`tools/virtual-phone/`, `.github/workflows/virtual-phone.yml`)
+
+**What it is.** An Android 14 emulator that GitHub starts on its own servers for every app change (or by hand from the
+Actions tab). It installs Linda and runs a scripted tour: the emulator receives a real SMS and a real phone call from a
+fake scam number, and the tour checks that Linda warns before the message is opened, labels the call while it rings,
+and that the main screens work. It saves a screenshot of every step and a pass/fail report.
+
+**Why.** Testing a change used to mean building, downloading and installing on a phone. Now each change is tested
+automatically, and the screenshots show what a person would see.
+
+**How it works, in plain terms.** `adb` is Android's command-line remote control. `adb emu sms send` and
+`adb emu gsm call` tell the emulator's pretend phone network to deliver a text or ring the phone, so Linda's real SMS
+receiver and call screening run. `uiautomator dump` lists the words on screen, so the script taps buttons by their text.
+`dumpsys notification` lists the notifications. No extra libraries: only Python's standard library and adb.
+
+**Limits.** An emulator is not a cheap phone: it does not kill background apps, and installing with adb skips Play
+Protect and restricted settings. A real-phone check before the demo is still needed.
