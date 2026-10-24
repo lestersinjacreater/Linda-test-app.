@@ -170,7 +170,9 @@ class Tour:
         # Linda labels calls only if it holds the call-screening role; a person grants it in Settings.
         self.shell(f"cmd role add-role-holder android.app.role.CALL_SCREENING {PKG}")
         self.shell(f"dumpsys deviceidle whitelist +{PKG}")  # like the battery step in the welcome screen
-        role = PKG in self.shell("cmd role get-role-holders android.app.role.CALL_SCREENING")
+        # The role is granted in the background, so give it a few seconds to show up.
+        role = self.wait_for(
+            lambda: PKG in self.shell("cmd role get-role-holders android.app.role.CALL_SCREENING"), 10)
         self.check("Install with permissions and call-screening role", ok and role,
                    f"install: {'Success' if ok else out.strip()[-200:]}; call-screening role: {role}")
 
@@ -286,16 +288,14 @@ class Tour:
         self.shell("cmd statusbar collapse")
 
     def swahili(self) -> None:
-        # Leave Demo mode with Back (it returns to Settings, scrolled down to the version line). A Back sent while the
-        # notification shade is still closing, or a heads-up call is showing, gets swallowed, so press it only while
-        # Demo mode is still on screen, at most three times, so the tour never backs out of the app.
-        time.sleep(1.5)
-        for _ in range(3):
-            if "Demo mode" not in self.screen_text():
-                break
-            self.shell("input keyevent KEYCODE_BACK")
-            time.sleep(1.5)
-        # Then scroll up to the language choices at the top.
+        # On the emulator, Back presses after the simulated call never reach Demo mode (runs 5 and 6 stayed there),
+        # so start the app afresh and open Settings from the bottom bar. The replay bug (an old warning coming back
+        # when the screen is rebuilt) is still covered by the rotation check, and is checked again below.
+        self.shell(f"am force-stop {PKG}")
+        self.open_app()
+        self.tap_exact("Settings", scrolls=0)
+        time.sleep(1)
+        # The language choices are at the top of Settings.
         switched = False
         for _ in range(5):
             if self.tap_exact("Kiswahili", scrolls=0):
