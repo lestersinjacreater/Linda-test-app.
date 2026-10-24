@@ -283,7 +283,16 @@ scenarios (blast, rotating, poison, call) and metrics, dashboard, deployment con
 Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendeley); replaced by the lightweight `2026.10.20-1` (same real-test results, 87 KB), then by `2026.10.21-1`, which adds a
 public Kenyan SMS set re-labelled by Claude (82% of Kenyan test scams caught, up from 61%; see `ml/reports/metrics.md`).
 
-**Remaining, in priority order (P4, 19–22 Oct, then FEATURE FREEZE on 22 Oct):**
+**Dates (extended):** building continues until the end of **27 Oct**, then FEATURE FREEZE. Hack day is 28–29 Oct.
+
+**Done since 22 Oct:** the virtual phone tour (`tools/virtual-phone/tour.py`, CI on every app PR) and the live phone
+(`.github/workflows/live-phone.yml`: a browser-usable emulator plus `/phone` commands on the "Live phone" issue);
+on-device learning in `android/.../features/learning/` (never leaves the phone): **M-Pesa memory** (checks "I sent you
+money by mistake" claims against the person's real M-Pesa messages), **know your senders** (softens wording-only
+warnings from numbers the person really talks to; warns on the "new number" trick and strangers asking for money),
+**learn from your taps** (a capped personal layer trained by "Mark as safe" and "Report").
+
+**Remaining, in priority order (until the freeze at the end of 27 Oct):**
 1. Kenyan data: public Kenyan set added (`kenya_sms`, model `2026.10.21-1`). Still to do: team spot-check of the labels,
    and the team's own messages in `ml/data/processed/team_collected.csv`.
 2. ~~`fraudintel/` mock service (5.12) and the gateway merging it.~~ Done.
@@ -297,8 +306,8 @@ public Kenyan SMS set re-labelled by Claude (82% of Kenyan test scams caught, up
 8. Payment precheck (5.7). Drop if short of time.
 9. Dashboard updates for fraud-intel hits, verified callers and adoption levels.
 
-**P3 Polish (23–27 Oct).** Bug fixes only. Technical brief (2 pages), pitch deck (8 slides),
-recorded backup demo video, three full rehearsals. No new features after the freeze.
+**P3 Polish (alongside the last build days, and after the freeze).** Bug fixes only after 27 Oct. Technical brief
+(2 pages), pitch deck (8 slides), recorded backup demo video, three full rehearsals, one real-phone check of the APK.
 
 ## 9. How to work in this repo (instructions for Claude Code)
 
