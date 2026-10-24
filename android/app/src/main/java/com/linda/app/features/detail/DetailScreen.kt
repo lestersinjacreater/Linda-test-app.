@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -58,7 +59,9 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
     val scope = rememberCoroutineScope()
     var refresh by remember { mutableStateOf(0) }
     // The full-screen alert only when the person opened this from a warning notification, and only for a confident scam.
-    var showTakeover by remember(detectionId) { mutableStateOf(takeover) }
+    // rememberSaveable, not remember: once dismissed, the stop screen must stay dismissed when Android rebuilds the
+    // screen (rotation, a language change), or it pops back over the warning the person already read.
+    var showTakeover by rememberSaveable(detectionId) { mutableStateOf(takeover) }
     val detection: DetectionEntity? by produceState<DetectionEntity?>(null, detectionId, refresh) {
         value = app.database.detectionDao().getById(detectionId)
     }
@@ -90,7 +93,7 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
     val reportable = ReportableDetection(d.level, d.sender, d.category, d.score, d.fingerprint, d.modelVersion, d.receivedAt, d.reportedAt != null)
     val cannotReport = ManualReport.blockedReason(reportable, verified)
     // Opened from the notification's "Report this number": the sheet is already up, still showing what will be sent.
-    var showReportDialog by remember(detectionId) { mutableStateOf(openReport && cannotReport == null && !d.markedSafe) }
+    var showReportDialog by rememberSaveable(detectionId) { mutableStateOf(openReport && cannotReport == null && !d.markedSafe) }
     var reportNote by remember { mutableStateOf<String?>(null) }
 
     if (showTakeover && d.level == "SCAM" && !d.markedSafe) {

@@ -272,10 +272,12 @@ class Tour:
         time.sleep(1)
         self.tap_text("Settings", scrolls=0)
         switched = self.tap_text("Kiswahili")
-        time.sleep(2)
-        self.tap_text("Nyumbani", scrolls=0) or self.tap_text("Home", scrolls=0)
-        sw = self.wait_for(lambda: "LINDA inakulinda." in self.screen_text(), 8)
-        self.check("Switching to Kiswahili changes the app's language", switched and sw)
+        time.sleep(3)  # the screen is rebuilt in the new language
+        # Settings itself and the bottom bar must now be in Kiswahili ("Mipangilio", "Lugha", "Nyumbani").
+        sw = self.wait_for(lambda: all(w in self.screen_text() for w in ("Lugha", "Nyumbani")), 8)
+        stop = "Stop. This looks like a scam." in self.screen_text() or "Simama" in self.screen_text()
+        self.check("Switching to Kiswahili changes the app's language", switched and sw and not stop,
+                   "and does not reopen an old warning")
 
     # ---------- report ----------
     def report(self, apk: str) -> int:
