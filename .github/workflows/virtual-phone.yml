@@ -1,0 +1,89 @@
+name: Virtual phone
+
+# Boots an Android emulator on GitHub's servers, installs Linda and runs tools/virtual-phone/tour.py:
+# a real SMS and a real call reach the emulator, and the tour checks Linda's warnings and screens.
+# Results (report.md + a screenshot of every step) go to the "virtual-phone-latest" pre-release and the run's artifacts.
+# Start it by hand from the Actions tab ("Run workflow"), or it runs on pull requests that change the app.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "android/**"
+      - "tools/virtual-phone/**"
+      - ".github/workflows/virtual-phone.yml"
+
+permissions:
+  contents: write # to publish the results as a pre-release
+
+concurrency:
+  group: virtual-phone-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tour:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build the debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --stacktrace
+
+      # GitHub's Linux runners have hardware virtualisation; this rule lets the emulator use it (much faster).
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run the tour on an Android 14 emulator
+        id: tour
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: python3 tools/virtual-phone/tour.py --apk android/app/build/outputs/apk/debug/app-debug.apk --out virtual-phone-out
+
+      - name: Show the report
+        if: always()
+        run: |
+          if [ -f virtual-phone-out/report.md ]; then cat virtual-phone-out/report.md >> "$GITHUB_STEP_SUMMARY"; else echo "No report was written." >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: virtual-phone-results
+          path: virtual-phone-out/
+
+      - name: Publish the results as the virtual-phone-latest pre-release
+        if: always() && github.event.pull_request.head.repo.fork != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # On a pull request, GITHUB_SHA is a temporary merge commit; tag the branch's own commit instead.
+          COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          ls virtual-phone-out >/dev/null 2>&1 || exit 0
+          gh release delete virtual-phone-latest --cleanup-tag --yes || true
+          gh release create virtual-phone-latest virtual-phone-out/* \
+            --prerelease \
+            --title "Virtual phone #$GITHUB_RUN_NUMBER (${COMMIT::7})" \
+            --target "$COMMIT" \
+            --notes "Virtual phone tour of commit $COMMIT ($GITHUB_HEAD_REF$GITHUB_REF_NAME). Open report.md for the checks; each screenshot is named after its step."
