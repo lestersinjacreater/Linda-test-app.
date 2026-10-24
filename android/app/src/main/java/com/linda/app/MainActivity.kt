@@ -30,7 +30,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        readIntent(intent)
+        // Only a fresh start acts on the launching intent. When Android rebuilds the screen (rotation, or a language
+        // change in Settings), savedInstanceState is set and the old intent must not replay: otherwise a warning the
+        // person already opened would jump back on screen. Found by the virtual phone tour (tools/virtual-phone).
+        if (savedInstanceState == null) readIntent(intent)
         // Draw behind the status and navigation bars; the icons turn dark or light with the phone's light/dark setting.
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
