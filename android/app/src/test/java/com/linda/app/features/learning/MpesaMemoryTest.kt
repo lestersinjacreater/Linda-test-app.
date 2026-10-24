@@ -112,6 +112,13 @@ class MpesaMemoryTest {
         assertEquals("sent_by_mistake", v.category)
     }
 
+    @Test fun aFakeConfirmationKeepsDidNotComeFromMpesaFirstAndTheMemoryBacksItUp() {
+        val v = analyse(fakeConfirmation, "254700000777", memory())
+        assertEquals(RiskLevel.SCAM, v.level)
+        assertEquals("fake_mpesa", v.reasons[0].code) // the notification shows this one (demo script line)
+        assertEquals("memory_no_payment", v.reasons[1].code)
+    }
+
     @Test fun aRealPaymentStillWarnsNotToSendItBackYourself() {
         val v = analyse(mistake, "254700000778", memory(receipt(250_000, now - hour)))
         assertTrue(v.level != RiskLevel.SAFE)
