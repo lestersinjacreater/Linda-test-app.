@@ -146,11 +146,14 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
 
         var category = Categories.categorise(input.body, input.sender, scorer.verifiedSenders)
         if (category == "other" && claim?.kind == MoneyClaim.Kind.SENT_BY_MISTAKE) category = "sent_by_mistake"
-        // The memory's finding goes first: "no such money arrived" is the most convincing thing Linda can say.
+        // The memory's finding goes first for a "sent by mistake" text: "no such money arrived" is the most convincing
+        // thing Linda can say. For a fake M-Pesa confirmation, "did not come from M-Pesa" stays first (the notification
+        // shows the first reason) and the memory's finding backs it up second.
         val reasons = mutableListOf<Reason>()
-        memoryReason?.let { reasons += it }
+        if (category != "fake_mpesa") memoryReason?.let { reasons += it }
         senderReason?.let { if (it !== ReasonCatalogue.KNOWN_SENDER) reasons += it }
         reasons += ReasonCatalogue.forCategory(category)
+        if (category == "fake_mpesa") memoryReason?.let { reasons += it }
         if (detail.meta.getValue("has_link") == 1.0 && category != "phishing_link") reasons += ReasonCatalogue.LINK
         if (detail.meta.getValue("sender_personal_number") == 1.0 && category != "fake_mpesa") reasons += ReasonCatalogue.PERSONAL_NUMBER
         if (unknownFirst && senderReason !== ReasonCatalogue.FIRST_ASKS_MONEY) reasons += ReasonCatalogue.UNKNOWN_SENDER
