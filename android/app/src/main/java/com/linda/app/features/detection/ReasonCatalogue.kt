@@ -102,6 +102,27 @@ object ReasonCatalogue {
         "Huu unalingana na ujumbe halisi wa M-Pesa kwenye simu yako (nambari ileile ya muamala).",
     )
 
+    // ---- Know your senders (features/learning) ----
+
+    /** A number the person has been in touch with for a while: a wording-only warning is softened to a caution. */
+    val KNOWN_SENDER = Reason(
+        "known_sender",
+        "You have been in touch with this number for a while, so this is only a caution. If it asks for money, call them first.",
+        "Umekuwa ukiwasiliana na nambari hii kwa muda, kwa hivyo hii ni tahadhari tu. Ikiomba pesa, wapigie kwanza.",
+    )
+
+    val FIRST_ASKS_MONEY = Reason(
+        "first_asks_money",
+        "This is the first message from this number, and it asks you to send money.",
+        "Huu ni ujumbe wa kwanza kutoka kwa nambari hii, na unakuomba utume pesa.",
+    )
+
+    val NEW_NUMBER_TRICK = Reason(
+        "new_number_trick",
+        "Someone says this is their new number and asks for money. Call their old number, or meet them, before you send anything.",
+        "Mtu anasema hii ni nambari yake mpya na anaomba pesa. Piga nambari yake ya zamani, au mkutane, kabla ya kutuma chochote.",
+    )
+
     fun forCategory(category: String): Reason = BY_CATEGORY.getValue(if (category in BY_CATEGORY) category else "other")
 
     /** "Words like ..." built from the n-grams that pushed the score up most. */

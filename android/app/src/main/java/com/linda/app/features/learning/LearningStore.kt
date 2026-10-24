@@ -7,6 +7,8 @@ import android.provider.Telephony
 import androidx.core.content.ContextCompat
 import com.linda.app.LindaApp
 import com.linda.app.core.data.MpesaReceiptEntity
+import com.linda.app.core.data.SeenSenderEntity
+import com.linda.app.core.util.PhoneNumbers
 
 /**
  * The phone side of the M-Pesa memory: where receipts are stored (Room) and when they are read.
@@ -27,7 +29,10 @@ object LearningStore {
 
     fun enabled(ctx: Context): Boolean = prefs(ctx).getBoolean(ENABLED, true)
 
-    /** Turning the memory off also forgets it: Linda keeps nothing it is not allowed to use. */
+    /**
+     * One switch for everything Linda learns on this phone (M-Pesa memory and sender history).
+     * Turning it off also forgets: Linda keeps nothing it is not allowed to use.
+     */
     suspend fun setEnabled(ctx: Context, value: Boolean) {
         prefs(ctx).edit().putBoolean(ENABLED, value).apply()
         if (!value) forget(ctx)
@@ -98,8 +103,48 @@ object LearningStore {
         return MpesaMemory(receipts, completeSince)
     }
 
+    // ---------- Know your senders ----------
+
+    /**
+     * What is known about the phone number [sender] before its new message is counted: Linda's own count (texts and
+     * warnings), and, when inbox reading is allowed, the person's own texts to and from it. Null for a business name.
+     */
+    suspend fun senderHistory(ctx: Context, sender: String?): SenderHistory? {
+        if (!enabled(ctx)) return null
+        val msisdn = PhoneNumbers.toMsisdn(sender) ?: return null
+        val seen = (ctx.applicationContext as LindaApp).database.senderDao().find(sender!!)
+        val own = seen?.let { SenderHistory(it.firstSeen, it.count, 0, null, it.warned) }
+        return SenderHistory.merge(own, readConversation(ctx, msisdn))
+    }
+
+    /** Counts texts to and from this number in the phone's own message store. Only counts and dates are read. */
+    private fun readConversation(ctx: Context, msisdn: String): SenderHistory? {
+        if (!canReadInbox(ctx)) return null
+        // The same number is written in different ways: 0712..., +254712..., 254712...
+        val ways = arrayOf("0" + msisdn.substring(3), "+$msisdn", msisdn)
+        fun countAndFirst(uri: android.net.Uri): Pair<Int, Long?> = try {
+            ctx.contentResolver.query(
+                uri, arrayOf(Telephony.Sms.DATE), "${Telephony.Sms.ADDRESS} IN (?, ?, ?)", ways, "${Telephony.Sms.DATE} ASC",
+            )?.use { c -> c.count to (if (c.moveToFirst()) c.getLong(0) else null) } ?: (0 to null)
+        } catch (e: SecurityException) {
+            0 to null
+        }
+        val (received, firstIn) = countAndFirst(Telephony.Sms.Inbox.CONTENT_URI)
+        val (sent, firstOut) = countAndFirst(Telephony.Sms.Sent.CONTENT_URI)
+        val first = listOfNotNull(firstIn, firstOut).minOrNull() ?: return null
+        return SenderHistory(first, received, sent, firstOut, 0)
+    }
+
+    /** After a message is judged: one more text from this sender, and one more warning if Linda warned. */
+    suspend fun countMessage(ctx: Context, sender: String, at: Long, warned: Boolean) {
+        val senders = (ctx.applicationContext as LindaApp).database.senderDao()
+        val w = if (warned) 1 else 0
+        if (senders.markSeen(SeenSenderEntity(sender, at, count = 1, warned = w)) == -1L) senders.countAgain(sender, w)
+    }
+
     /** "Forget what Linda learned": deletes every receipt and starts listening afresh from now. */
     suspend fun forget(ctx: Context, now: Long = System.currentTimeMillis()) {
+        (ctx.applicationContext as LindaApp).database.senderDao().forgetAll()
         dao(ctx).forgetAllReceipts()
         // BACKFILLED stays set, so Linda does not quietly read the whole inbox again; it relearns as messages arrive.
         prefs(ctx).edit().putLong(LISTENING_SINCE, now).putLong(COMPLETE_SINCE, now).apply()
