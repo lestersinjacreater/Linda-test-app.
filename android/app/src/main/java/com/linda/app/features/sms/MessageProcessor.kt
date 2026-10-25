@@ -16,6 +16,9 @@ import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.demo.DemoSnapshots
 import com.linda.app.features.guardian.AlertDecision
 import com.linda.app.features.guardian.GuardianService
+import com.linda.app.features.learning.LearningStore
+import com.linda.app.features.learning.MoneyClaims
+import com.linda.app.features.learning.MpesaMemory
 import com.linda.app.features.reporting.ReportingService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -29,13 +32,15 @@ data class ProcessResult(val verdict: Verdict, val detectionId: Long?, val speec
 
 /**
  * The single path every message takes: real SMS, pasted text, and demo mode all come through here,
- * so a demo behaves exactly like a real message. Order: allow-list, context, ScamDetector, save, warn.
+ * so a demo behaves exactly like a real message. Order: M-Pesa memory, allow-list, context, ScamDetector, save, warn.
  */
 class MessageProcessor(private val context: Context) {
     private val app = context.applicationContext as LindaApp
 
     suspend fun process(body: String, sender: String?, receivedAt: Long, source: String, notify: Boolean): ProcessResult =
         withContext(Dispatchers.Default) {
+            // M-Pesa memory: a genuine M-Pesa "you have received" text is remembered (time, amount, hashed code only).
+            if (source == "sms" || source == "demo") LearningStore.learn(context, sender, body, receivedAt)
             val senders = app.database.senderDao()
             if (sender != null && senders.isAllowed(sender)) {
                 // The user said this sender is fine. Skip scoring (a SAFE verdict with no reasons).
@@ -45,7 +50,11 @@ class MessageProcessor(private val context: Context) {
             }
             val inContacts = ContactsLookup.isInContacts(context, sender)
             val first = sender?.let { !senders.hasSeen(it) }
-            val verdict = app.detector.analyse(MessageInput(body, sender, receivedAt, inContacts, first))
+            // Only a message that claims money arrived needs the memory (most messages do not, so most skip this).
+            val memory = if (MoneyClaims.find(body) != null) {
+                LearningStore.snapshot(context, receivedAt, if (sender == null) MpesaMemory.RETENTION_MS else MpesaMemory.WINDOW_MS)
+            } else null
+            val verdict = app.detector.analyse(MessageInput(body, sender, receivedAt, inContacts, first, memory))
             if (sender != null) senders.markSeen(SeenSenderEntity(sender, receivedAt))
 
             if (verdict.level == RiskLevel.SAFE) {

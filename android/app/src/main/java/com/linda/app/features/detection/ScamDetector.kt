@@ -1,5 +1,7 @@
 package com.linda.app.features.detection
 
+import com.linda.app.features.learning.MpesaMemory
+
 /**
  * The detection engine's public API (root CLAUDE.md and android/CLAUDE.md section 5).
  * Everything else in the app (SMS receiver, checker, inbox scan, demo mode) calls [analyse].
@@ -25,6 +27,8 @@ data class MessageInput(
     val receivedAt: Long,
     val senderInContacts: Boolean? = null,
     val firstMessageFromSender: Boolean? = null,
+    /** The person's real M-Pesa payments (features/learning), or null when that memory is off or not needed. */
+    val mpesaMemory: MpesaMemory? = null,
 )
 
 enum class RiskLevel { SAFE, CAUTION, SCAM }

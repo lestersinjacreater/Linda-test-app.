@@ -1,5 +1,7 @@
 package com.linda.app.features.inbox
 
+import com.linda.app.features.learning.LearningStore
+import com.linda.app.features.learning.MpesaMemory
 import android.app.Application
 import android.provider.Telephony
 import androidx.lifecycle.AndroidViewModel
@@ -59,7 +61,11 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
         val begun = System.nanoTime()
         val since = InboxWindow.startMillis(System.currentTimeMillis())
         val allowed = app.database.senderDao().allAllowed().toSet()
-        val scanner = InboxScanner(app.detector, { ContactsLookup.isInContacts(app, it) }, { it in allowed })
+        // Read the M-Pesa messages first, so old "I sent you money by mistake" texts can be checked against them.
+        val now = System.currentTimeMillis()
+        LearningStore.backfillOnce(app, now)
+        val memory = LearningStore.snapshot(app, now, MpesaMemory.RETENTION_MS)
+        val scanner = InboxScanner(app.detector, { ContactsLookup.isInContacts(app, it) }, { it in allowed }, memory)
 
         var scanned = 0
         val cursor = app.contentResolver.query(

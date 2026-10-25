@@ -94,7 +94,10 @@ fun CheckerScreen(sharedText: String?, state: CheckerViewModel = viewModel()) {
             ) {
                 // A safe message gets a short, honest note; a warning explains itself in the reasons above.
                 if (v.level == RiskLevel.SAFE) {
-                    Text(stringResource(R.string.checker_safe_note), style = MaterialTheme.typography.bodyLarge, color = LindaTheme.colors.textPrimary)
+                    // "Cannot be sure" is honest for wording alone, but not when the message matched a real M-Pesa message.
+                    val matchedReal = v.reasons.any { it.code == "memory_same_as_real" }
+                    val note = if (matchedReal) R.string.checker_safe_note_real_mpesa else R.string.checker_safe_note
+                    Text(stringResource(note), style = MaterialTheme.typography.bodyLarge, color = LindaTheme.colors.textPrimary)
                 }
             }
         }

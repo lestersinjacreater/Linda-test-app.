@@ -1,5 +1,10 @@
 package com.linda.app.features.detection
 
+import com.linda.app.features.learning.Money
+import com.linda.app.features.learning.MoneyClaim
+import com.linda.app.features.learning.MoneyClaims
+import com.linda.app.features.learning.MpesaMemory
+
 /**
  * The on-device detector: model score + context signals -> [Verdict].
  *
@@ -10,6 +15,11 @@ package com.linda.app.features.detection
  * Registered senders (business names like BETIKA, short codes like 22444) are not warned on for their
  * wording alone, only when a scam sign is also present ([Senders]). That stops false alarms on real
  * bank alerts, loan reminders and promos, which the model saw too few of in training.
+ *
+ * M-Pesa memory (features/learning): a message that claims money arrived ("I sent you 2,500 by mistake", or a
+ * confirmation) is checked against the person's real M-Pesa messages. "No such money arrived" makes a stranger's
+ * text a SCAM, with that fact as the first reason. The memory only ever raises a warning, with one exception: a
+ * pasted copy of the person's own genuine M-Pesa message (same transaction code) is confirmed as real.
  */
 class LindaDetector(private val scorer: ModelScorer, private val config: FusionConfig = FusionConfig()) : ScamDetector {
 
@@ -52,20 +62,61 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
         if (registered && level != RiskLevel.SAFE && !Senders.hasStrongSign(input.body, detail.meta)) {
             level = if (kind == SenderKind.LOOKALIKE) RiskLevel.CAUTION else RiskLevel.SAFE
         }
+
+        // M-Pesa memory (features/learning): a message that says money arrived is checked against the person's REAL
+        // M-Pesa messages. Banks and businesses (registered senders) are skipped: they really do announce payments.
+        // A brand lookalike is not skipped, because pretending to be M-Pesa is exactly the trick.
+        val claim = if (input.mpesaMemory != null && !isVerified && (!registered || kind == SenderKind.LOOKALIKE)) MoneyClaims.find(input.body) else null
+        val pasted = input.sender == null
+        val answer = claim?.let { input.mpesaMemory!!.check(it, input.receivedAt, if (pasted) MpesaMemory.RETENTION_MS else MpesaMemory.WINDOW_MS) }
+        var memoryReason: Reason? = null
+        if (claim != null) when (answer) {
+            MpesaMemory.Answer.NO_REAL_PAYMENT -> {
+                // A fact, not a guess: no such money arrived. Pasted text and a contact get a CAUTION (a friend's
+                // phone can be stolen, but a friend can also mean a bank transfer); a stranger's text is a SCAM.
+                val raiseTo = if (pasted || input.senderInContacts == true) RiskLevel.CAUTION else RiskLevel.SCAM
+                level = higher(level, raiseTo)
+                score = maxOf(score, if (raiseTo == RiskLevel.SCAM) scorer.scamThreshold else scorer.warnThreshold)
+                val amount = Money.format(claim.amountCents)
+                memoryReason = if (pasted) ReasonCatalogue.memoryNoPaymentPasted(amount) else ReasonCatalogue.memoryNoPayment(amount)
+            }
+            MpesaMemory.Answer.REAL_PAYMENT -> if (claim.kind == MoneyClaim.Kind.SENT_BY_MISTAKE && input.senderInContacts != true) {
+                // The money is real, but "send it back to me" is still the trick: only Safaricom should reverse it.
+                level = higher(level, RiskLevel.CAUTION)
+                score = maxOf(score, scorer.warnThreshold)
+                memoryReason = ReasonCatalogue.memoryRealPayment(Money.format(claim.amountCents))
+            }
+            MpesaMemory.Answer.SAME_AS_REAL_MESSAGE -> if (pasted) {
+                // The person pasted one of their own genuine M-Pesa messages to ask "is this real?": it is.
+                return Verdict(RiskLevel.SAFE, 0f, listOf(ReasonCatalogue.MEMORY_SAME_AS_REAL), scorer.version, "none", "")
+            }
+            MpesaMemory.Answer.CANNOT_TELL, null -> Unit
+        }
+        score = score.coerceIn(0.0, 1.0)
+
         if (level == RiskLevel.SAFE) {
             // Harmless messages are the vast majority, so do no extra work for them: no fingerprint (only warnings are reported).
             return Verdict(level, score.toFloat(), emptyList(), scorer.version, "none", "")
         }
         val fingerprint = SimHash.simhash64(Normalizer.normalize(input.body))
 
-        val category = Categories.categorise(input.body, input.sender, scorer.verifiedSenders)
-        val reasons = mutableListOf(ReasonCatalogue.forCategory(category))
+        var category = Categories.categorise(input.body, input.sender, scorer.verifiedSenders)
+        if (category == "other" && claim?.kind == MoneyClaim.Kind.SENT_BY_MISTAKE) category = "sent_by_mistake"
+        // The memory's finding goes first for a "sent by mistake" text: "no such money arrived" is the most convincing
+        // thing Linda can say. For a fake M-Pesa confirmation, "did not come from M-Pesa" stays first (the notification
+        // shows the first reason) and the memory's finding backs it up second.
+        val reasons = mutableListOf<Reason>()
+        if (category != "fake_mpesa") memoryReason?.let { reasons += it }
+        reasons += ReasonCatalogue.forCategory(category)
+        if (category == "fake_mpesa") memoryReason?.let { reasons += it }
         if (detail.meta.getValue("has_link") == 1.0 && category != "phishing_link") reasons += ReasonCatalogue.LINK
         if (detail.meta.getValue("sender_personal_number") == 1.0 && category != "fake_mpesa") reasons += ReasonCatalogue.PERSONAL_NUMBER
         if (unknownFirst) reasons += ReasonCatalogue.UNKNOWN_SENDER
         topWords(detail)?.let { reasons += it }
         return Verdict(level, score.toFloat(), reasons, scorer.version, category, fingerprint)
     }
+
+    private fun higher(a: RiskLevel, b: RiskLevel) = if (a.ordinal >= b.ordinal) a else b
 
     /** The n-grams that raised the score most, trimmed to whole-looking words, as an explanation. */
     private fun topWords(detail: ModelScorer.Detail): Reason? {

@@ -107,3 +107,22 @@ interface GuardianAlertDao {
     @Query("DELETE FROM guardian_alerts")
     suspend fun clearAll()
 }
+
+/** What Linda learns on this phone (features/learning). Nothing here ever leaves the phone. */
+@Dao
+interface LearningDao {
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addReceipts(receipts: List<MpesaReceiptEntity>)
+
+    @Query("SELECT * FROM mpesa_receipts WHERE at >= :since ORDER BY at DESC")
+    suspend fun receiptsSince(since: Long): List<MpesaReceiptEntity>
+
+    @Query("DELETE FROM mpesa_receipts WHERE at < :before")
+    suspend fun forgetReceiptsBefore(before: Long)
+
+    @Query("DELETE FROM mpesa_receipts")
+    suspend fun forgetAllReceipts()
+
+    @Query("SELECT COUNT(*) FROM mpesa_receipts")
+    fun observeReceiptCount(): Flow<Int>
+}

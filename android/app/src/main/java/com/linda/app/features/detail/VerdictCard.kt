@@ -103,7 +103,10 @@ fun VerdictCard(
             trace?.let { LayerTraceView(it, level, onLanded = onTraceLanded) }
             if (reasons.isNotEmpty()) {
                 Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
-                    Text(stringResource(R.string.detail_why), style = MaterialTheme.typography.titleMedium, color = colors.textPrimary)
+                    // A SAFE verdict can carry a reason too (a pasted message that matches a real M-Pesa message), so the
+                    // heading must not say "flagged" then.
+                    val heading = if (level == "SAFE") R.string.detail_why_safe else R.string.detail_why
+                    Text(stringResource(heading), style = MaterialTheme.typography.titleMedium, color = colors.textPrimary)
                     reasons.forEach { Text(it, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary) }
                 }
             }
