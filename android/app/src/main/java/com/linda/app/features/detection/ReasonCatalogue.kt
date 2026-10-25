@@ -2,7 +2,8 @@ package com.linda.app.features.detection
 
 /**
  * The plain-language reasons shown with every warning, in English and Swahili (rule: every warning
- * explains itself). The Swahili text has NOT been reviewed by a native speaker yet: do that before the demo.
+ * explains itself). The Kiswahili was checked for grammar and natural wording on 25 Oct (by Claude, not a native
+ * speaker): a native speaker should still read it once before the demo.
  * They live here rather than in strings.xml because a [Verdict] carries both languages at once.
  */
 object ReasonCatalogue {
@@ -14,8 +15,8 @@ object ReasonCatalogue {
         ),
         "sent_by_mistake" to Reason(
             "sent_by_mistake",
-            "Scammers say they sent money \"by mistake\" and beg you to send it back. Check your real M-Pesa balance first.",
-            "Matapeli hudai wamekutumia pesa \"kimakosa\" na kukusihi uzirudishe. Angalia salio lako halisi la M-Pesa kwanza.",
+            "Scammers say they sent money \"by mistake\" and beg you to send it back. Check your real M-Pesa messages first, and never send it back yourself: the sender can forward their M-PESA message to 456.",
+            "Matapeli hudai wamekutumia pesa \"kimakosa\" na kukusihi uzirudishe. Angalia kwanza jumbe zako halisi za M-Pesa, na usizirudishe wewe mwenyewe: mtumaji anaweza kutuma ujumbe wake wa M-PESA kwa 456.",
         ),
         "prize" to Reason(
             "prize",
@@ -45,12 +46,12 @@ object ReasonCatalogue {
         "pin_request" to Reason(
             "pin_request",
             "It asks for your PIN. Nobody from Safaricom or a bank will ever ask for your PIN.",
-            "Inaomba PIN yako. Hakuna mtu wa Safaricom au benki atakayekuomba PIN yako.",
+            "Ujumbe huu unaomba PIN yako. Hakuna mtu wa Safaricom wala wa benki atakayekuomba PIN yako.",
         ),
         "phishing_link" to Reason(
             "phishing_link",
             "It pushes you to open a suspicious link. Do not tap it or enter any details.",
-            "Inakusukuma kufungua kiungo cha kutiliwa shaka. Usikibofye wala kuingiza taarifa zako.",
+            "Ujumbe huu unakushinikiza ufungue kiungo cha kutiliwa shaka. Usikibofye, na usiweke taarifa zako.",
         ),
         "other" to Reason(
             "other",
@@ -63,7 +64,7 @@ object ReasonCatalogue {
     val PERSONAL_NUMBER = Reason(
         "personal_number",
         "It came from an ordinary phone number, not an official sender name.",
-        "Umetoka kwa nambari ya kawaida ya simu, si jina rasmi la mtumaji.",
+        "Ujumbe huu umetoka kwa nambari ya kawaida ya simu, si kwa jina rasmi la mtumaji.",
     )
     val UNKNOWN_SENDER = Reason(
         "unknown_sender",
@@ -77,29 +78,29 @@ object ReasonCatalogue {
     /** A text message says money arrived, and Linda saw every real M-Pesa message of the last 2 days: none brought it. */
     fun memoryNoPayment(amount: String) = Reason(
         "memory_no_payment",
-        "Your real M-Pesa messages show no $amount received in the last 2 days. Nobody sent you this money. Do not send anything back.",
-        "Ujumbe wako halisi wa M-Pesa hauonyeshi $amount iliyopokelewa katika siku 2 zilizopita. Hakuna aliyekutumia pesa hizi. Usirudishe chochote.",
+        "Your real M-Pesa messages show no $amount received in the last 2 days. Nobody sent you this money. Do not send anything back; you can forward this message to 333.",
+        "Jumbe zako halisi za M-Pesa hazionyeshi kwamba ulipokea $amount katika siku 2 zilizopita. Hakuna aliyekutumia pesa hizi. Usirudishe chochote; unaweza kutuma ujumbe huu kwa 333.",
     )
 
     /** Pasted text has no date, so the check covers the whole 30-day memory. */
     fun memoryNoPaymentPasted(amount: String) = Reason(
         "memory_no_payment",
         "Linda checked your real M-Pesa messages from the last 30 days: no $amount arrived like this.",
-        "Linda imeangalia ujumbe wako halisi wa M-Pesa wa siku 30 zilizopita: hakuna $amount iliyoingia hivi.",
+        "Linda imeangalia jumbe zako halisi za M-Pesa za siku 30 zilizopita: hakuna malipo ya $amount kama haya yaliyoingia.",
     )
 
     /** A real payment of the claimed amount did arrive, and the message asks for it back. */
     fun memoryRealPayment(amount: String) = Reason(
         "memory_real_payment",
-        "A real $amount did arrive on your M-Pesa. If it truly was a mistake, the sender asks Safaricom to reverse it. Never send it back yourself.",
-        "$amount halisi ziliingia kwenye M-Pesa yako. Ikiwa kweli ni makosa, mtumaji aombe Safaricom airudishe. Usizirudishe wewe mwenyewe.",
+        "A real $amount did arrive on your M-Pesa. Do not send it back yourself, even if they ask. If it truly was a mistake, the sender forwards their M-PESA message to 456 or calls Safaricom.",
+        "Malipo halisi ya $amount yaliingia kwenye M-Pesa yako. Usiyarudishe wewe mwenyewe, hata wakikuomba. Ikiwa kweli ni makosa, mtumaji atume ujumbe wake wa M-PESA kwa 456 au apige simu Safaricom.",
     )
 
     /** Pasted text with the transaction code of a genuine M-Pesa message on this phone. */
     val MEMORY_SAME_AS_REAL = Reason(
         "memory_same_as_real",
         "This matches a real M-Pesa message on your phone (same transaction code).",
-        "Huu unalingana na ujumbe halisi wa M-Pesa kwenye simu yako (nambari ileile ya muamala).",
+        "Ujumbe huu unalingana na ujumbe halisi wa M-Pesa ulio kwenye simu yako (nambari ileile ya muamala).",
     )
 
     // ---- Know your senders (features/learning) ----
@@ -108,7 +109,7 @@ object ReasonCatalogue {
     val KNOWN_SENDER = Reason(
         "known_sender",
         "You have been in touch with this number for a while, so this is only a caution. If it asks for money, call them first.",
-        "Umekuwa ukiwasiliana na nambari hii kwa muda, kwa hivyo hii ni tahadhari tu. Ikiomba pesa, wapigie kwanza.",
+        "Umekuwa ukiwasiliana na nambari hii kwa muda, kwa hivyo hii ni tahadhari tu. Ukiombwa pesa, mpigie simu kwanza.",
     )
 
     val FIRST_ASKS_MONEY = Reason(
@@ -120,7 +121,7 @@ object ReasonCatalogue {
     val NEW_NUMBER_TRICK = Reason(
         "new_number_trick",
         "Someone says this is their new number and asks for money. Call their old number, or meet them, before you send anything.",
-        "Mtu anasema hii ni nambari yake mpya na anaomba pesa. Piga nambari yake ya zamani, au mkutane, kabla ya kutuma chochote.",
+        "Mtu anasema hii ni nambari yake mpya na anaomba pesa. Piga nambari yake ya zamani, au mkutane, kabla hujatuma chochote.",
     )
 
     // ---- Learn from your taps (features/learning) ----
@@ -128,16 +129,50 @@ object ReasonCatalogue {
     val TAPS_SAFE = Reason(
         "taps_safe",
         "You marked messages like this as safe before, so Linda is less worried about this one.",
-        "Uliweka alama ya salama kwenye ujumbe kama huu awali, kwa hivyo Linda haina wasiwasi sana na huu.",
+        "Awali ulisema ujumbe kama huu ni salama, kwa hivyo Linda haina wasiwasi mwingi kuhusu huu.",
     )
 
     val TAPS_SCAM = Reason(
         "taps_scam",
         "You reported messages like this one before.",
-        "Uliripoti ujumbe kama huu awali.",
+        "Awali uliripoti ujumbe kama huu.",
     )
 
     fun forCategory(category: String): Reason = BY_CATEGORY.getValue(if (category in BY_CATEGORY) category else "other")
+
+    /**
+     * The category reason for this very message. A job or loan text is named by its topic words ("hiring", "loan"), but
+     * the usual reason says it asks for a fee: when the text asks for no fee or payment, that would be untrue, so it
+     * gets a "be careful" reason instead. Same code, so the trace and the radar category do not change.
+     */
+    fun forCategory(category: String, body: String): Reason = when {
+        category == "job_fee" && !mentionsFee(body) -> JOB_NO_FEE
+        category == "loan_fee" && !mentionsFee(body) -> LOAN_NO_FEE
+        else -> forCategory(category)
+    }
+
+    private val JOB_NO_FEE = Reason(
+        "job_fee",
+        "Be careful: scammers send job offers like this and ask for a fee later. Real employers never ask you to pay to be hired.",
+        "Kuwa mwangalifu: matapeli hutuma ofa za kazi kama hii, kisha huomba ada baadaye. Waajiri halisi kamwe hawakuombi ulipe ili uajiriwe.",
+    )
+    private val LOAN_NO_FEE = Reason(
+        "loan_fee",
+        "Be careful: scammers send loan offers like this and ask for a fee first. Real lenders never ask for a fee before the loan.",
+        "Kuwa mwangalifu: matapeli hutuma ofa za mkopo kama hii, kisha huomba ada kwanza. Wakopeshaji halisi kamwe hawaombi ada kabla ya mkopo.",
+    )
+
+    // Asking the reader to pay, on Normalizer output. Not a bare "pay": job texts say "good pay" or "pay: 3000 daily".
+    private val FEE_WORDS = listOf(
+        "fee", "fees", "ada", "registration", "deposit", "charge", "charges", "processing", "kiingilio", "gharama",
+        "lipa", "kulipa", "ulipe", "lipia", "to pay", "pay a", "pay the", "pay ksh", "pay kes", "tuma pesa", "tuma ksh",
+        "send money", "send ksh", "send kes",
+    )
+
+    private fun mentionsFee(body: String): Boolean {
+        val n = Normalizer.normalize(body)
+        return FEE_WORDS.any { Regex("(?<![a-z0-9])" + Regex.escape(it) + "(?![a-z0-9])").containsMatchIn(n) }
+    }
 
     /** "Words like ..." built from the n-grams that pushed the score up most. */
     fun wordsReason(words: List<String>): Reason = Reason(

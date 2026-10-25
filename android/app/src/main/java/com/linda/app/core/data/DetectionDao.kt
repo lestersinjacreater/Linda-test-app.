@@ -60,7 +60,7 @@ interface SenderDao {
     @Query("SELECT * FROM seen_senders WHERE sender = :sender")
     suspend fun find(sender: String): SeenSenderEntity?
 
-    /** "Forget what Linda learned" (features/learning). */
+    /** "Forget everything Linda learned" (features/learning). */
     @Query("DELETE FROM seen_senders")
     suspend fun forgetAll()
 }
