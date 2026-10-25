@@ -128,6 +128,16 @@ class Tour(Phone):
         after = self.count(SCAM_TITLE) + self.count("Linda: be careful")
         self.check("Real SMS: an ordinary chat is not warned", after == before, f"Linda warnings before {before}, after {after}")
 
+    def find_any(self, variants: tuple[str, ...], scrolls: int = 3) -> dict | None:
+        """The first element showing any of these texts, scrolling down a little at a time."""
+        for i in range(scrolls + 1):
+            for n in self.screen_nodes():
+                if any(v in n["text"] for v in variants):
+                    return n
+            if i < scrolls:
+                self.swipe_up()
+        return None
+
     def warnings(self) -> int:
         return self.count(SCAM_TITLE) + self.count(CAUTION_TITLE)
 
@@ -164,7 +174,13 @@ class Tour(Phone):
         self.open_app()
         self.tap_exact("History", scrolls=0)
         time.sleep(1)
-        opened = any(self.tap_text(v, scrolls=2) for v in ("0700 000 783", "0700000783", "254700000783"))
+        entry = self.find_any(("0700 000 783", "0700000783", "254700000783"))
+        if entry:
+            self.shell(f"input tap {entry['x']} {entry['y']}")
+            time.sleep(2)
+        opened = entry is not None
+        if opened and "Stop. This looks like a scam." in self.screen_text():
+            self.tap_text("OK, show me why")  # a SCAM opens on the stop screen first
         marked = opened and self.tap_text("Mark as safe")
         said = self.wait_for(lambda: "You marked this sender as safe" in self.screen_text() or
                              self.find("You marked this sender as safe", scrolls=2) is not None, 6)
@@ -191,7 +207,9 @@ class Tour(Phone):
     def tabs(self) -> None:
         self.open_app()
         self.tap_text("History", scrolls=0)
-        hist = self.wait_for(lambda: any(s in self.screen_text() for s in ("0700000777", "0700 000 777", "254700000777")), 6)
+        time.sleep(1.5)
+        # Newest first, so after the other test texts the fake M-Pesa one may be further down the list.
+        hist = self.find_any(("0700000777", "0700 000 777", "254700000777")) is not None
         self.check("History lists the warned message", hist)
         self.tap_text("Check", scrolls=0)
         field = self.find("Paste the message here", scrolls=0)
