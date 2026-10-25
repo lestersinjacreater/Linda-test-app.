@@ -50,3 +50,6 @@ dashboard/tsconfig.tsbuildinfo
 ml/data/processed/public.csv
 ml/data/processed/team_collected.csv
 ml/data/processed/kenya_sms.csv
+
+# Labels for a team member's own inbox: private, never committed (they are kept by the person, see ml/data/README.md)
+ml/data/labels/private/

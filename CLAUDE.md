@@ -281,7 +281,9 @@ Call screening needs Android 10+; on older phones the app still protects SMS and
 screening and blocklist sync, radar confirmation with trust weights and poisoning resistance, simulator
 scenarios (blast, rotating, poison, call) and metrics, dashboard, deployment config, CI per folder.
 Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendeley); replaced by the lightweight `2026.10.20-1` (same real-test results, 87 KB), then by `2026.10.21-1`, which adds a
-public Kenyan SMS set re-labelled by Claude (82% of Kenyan test scams caught, up from 61%; see `ml/reports/metrics.md`).
+public Kenyan SMS set re-labelled by Claude (82% of Kenyan test scams caught, up from 61%; see `ml/reports/metrics.md`), then by
+`2026.10.25-1`, which adds a team member's donated real inbox (private, never committed; false alarms on that real inbox's
+test part 20% -> 3.8% with all its test scams still caught; Kenyan public set 76.5% caught, false alarms 31.8% -> 21.2%).
 
 **Dates (extended):** building continues until the end of **27 Oct**, then FEATURE FREEZE. Hack day is 28–29 Oct.
 
@@ -292,8 +294,8 @@ warnings from numbers the person really talks to; warns on the "new number" tric
 **learn from your taps** (a capped personal layer trained by "Mark as safe" and "Report").
 
 **Remaining, in priority order (until the freeze at the end of 27 Oct):**
-1. Kenyan data: public Kenyan set added (`kenya_sms`, model `2026.10.21-1`). Still to do: team spot-check of the labels,
-   and the team's own messages in `ml/data/processed/team_collected.csv`.
+1. Kenyan data: public Kenyan set (`kenya_sms`) and a donated team inbox (`team_collected`, model `2026.10.25-1`) added.
+   Still to do: team spot-check of the public-set labels.
 2. ~~`fraudintel/` mock service (5.12) and the gateway merging it.~~ Done.
 3. ~~Verified-caller badges in the gateway and the app.~~ Done (5.13). In production the list comes from 5.12.
 4. ~~Private hash-prefix lookups and hashed sync (5.10, 5.11), then retire 5.3 for phones.~~ Done.

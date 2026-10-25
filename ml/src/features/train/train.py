@@ -33,7 +33,7 @@ from src.features.normalize.normalize import NORMALIZER_VERSION, normalize  # no
 from src.features.scoring.metadata import FEATURE_NAMES, metadata_features  # noqa: E402
 from src.features.scoring.scorer import bucket_counts, hashed_weights  # noqa: E402
 
-MODEL_VERSION = "2026.10.21-1"
+MODEL_VERSION = "2026.10.25-1"
 SEED = 42
 NGRAM_RANGE = (2, 5)
 BUCKETS = 32768   # 2^15 slots: 32 KB of weights + 32 KB of idf (see ml/reports/metrics.md for the size comparison)

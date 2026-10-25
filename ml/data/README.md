@@ -17,6 +17,12 @@ Raw and processed real data are git-ignored. To rebuild them:
    as `ml/data/raw/kenya_sms_mwatsefu.csv`. `make data` builds `processed/kenya_sms.csv` from it using OUR labels in
    `ml/data/labels/kenya_sms_labels.csv` (fingerprints and labels, no text), not the file's own keyword-script labels.
 
+5. A team member's donated inbox (private): put the donation export (`donor_id, sender_id, sender_type, text,
+   received_at`) at `ml/data/raw/team_inbox.csv` and the donor's labels file at
+   `ml/data/labels/private/team_inbox_labels.csv` (both git-ignored; the donor keeps the labels file and hands it
+   over only to whoever retrains). `make data` scrubs and builds `processed/team_collected.csv` with
+   `ml/src/features/dataset/team_inbox.py`. Without the two private files this step is skipped.
+
 Kenyan team messages go in `processed/team_collected.csv` with the schema below (`source` = `team_collected`).
 The trainer picks the file up automatically; put whole scam campaigns in `test` so the score shows how
 Linda handles Kenyan scam scripts it never saw.
