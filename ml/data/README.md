@@ -1,7 +1,7 @@
 # Linda training data
 
 Status: **real Kenyan data in use.** Training uses synthetic templates, two foreign public datasets (Tanzanian Swahili and
-international English) and a public Kenyan SMS set (Salim Mwatsefu, IwazoLab, used with permission) that Claude re-labelled
+international English) and a public Kenyan SMS set (Salim Mwatsefu, IwazoLab, used with permission: `docs/permissions/salim-mwatsefu-kenya-sms.md`) that Claude re-labelled
 by hand. Messages collected by the team itself are still welcome: they would be the first Kenyan data we gathered ourselves.
 
 ## Getting the real data (each person, on their own machine)

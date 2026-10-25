@@ -242,7 +242,7 @@ The screen for someone who has **already sent money** to a scammer ("I've been s
 4. Writes a ready-made report in English and in Kiswahili (`ReportText`) with the scammer's number, amount, transaction code, date and what the scam looked like, with a Copy button, to paste into an SMS, a bank form or a police statement. The scam message itself is included only if the person switches that on. If a fact is missing it says "(not provided)" rather than leaving a blank or inventing one.
 
 ### Where the official numbers live, and how sure we are
-Every number, the 24-hour window and the "large amount" threshold are in **one file**, `RecoveryConfig.kt`, each marked `// VERIFY BEFORE DEMO`, and the file lists how each was checked. **Be straight with judges and teammates about this:** Safaricom's own website could not be opened from our build environment, so none of the numbers is confirmed on an official Safaricom page yet. 456, 333, 100 and 200 agree across several Kenyan news and explainer sources; the DCI hotline agrees across news reports quoting the DCI; 999 / 112 are the well-known emergency numbers but our search did not confirm them; the Ksh 10,000 "large amount" line is our own decision. A teammate must check them on Safaricom's pages or in the M-PESA app and then remove the markers.
+Every number, the 24-hour window and the "large amount" threshold are in **one file**, `RecoveryConfig.kt`, and the file lists how each was checked. **Be straight with judges and teammates about this:** on 25 Oct, **456, the 24-hour window and 333 were found on Safaricom's own pages** (the M-PESA Reversal page and the fraud-awareness pages; links in the file). Safaricom's fraud page also gives the advice Linda now repeats when someone says they sent money by mistake: do not send it back yourself, even if they ask; the sender forwards their M-PESA message to 456 or calls Safaricom; forward fake messages to 333. Still marked `// VERIFY BEFORE DEMO`: 100 and 200 (they agree across Kenyan news pages but are not on those Safaricom pages), the DCI hotline (news reports quoting the DCI), 999 / 112 (well-known, not confirmed by search) and the Ksh 10,000 "large amount" line (our own decision).
 
 ### Honest limits
 - Linda cannot reverse money. The screen says so. Whether money comes back depends on Safaricom, the bank, and whether the scammer already withdrew it.
@@ -864,7 +864,7 @@ claim against them:
 `MPESA` sender: the time, the amount, and a hash (scrambled fingerprint) of the transaction code. Never the message,
 never who sent the money, never your balance. 30 days, then forgotten. It never leaves the phone: reports to the
 gateway are unchanged. Settings → "What Linda learns on this phone" shows how many payments it remembers, has a switch,
-and "Forget what Linda learned".
+and "Forget everything Linda learned".
 
 **How it learns.** From each new M-Pesa text as it arrives. If you allowed "read messages" (Scan my inbox), it also
 reads the last 30 days of M-Pesa messages once, and re-reads the recent ones right before saying "no money arrived".
@@ -920,3 +920,15 @@ what you said. The main model file never changes.
 - *Private:* only slot numbers and weights are stored, in the app's private files; never words or messages.
   Settings shows how many taps it learned from, and Forget deletes it.
 - *Honest:* when it changed a verdict, the warning says so ("You reported messages like this one before").
+
+## Warning wording: honest reasons, Safaricom's own advice, and the Kiswahili pass (25 Oct)
+
+- **Job and loan texts that ask for no fee** no longer say "asks you to pay a fee". The scam *category* is still named
+  from topic words ("hiring", "loan"), which must match the Python side, but the *reason* now checks the message: with
+  no fee or payment words it says "Be careful: scammers send job offers like this and ask for a fee later. Real
+  employers never ask you to pay to be hired." (`ReasonCatalogue.forCategory(category, body)`, `ReasonWordingTest`.)
+- **"Sent by mistake" advice follows Safaricom's fraud page**: never send it back yourself, even if they ask; the sender
+  forwards their M-PESA message to 456 or calls Safaricom; a fake message can be forwarded to 333.
+- **Kiswahili**: every reason and the "What Linda learns" texts were re-read for grammar and natural wording (for
+  example plural "jumbe zako halisi za M-Pesa" instead of "ujumbe wako", and a clear subject in "Ujumbe huu unaomba PIN
+  yako"). This was done by Claude, not a native speaker, so one read by a Kiswahili speaker before the demo is still wise.

@@ -152,7 +152,7 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
         val reasons = mutableListOf<Reason>()
         if (category != "fake_mpesa") memoryReason?.let { reasons += it }
         senderReason?.let { if (it !== ReasonCatalogue.KNOWN_SENDER) reasons += it }
-        reasons += ReasonCatalogue.forCategory(category)
+        reasons += ReasonCatalogue.forCategory(category, input.body)
         if (category == "fake_mpesa") memoryReason?.let { reasons += it }
         if (detail.meta.getValue("has_link") == 1.0 && category != "phishing_link") reasons += ReasonCatalogue.LINK
         if (detail.meta.getValue("sender_personal_number") == 1.0 && category != "fake_mpesa") reasons += ReasonCatalogue.PERSONAL_NUMBER

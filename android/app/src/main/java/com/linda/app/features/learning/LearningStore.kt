@@ -199,7 +199,7 @@ object LearningStore {
         return personalCount
     }
 
-    /** "Forget what Linda learned": deletes every receipt and starts listening afresh from now. */
+    /** "Forget everything Linda learned": deletes every receipt and starts listening afresh from now. */
     suspend fun forget(ctx: Context, now: Long = System.currentTimeMillis()) {
         File(ctx.applicationContext.filesDir, PERSONAL_FILE).delete()
         personalCache = null

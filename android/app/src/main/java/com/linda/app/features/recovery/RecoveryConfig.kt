@@ -7,22 +7,26 @@ package com.linda.app.features.recovery
  * The team MUST confirm each value below against Safaricom's own official pages / the official M-PESA app before the
  * demo. A wrong number in a guide for someone who just lost money is worse than no guide.
  *
- * What was checked, and how (2026-10-07):
- *  - Safaricom's own website could NOT be opened from the build environment (blocked), so NOTHING here is confirmed
- *    on an official Safaricom page yet.
- *  - 456, 333, 100, 200: agree across several independent Kenyan news and explainer pages found by web search.
+ * What was checked, and how:
+ *  - 2026-10-25: 456, the 24-hour window and 333 FOUND on Safaricom's own pages (read by Claude; a team glance is still wise):
+ *      safaricom.co.ke/main-mpesa/m-pesa-for-you/getting-started/m-pesa-reversal ("Forward the original M-PESA
+ *      transaction message to 456", "within 24 hours of the transaction");
+ *      safaricom.co.ke/fraud-awareness/tips-tricks and .../m-pesa-fraud/fake-old-m-pesa-message ("forward them to 333";
+ *      when someone says they sent money by mistake, do not send it back: "request the sender to forward the message
+ *      to 456 or call Safaricom").
+ *  - 2026-10-07: 100 and 200 agree across several independent Kenyan news pages, but are not on those Safaricom pages.
  *  - DCI hotline: agrees across news reports quoting the DCI.
  *  - 999 / 112: the usual Kenyan emergency numbers, from general knowledge; not confirmed by the search.
  *  - POLICE_REPORT_FROM_KES is a TEAM DECISION, not an official figure.
  */
 object RecoveryConfig {
     /** Forward YOUR M-PESA confirmation message (the one for the payment you made) to this number to ask for a reversal. Free. */
-    const val REVERSAL_SHORT_CODE = "456" // VERIFY BEFORE DEMO
+    const val REVERSAL_SHORT_CODE = "456" // on safaricom.co.ke (read 2026-10-25)
     /** The automatic reversal request only works inside this window after the payment. */
-    const val REVERSAL_WINDOW_HOURS = 24 // VERIFY BEFORE DEMO
+    const val REVERSAL_WINDOW_HOURS = 24 // on safaricom.co.ke (read 2026-10-25)
 
     /** Forward scam messages to this number; Safaricom checks and blocks fraud numbers. Free. */
-    const val FRAUD_REPORT_SHORT_CODE = "333" // VERIFY BEFORE DEMO
+    const val FRAUD_REPORT_SHORT_CODE = "333" // on safaricom.co.ke (read 2026-10-25)
 
     const val CUSTOMER_CARE_PREPAID = "100" // VERIFY BEFORE DEMO
     const val CUSTOMER_CARE_POSTPAID = "200" // VERIFY BEFORE DEMO
@@ -41,9 +45,9 @@ object RecoveryConfig {
     data class Entry(val name: String, val value: String, val status: String, val source: String)
 
     val ENTRIES = listOf(
-        Entry("Reversal short code", REVERSAL_SHORT_CODE, "corroborated by news, not on Safaricom's site", "Business Daily, People Daily, Hapakenya explainers"),
-        Entry("Reversal window (hours)", REVERSAL_WINDOW_HOURS.toString(), "corroborated by news, not on Safaricom's site", "same"),
-        Entry("Fraud report short code", FRAUD_REPORT_SHORT_CODE, "corroborated by news, not on Safaricom's site", "Safaricom fraud-awareness advice as quoted by Kenyan media"),
+        Entry("Reversal short code", REVERSAL_SHORT_CODE, "found on Safaricom's site by Claude (2026-10-25); team to glance", "safaricom.co.ke M-PESA Reversal page"),
+        Entry("Reversal window (hours)", REVERSAL_WINDOW_HOURS.toString(), "found on Safaricom's site by Claude (2026-10-25); team to glance", "safaricom.co.ke M-PESA Reversal page"),
+        Entry("Fraud report short code", FRAUD_REPORT_SHORT_CODE, "found on Safaricom's site by Claude (2026-10-25); team to glance", "safaricom.co.ke Fraud awareness: Tips for staying safe"),
         Entry("Customer care prepaid", CUSTOMER_CARE_PREPAID, "corroborated by news, not on Safaricom's site", "same"),
         Entry("Customer care postpaid", CUSTOMER_CARE_POSTPAID, "corroborated by news, not on Safaricom's site", "same"),
         Entry("DCI hotline", DCI_HOTLINE_DISPLAY, "corroborated by news quoting the DCI", "Citizen Digital, People Daily"),
