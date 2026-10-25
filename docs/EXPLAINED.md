@@ -1006,3 +1006,5 @@ inbox it fired only on genuine bank texts (which often arrive first) and never o
 - **`docs/demo-script.md`**: the moments, what judges see, what to say, and what to do when something breaks.
 - **Demo mode** has two more messages, the "new number" trick and "our Paybill has changed", and the virtual phone tour
   checks them on real SMS, with the M-Pesa memory and Mark as safe.
+- **Bottom-bar labels stay on one line.** In Kiswahili, "Mipangilio" and "Nyumbani" wrapped mid-word on narrow phones
+  and with large text. The label now shrinks a little until it fits (to 70% at most) instead of wrapping (`NavLabel`).
