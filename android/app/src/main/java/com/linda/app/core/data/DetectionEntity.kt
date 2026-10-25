@@ -1,5 +1,6 @@
 package com.linda.app.core.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -32,9 +33,17 @@ data class DetectionEntity(
 @Entity(tableName = "allowed_senders")
 data class AllowedSenderEntity(@PrimaryKey val sender: String)
 
-/** A sender Linda has seen before, so it can tell "first message from this number". */
+/**
+ * A sender Linda has seen before, so it can tell "first message from this number", and (features/learning) how many
+ * texts came from it and how many Linda warned on. No message text.
+ */
 @Entity(tableName = "seen_senders")
-data class SeenSenderEntity(@PrimaryKey val sender: String, val firstSeen: Long)
+data class SeenSenderEntity(
+    @PrimaryKey val sender: String,
+    val firstSeen: Long,
+    @ColumnInfo(defaultValue = "1") val count: Int = 1,
+    @ColumnInfo(defaultValue = "0") val warned: Int = 0,
+)
 
 /** A report waiting to be sent to the radar. Survives app restarts and offline periods. No message text. */
 @Entity(tableName = "report_queue")

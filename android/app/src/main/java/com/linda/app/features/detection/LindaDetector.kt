@@ -4,6 +4,7 @@ import com.linda.app.features.learning.Money
 import com.linda.app.features.learning.MoneyClaim
 import com.linda.app.features.learning.MoneyClaims
 import com.linda.app.features.learning.MpesaMemory
+import com.linda.app.features.learning.SenderSignals
 
 /**
  * The on-device detector: model score + context signals -> [Verdict].
@@ -92,6 +93,35 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
             }
             MpesaMemory.Answer.CANNOT_TELL, null -> Unit
         }
+        // Know your senders (features/learning): only for phone numbers, never for verified or business senders.
+        var senderReason: Reason? = null
+        if (kind == SenderKind.PERSONAL) {
+            val history = input.senderHistory
+            val established = history?.isEstablished(input.receivedAt) == true
+            val stranger = input.senderInContacts != true && !established
+            // "First" from the person's own messages when known; otherwise Linda's own first-message check.
+            val first = history?.let { it.received <= 1 && it.sentByYou == 0 } ?: (input.firstMessageFromSender == true)
+            when {
+                // Someone the person is really in touch with: wording alone is softened by one step. Never when the
+                // memory found a lie, and never when a hard sign is present (a link, a PIN, a fake M-Pesa...).
+                established && level != RiskLevel.SAFE && memoryReason == null && !Senders.hasStrongSign(input.body, detail.meta) -> {
+                    level = if (level == RiskLevel.SCAM) RiskLevel.CAUTION else RiskLevel.SAFE
+                    if (level == RiskLevel.CAUTION) senderReason = ReasonCatalogue.KNOWN_SENDER
+                }
+                // "Hi, it's me, this is my new number, send me...": the impersonation trick.
+                stranger && SenderSignals.claimsNewNumber(input.body) && SenderSignals.asksForMoney(input.body) -> {
+                    level = higher(level, RiskLevel.CAUTION)
+                    score = maxOf(score, scorer.warnThreshold)
+                    senderReason = ReasonCatalogue.NEW_NUMBER_TRICK
+                }
+                // A stranger's very first message asks for money. A context sign: it can raise to CAUTION, not to SCAM.
+                stranger && first && SenderSignals.asksForMoney(input.body) -> {
+                    level = higher(level, RiskLevel.CAUTION)
+                    score = maxOf(score, scorer.warnThreshold)
+                    senderReason = ReasonCatalogue.FIRST_ASKS_MONEY
+                }
+            }
+        }
         score = score.coerceIn(0.0, 1.0)
 
         if (level == RiskLevel.SAFE) {
@@ -107,12 +137,14 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
         // shows the first reason) and the memory's finding backs it up second.
         val reasons = mutableListOf<Reason>()
         if (category != "fake_mpesa") memoryReason?.let { reasons += it }
+        senderReason?.let { if (it !== ReasonCatalogue.KNOWN_SENDER) reasons += it }
         reasons += ReasonCatalogue.forCategory(category)
         if (category == "fake_mpesa") memoryReason?.let { reasons += it }
         if (detail.meta.getValue("has_link") == 1.0 && category != "phishing_link") reasons += ReasonCatalogue.LINK
         if (detail.meta.getValue("sender_personal_number") == 1.0 && category != "fake_mpesa") reasons += ReasonCatalogue.PERSONAL_NUMBER
-        if (unknownFirst) reasons += ReasonCatalogue.UNKNOWN_SENDER
+        if (unknownFirst && senderReason !== ReasonCatalogue.FIRST_ASKS_MONEY) reasons += ReasonCatalogue.UNKNOWN_SENDER
         topWords(detail)?.let { reasons += it }
+        if (senderReason === ReasonCatalogue.KNOWN_SENDER) reasons += ReasonCatalogue.KNOWN_SENDER // last: why only a caution
         return Verdict(level, score.toFloat(), reasons, scorer.version, category, fingerprint)
     }
 

@@ -1,6 +1,7 @@
 package com.linda.app.features.detection
 
 import com.linda.app.features.learning.MpesaMemory
+import com.linda.app.features.learning.SenderHistory
 
 /**
  * The detection engine's public API (root CLAUDE.md and android/CLAUDE.md section 5).
@@ -29,6 +30,8 @@ data class MessageInput(
     val firstMessageFromSender: Boolean? = null,
     /** The person's real M-Pesa payments (features/learning), or null when that memory is off or not needed. */
     val mpesaMemory: MpesaMemory? = null,
+    /** What the person's own messages say about this phone number (features/learning), or null. */
+    val senderHistory: SenderHistory? = null,
 )
 
 enum class RiskLevel { SAFE, CAUTION, SCAM }

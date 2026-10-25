@@ -47,11 +47,22 @@ interface SenderDao {
     @Query("SELECT COUNT(*) > 0 FROM allowed_senders WHERE sender = :sender")
     suspend fun isAllowed(sender: String): Boolean
 
+    /** Returns -1 when the sender was already there (then use [countAgain]). */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun markSeen(sender: SeenSenderEntity)
+    suspend fun markSeen(sender: SeenSenderEntity): Long
+
+    @Query("UPDATE seen_senders SET count = count + 1, warned = warned + :warned WHERE sender = :sender")
+    suspend fun countAgain(sender: String, warned: Int)
 
     @Query("SELECT COUNT(*) > 0 FROM seen_senders WHERE sender = :sender")
     suspend fun hasSeen(sender: String): Boolean
+
+    @Query("SELECT * FROM seen_senders WHERE sender = :sender")
+    suspend fun find(sender: String): SeenSenderEntity?
+
+    /** "Forget what Linda learned" (features/learning). */
+    @Query("DELETE FROM seen_senders")
+    suspend fun forgetAll()
 }
 
 @Dao

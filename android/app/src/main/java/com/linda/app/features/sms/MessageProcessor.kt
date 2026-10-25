@@ -3,7 +3,6 @@ package com.linda.app.features.sms
 import android.content.Context
 import com.linda.app.LindaApp
 import com.linda.app.core.data.DetectionEntity
-import com.linda.app.core.data.SeenSenderEntity
 import com.linda.app.core.util.PhoneHash
 import com.linda.app.core.util.PhoneNumbers
 import com.linda.app.features.alerts.AlertNotifier
@@ -54,8 +53,10 @@ class MessageProcessor(private val context: Context) {
             val memory = if (MoneyClaims.find(body) != null) {
                 LearningStore.snapshot(context, receivedAt, if (sender == null) MpesaMemory.RETENTION_MS else MpesaMemory.WINDOW_MS)
             } else null
-            val verdict = app.detector.analyse(MessageInput(body, sender, receivedAt, inContacts, first, memory))
-            if (sender != null) senders.markSeen(SeenSenderEntity(sender, receivedAt))
+            // Know your senders: what the person's own messages say about this phone number (null for business names).
+            val history = LearningStore.senderHistory(context, sender)
+            val verdict = app.detector.analyse(MessageInput(body, sender, receivedAt, inContacts, first, memory, history))
+            if (sender != null) LearningStore.countMessage(context, sender, receivedAt, warned = verdict.level != RiskLevel.SAFE)
 
             if (verdict.level == RiskLevel.SAFE) {
                 recordForDemoOverlay(body, sender, source, inContacts, first, verdict, allowListed = false, actions = emptyList())

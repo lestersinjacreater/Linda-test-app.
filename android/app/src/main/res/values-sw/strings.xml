@@ -356,4 +356,8 @@
         <item quantity="one">Malipo halisi %1$d yanakumbukwa</item>
         <item quantity="other">Malipo halisi %1$d yanakumbukwa</item>
     </plurals>
+    <string name="trace_n_new_number">Inasema ni nambari mpya, na inaomba pesa</string>
+    <string name="trace_n_first_money">Ujumbe wa kwanza kutoka kwa nambari hii, na unaomba pesa</string>
+    <string name="trace_n_known_sender">Umekuwa ukiwasiliana na nambari hii kwa muda</string>
+    <string name="learning_senders_body">Pia hutambua nambari unazowasiliana nazo kweli (uliwatumia ujumbe, au wamekutumia kwa wiki kadhaa), ili isiwe na wasiwasi nazo sana na iwe macho zaidi na wageni wanaoomba pesa. Huhesabu tu na kuweka tarehe, kamwe si ujumbe wenyewe.</string>
 </resources>

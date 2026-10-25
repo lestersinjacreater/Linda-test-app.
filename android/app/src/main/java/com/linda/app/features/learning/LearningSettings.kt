@@ -36,6 +36,7 @@ fun LearningSettings() {
 
     Text(stringResource(R.string.learning_title), style = MaterialTheme.typography.titleMedium)
     Text(stringResource(R.string.learning_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    Text(stringResource(R.string.learning_senders_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
             Text(stringResource(R.string.learning_mpesa_switch), style = MaterialTheme.typography.bodyLarge)
