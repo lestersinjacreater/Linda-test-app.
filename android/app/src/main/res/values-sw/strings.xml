@@ -342,7 +342,7 @@
     <string name="sms_help_button">Fungua maelezo ya programu</string>
     <!-- What Linda learns on this phone (features/learning) -->
     <string name="learning_title">Linda inachojifunza kwenye simu hii</string>
-    <string name="learning_body">Linda hukumbuka kiasi ambacho jumbe zako halisi za M-Pesa zinasema ulipokea (kwa siku 30), ili itambue mtu anapodanganya kwamba alikutumia pesa. Huhifadhi saa, kiasi na nambari ya muamala iliyofichwa tu, kamwe si ujumbe wenyewe. Hakuna kinachotoka kwenye simu yako.</string>
+    <string name="learning_body">Linda hujifunza kikasha chako kwenye simu hii, ili itofautishe jumbe halisi na uongo: malipo ya M-Pesa yaliyoingia kweli, na kile benki na biashara zako hutuma kwa kawaida. Huhifadhi kiasi, tarehe, nambari zilizofichwa na alama za jumbe za biashara tu, kamwe si jumbe zenyewe. Hakuna kinachotoka kwenye simu yako.</string>
     <string name="learning_mpesa_switch">Ruhusu Linda ijifunze kwenye simu hii</string>
     <string name="learning_inbox_off">Linda hujifunza kutoka kwa jumbe mpya za M-Pesa zinapoingia. Ruhusu \"kusoma jumbe\" (Kagua kikasha changu) ili iangalie pia jumbe za hivi karibuni.</string>
     <string name="learning_forget">Futa yote Linda iliyojifunza</string>
@@ -359,12 +359,14 @@
     <string name="trace_n_new_number">Inasema ni nambari mpya, na inaomba pesa</string>
     <string name="trace_n_first_money">Ujumbe wa kwanza kutoka kwa nambari hii, na unaomba pesa</string>
     <string name="trace_n_known_sender">Umekuwa ukiwasiliana na nambari hii kwa muda</string>
-    <string name="learning_senders_body">Pia hutambua nambari unazowasiliana nazo kweli (uliwatumia ujumbe, au wamekutumia kwa wiki kadhaa), ili isiwe na wasiwasi mwingi kuhusu nambari hizo na iwe macho zaidi na watu usiowajua wanaoomba pesa. Huhifadhi hesabu na tarehe tu, kamwe si ujumbe wenyewe.</string>
-    <string name="learning_taps_body">Pia hujifunza kutokana na unachobonyeza: ukisema ujumbe ni salama au ukiuripoti, jumbe zinazofanana hupimwa tofauti kidogo, kwenye simu hii tu.</string>
+    <string name="learning_senders_body">Pia inajua unaowasiliana nao kweli, ili isiwe na wasiwasi mwingi nao na iwe macho zaidi na watu usiowajua wanaoomba pesa au wanaosema njia ya kulipa imebadilika.</string>
+    <string name="learning_taps_body">Unachobonyeza pia huifunza: ukisema ujumbe ni salama au ukiuripoti, jumbe zinazofanana hupimwa tofauti kidogo.</string>
     <plurals name="learning_taps_count">
         <item quantity="one">Imejifunza mara %1$d kutokana na ulichobonyeza.</item>
         <item quantity="other">Imejifunza mara %1$d kutokana na ulichobonyeza.</item>
     </plurals>
     <string name="trace_n_taps_scam">Awali uliripoti ujumbe kama huu</string>
     <string name="trace_n_taps_safe">Awali ulisema ujumbe kama huu ni salama</string>
+    <string name="trace_n_payment_changed">Inasema njia ya kulipa imebadilika</string>
+    <string name="trace_n_story_new_link">Mtumaji unayemjua, lakini anwani ya mtandao ambayo hajawahi kutumia</string>
 </resources>

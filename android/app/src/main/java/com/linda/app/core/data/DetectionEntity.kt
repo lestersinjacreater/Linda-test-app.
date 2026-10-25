@@ -88,3 +88,22 @@ data class GuardianAlertEntity(
  */
 @Entity(tableName = "mpesa_receipts")
 data class MpesaReceiptEntity(@PrimaryKey val codeHash: String, val at: Long, val amountCents: Long)
+
+/**
+ * The inbox story of one registered sender (features/learning/InboxStory): how many texts since when, the shapes of
+ * its recent texts (SimHash fingerprints as hex, comma separated, at most 30) and the web addresses it uses (comma
+ * separated). Never message text. [reported] is set when the person reports one of its texts.
+ */
+@Entity(tableName = "sender_stories")
+data class SenderStoryEntity(
+    @PrimaryKey val sender: String,
+    val firstSeen: Long,
+    val count: Int,
+    val templates: String,
+    val domains: String,
+    val reported: Boolean = false,
+)
+
+/** A transaction code seen in a genuine M-Pesa message (any kind: sent, paid, received), as a hash. Kept 30 days. */
+@Entity(tableName = "mpesa_codes")
+data class MpesaCodeEntity(@PrimaryKey val codeHash: String, val at: Long)

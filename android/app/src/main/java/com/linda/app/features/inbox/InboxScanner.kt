@@ -6,6 +6,8 @@ import com.linda.app.features.detection.ScamDetector
 import com.linda.app.features.detection.Verdict
 import com.linda.app.features.learning.MpesaMemory
 import com.linda.app.features.learning.PersonalModel
+import com.linda.app.features.learning.StoryBook
+import com.linda.app.features.detection.Senders
 
 /** One message read from the phone's inbox. */
 data class RawSms(val sender: String?, val body: String, val date: Long)
@@ -23,7 +25,9 @@ data class SenderGroup(val sender: String?, val messages: List<Flagged>) {
  * "Scan my inbox" (F8), free of Android so it can be unit tested and timed. It scores every message with the same
  * [ScamDetector] as a live SMS. Differences from a live message, on purpose:
  *  - the "first message from this sender" signal is NOT used: a 90-day window cannot tell what was really first;
- *  - nothing is notified, spoken, reported or sent to a guardian: these are old messages, and a backlog would be a flood.
+ *  - nothing is notified, spoken, reported or sent to a guardian: these are old messages, and a backlog would be a flood;
+ *  - the inbox story is built as the scan goes, so give it the rows OLDEST FIRST: each text is judged only on what came
+ *    before it, as on the day it arrived.
  */
 class InboxScanner(
     private val detector: ScamDetector,
@@ -31,6 +35,7 @@ class InboxScanner(
     private val isAllowed: (String) -> Boolean,      // senders the person marked as safe
     private val memory: MpesaMemory? = null,         // the person's real M-Pesa payments, to check "sent you money" claims
     private val personal: PersonalModel? = null,     // what the person's own taps taught Linda
+    private val story: StoryBook? = null,            // the inbox story, or null when learning is off
 ) {
     private val contactsCache = HashMap<String, Boolean?>()
 
@@ -52,9 +57,15 @@ class InboxScanner(
             val sender = row.sender?.takeIf { it.isNotBlank() }
             if (sender == null || !isAllowed(sender)) {
                 val contact = if (sender == null) null else contactsCache.getOrPut(sender) { inContacts(sender) }
-                val verdict = detector.analyse(MessageInput(row.body, sender, row.date, senderInContacts = contact, firstMessageFromSender = null, mpesaMemory = memory, personalModel = personal))
+                val verdict = detector.analyse(
+                    MessageInput(
+                        row.body, sender, row.date, senderInContacts = contact, firstMessageFromSender = null, mpesaMemory = memory,
+                        personalModel = personal, story = story?.facts(sender, row.body),
+                    ),
+                )
                 if (verdict.level != RiskLevel.SAFE) found += Flagged(sender, row.body, row.date, verdict)
             }
+            story?.remember(sender, Senders.kindOf(sender, detector.verifiedSenders), row.body, row.date)
             if (checked % progressEvery == 0) onProgress(checked, found.size)
         }
         onProgress(checked, found.size)

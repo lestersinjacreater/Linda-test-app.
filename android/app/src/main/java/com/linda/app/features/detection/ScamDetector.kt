@@ -3,6 +3,7 @@ package com.linda.app.features.detection
 import com.linda.app.features.learning.MpesaMemory
 import com.linda.app.features.learning.PersonalModel
 import com.linda.app.features.learning.SenderHistory
+import com.linda.app.features.learning.StoryFacts
 
 /**
  * The detection engine's public API (root CLAUDE.md and android/CLAUDE.md section 5).
@@ -35,6 +36,8 @@ data class MessageInput(
     val senderHistory: SenderHistory? = null,
     /** The person's own taps ("Mark as safe", "Report"), learned on this phone (features/learning), or null. */
     val personalModel: PersonalModel? = null,
+    /** The inbox story of a registered sender, and whether the text quotes a real M-Pesa code (features/learning). */
+    val story: StoryFacts? = null,
 )
 
 enum class RiskLevel { SAFE, CAUTION, SCAM }

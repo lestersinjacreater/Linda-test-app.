@@ -9,8 +9,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [DetectionEntity::class, AllowedSenderEntity::class, SeenSenderEntity::class, ReportQueueEntity::class, BlockedNumberEntity::class, GuardianAlertEntity::class,
-        MpesaReceiptEntity::class],
-    version = 9, // 9: sender counts; 8: M-Pesa memory (features/learning); 7: blocked numbers stored as hashes (5.11)
+        MpesaReceiptEntity::class, SenderStoryEntity::class, MpesaCodeEntity::class],
+    version = 10, // 10: the inbox story; 9: sender counts; 8: M-Pesa memory (features/learning); 7: blocked numbers stored as hashes (5.11)
     exportSchema = false,
 )
 abstract class LindaDatabase : RoomDatabase() {
@@ -40,9 +40,24 @@ abstract class LindaDatabase : RoomDatabase() {
             }
         }
 
+        /** 9 -> 10 only adds the inbox story tables (features/learning/InboxStory). */
+        val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `sender_stories` (`sender` TEXT NOT NULL, `firstSeen` INTEGER NOT NULL, " +
+                        "`count` INTEGER NOT NULL, `templates` TEXT NOT NULL, `domains` TEXT NOT NULL, " +
+                        "`reported` INTEGER NOT NULL, PRIMARY KEY(`sender`))",
+                )
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `mpesa_codes` (`codeHash` TEXT NOT NULL, `at` INTEGER NOT NULL, " +
+                        "PRIMARY KEY(`codeHash`))",
+                )
+            }
+        }
+
         fun create(context: Context): LindaDatabase =
             Room.databaseBuilder(context.applicationContext, LindaDatabase::class.java, "linda.db")
-                .addMigrations(MIGRATION_7_8, MIGRATION_8_9)
+                .addMigrations(MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
                 // Prototype: for any other (older) schema, history is disposable, so a change wipes it
                 // instead of crashing phones that have an older build installed.
                 .fallbackToDestructiveMigration()

@@ -6,9 +6,13 @@ import android.content.pm.PackageManager
 import android.provider.Telephony
 import androidx.core.content.ContextCompat
 import com.linda.app.LindaApp
+import com.linda.app.core.data.MpesaCodeEntity
 import com.linda.app.core.data.MpesaReceiptEntity
+import com.linda.app.core.data.SenderStoryEntity
 import com.linda.app.core.data.SeenSenderEntity
 import com.linda.app.core.util.PhoneNumbers
+import com.linda.app.features.detection.SenderKind
+import com.linda.app.features.detection.Senders
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.json.JSONArray
@@ -57,6 +61,7 @@ object LearningStore {
     suspend fun learn(ctx: Context, sender: String?, body: String, at: Long) {
         if (!enabled(ctx) || !MpesaReceipts.isMpesaSender(sender)) return
         startListening(ctx, at)
+        keepCodes(ctx, body, at) // the inbox story: any M-Pesa code, so a bank text about the same payment is recognised
         val r = MpesaReceipts.parse(sender, body, at) ?: return
         dao(ctx).addReceipts(listOf(MpesaReceiptEntity(r.codeHash, r.at, r.amountCents)))
         dao(ctx).forgetReceiptsBefore(at - MpesaMemory.RETENTION_MS)
@@ -71,6 +76,7 @@ object LearningStore {
         if (!enabled(ctx) || !canReadInbox(ctx)) return false
         val since = now - windowMs
         val found = ArrayList<MpesaReceiptEntity>()
+        val codes = ArrayList<MpesaCodeEntity>()
         try {
             ctx.contentResolver.query(
                 Telephony.Sms.Inbox.CONTENT_URI,
@@ -79,14 +85,17 @@ object LearningStore {
                 arrayOf(since.toString()), null,
             )?.use { c ->
                 while (c.moveToNext()) {
-                    MpesaReceipts.parse(c.getString(0), c.getString(1) ?: "", c.getLong(2))
+                    val body = c.getString(1) ?: ""
+                    MpesaReceipts.parse(c.getString(0), body, c.getLong(2))
                         ?.let { found += MpesaReceiptEntity(it.codeHash, it.at, it.amountCents) }
+                    InboxStory.codeHashes(body).forEach { codes += MpesaCodeEntity(it, c.getLong(2)) }
                 }
             } ?: return false
         } catch (e: SecurityException) {
             return false
         }
         dao(ctx).addReceipts(found)
+        dao(ctx).addCodes(codes)
         val p = prefs(ctx)
         startListening(ctx, now)
         if (since < p.getLong(COMPLETE_SINCE, now)) p.edit().putLong(COMPLETE_SINCE, since).apply()
@@ -147,6 +156,87 @@ object LearningStore {
         if (senders.markSeen(SeenSenderEntity(sender, at, count = 1, warned = w)) == -1L) senders.countAgain(sender, w)
     }
 
+    // ---------- The inbox story ----------
+
+    private const val STORY_INBOX_DAYS = 90L // how far back a new business sender's story is read from the inbox
+    private const val SELF_MS = 10 * 60 * 1000L
+
+    private fun kind(ctx: Context, sender: String?): SenderKind =
+        Senders.kindOf(sender, (ctx.applicationContext as LindaApp).detector.verifiedSenders)
+
+    private suspend fun keepCodes(ctx: Context, body: String, at: Long) {
+        val codes = InboxStory.codeHashes(body).map { MpesaCodeEntity(it, at) }
+        if (codes.isNotEmpty()) dao(ctx).addCodes(codes)
+        dao(ctx).forgetCodesBefore(at - InboxStory.CODES_KEPT_MS)
+    }
+
+    private fun SenderStoryEntity.toStory() = SenderStory(
+        firstSeen, count,
+        templates.split(',').filter { it.isNotEmpty() }.map { java.lang.Long.parseUnsignedLong(it, 16) },
+        domains.split(',').filter { it.isNotEmpty() }.toSet(),
+        reported,
+    )
+
+    private fun SenderStory.toEntity(sender: String) = SenderStoryEntity(
+        sender, firstSeen, count,
+        templates.joinToString(",") { java.lang.Long.toUnsignedString(it, 16) },
+        domains.joinToString(","),
+        reported,
+    )
+
+    /**
+     * What the story says about one message from a registered sender (business name or short code), or null for
+     * anyone else or when learning is off. The first time a sender is met, its story is read from the inbox (when
+     * allowed), from texts that arrived BEFORE this one, so Linda knows SAF_Balance's daily balance from day one.
+     */
+    suspend fun storyFacts(ctx: Context, sender: String?, body: String, at: Long): StoryFacts? {
+        if (!enabled(ctx) || sender == null || !Senders.isRegistered(kind(ctx, sender))) return null
+        val story = dao(ctx).story(sender)?.toStory() ?: storyFromInbox(ctx, sender, body, at)?.also { dao(ctx).saveStory(it.toEntity(sender)) }
+        val hashes = InboxStory.codeHashes(body)
+        return StoryFacts(story, hashes.isNotEmpty() && dao(ctx).countKnownCodes(hashes) > 0)
+    }
+
+    /** Builds a sender's story from its earlier texts in the phone's inbox. Only shapes and web addresses are kept. */
+    private fun storyFromInbox(ctx: Context, sender: String, body: String, at: Long): SenderStory? {
+        if (!canReadInbox(ctx)) return null
+        var story: SenderStory? = null
+        try {
+            ctx.contentResolver.query(
+                Telephony.Sms.Inbox.CONTENT_URI, arrayOf(Telephony.Sms.BODY, Telephony.Sms.DATE),
+                "${Telephony.Sms.ADDRESS} = ? AND ${Telephony.Sms.DATE} >= ? AND ${Telephony.Sms.DATE} < ?",
+                arrayOf(sender, (at - STORY_INBOX_DAYS * 24 * 60 * 60 * 1000L).toString(), at.toString()),
+                "${Telephony.Sms.DATE} ASC",
+            )?.use { c ->
+                while (c.moveToNext()) {
+                    val earlier = c.getString(0) ?: ""
+                    val date = c.getLong(1)
+                    // The message being judged may already be in the inbox, a little "before" itself (the network's
+                    // clock and the phone's differ): it must never vouch for itself.
+                    val itself = earlier == body && at - date < SELF_MS
+                    if (!itself) story = InboxStory.remember(story, earlier, date)
+                }
+            }
+        } catch (e: SecurityException) {
+            return null
+        }
+        return story
+    }
+
+    /** After a message from a registered sender is judged: its story learns this text too. */
+    suspend fun rememberStory(ctx: Context, sender: String?, body: String, at: Long) {
+        if (!enabled(ctx) || sender == null || !Senders.isRegistered(kind(ctx, sender))) return
+        val story = InboxStory.remember(dao(ctx).story(sender)?.toStory(), body, at)
+        dao(ctx).saveStory(story.toEntity(sender))
+    }
+
+    /** The person reported a text from [sender]: its story never clears a warning again. */
+    suspend fun storyReported(ctx: Context, sender: String?) {
+        if (sender != null) dao(ctx).markStoryReported(sender)
+    }
+
+    /** Every M-Pesa code on the phone (hashed), for "Scan my inbox". */
+    suspend fun knownCodes(ctx: Context): List<String> = if (enabled(ctx)) dao(ctx).allCodes() else emptyList()
+
     // ---------- Learn from your taps ----------
 
     private const val PERSONAL_FILE = "personal_model.json" // slot numbers and weights only, in the app's private files
@@ -199,13 +289,15 @@ object LearningStore {
         return personalCount
     }
 
-    /** "Forget everything Linda learned": deletes every receipt and starts listening afresh from now. */
+    /** "Forget everything Linda learned": deletes receipts, sender stories, codes and taps; listens afresh from now. */
     suspend fun forget(ctx: Context, now: Long = System.currentTimeMillis()) {
         File(ctx.applicationContext.filesDir, PERSONAL_FILE).delete()
         personalCache = null
         personalCount.value = 0
         (ctx.applicationContext as LindaApp).database.senderDao().forgetAll()
         dao(ctx).forgetAllReceipts()
+        dao(ctx).forgetAllStories()
+        dao(ctx).forgetAllCodes()
         // BACKFILLED stays set, so Linda does not quietly read the whole inbox again; it relearns as messages arrive.
         prefs(ctx).edit().putLong(LISTENING_SINCE, now).putLong(COMPLETE_SINCE, now).apply()
     }

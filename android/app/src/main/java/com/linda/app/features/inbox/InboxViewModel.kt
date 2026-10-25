@@ -2,6 +2,7 @@ package com.linda.app.features.inbox
 
 import com.linda.app.features.learning.LearningStore
 import com.linda.app.features.learning.MpesaMemory
+import com.linda.app.features.learning.StoryBook
 import android.app.Application
 import android.provider.Telephony
 import androidx.lifecycle.AndroidViewModel
@@ -65,13 +66,18 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
         val now = System.currentTimeMillis()
         LearningStore.backfillOnce(app, now)
         val memory = LearningStore.snapshot(app, now, MpesaMemory.RETENTION_MS)
-        val scanner = InboxScanner(app.detector, { ContactsLookup.isInContacts(app, it) }, { it in allowed }, memory, LearningStore.personalModel(app))
+        // The inbox story starts empty and learns as the scan reads the inbox oldest first (M-Pesa codes are facts, so the
+        // ones already on the phone are known from the start).
+        val story = if (LearningStore.enabled(app)) StoryBook(LearningStore.knownCodes(app)) else null
+        val scanner = InboxScanner(
+            app.detector, { ContactsLookup.isInContacts(app, it) }, { it in allowed }, memory, LearningStore.personalModel(app), story,
+        )
 
         var scanned = 0
         val cursor = app.contentResolver.query(
             Telephony.Sms.Inbox.CONTENT_URI,
             arrayOf(Telephony.Sms.ADDRESS, Telephony.Sms.BODY, Telephony.Sms.DATE),
-            "${Telephony.Sms.DATE} >= ?", arrayOf(since.toString()), "${Telephony.Sms.DATE} DESC",
+            "${Telephony.Sms.DATE} >= ?", arrayOf(since.toString()), "${Telephony.Sms.DATE} ASC", // oldest first, for the story
         ) ?: return InboxState.Failed
         val flagged: List<Flagged> = cursor.use { c ->
             val total = c.count

@@ -342,7 +342,7 @@
     <string name="sms_help_button">Open App info</string>
     <!-- What Linda learns on this phone (features/learning) -->
     <string name="learning_title">What Linda learns on this phone</string>
-    <string name="learning_body">Linda remembers the amounts your real M-Pesa messages say you received (for 30 days), so it can tell when someone lies that they sent you money. It keeps only the time, the amount and a scrambled transaction code, never the message. Nothing leaves your phone.</string>
+    <string name="learning_body">Linda learns your inbox on this phone, so it can tell real messages from lies: which M-Pesa payments really arrived, and what your banks and businesses usually send. It keeps only amounts, dates, scrambled codes and fingerprints of business texts, never the messages. Nothing leaves your phone.</string>
     <string name="learning_mpesa_switch">Let Linda learn on this phone</string>
     <string name="learning_inbox_off">Linda learns from new M-Pesa messages as they arrive. Allow "read messages" (Scan my inbox) so it can also check your recent ones.</string>
     <string name="learning_forget">Forget everything Linda learned</string>
@@ -359,12 +359,14 @@
     <string name="trace_n_new_number">Says it is a new number, and asks for money</string>
     <string name="trace_n_first_money">First message from this number, and it asks for money</string>
     <string name="trace_n_known_sender">You have been in touch with this number for a while</string>
-    <string name="learning_senders_body">It also notices which numbers you are really in touch with (you texted them, or they have texted you for weeks), so it worries less about them and more about strangers asking for money. Only counts and dates, never the messages.</string>
-    <string name="learning_taps_body">It also learns from your taps: when you mark a message as safe or report one, similar messages are judged a little differently, on this phone only.</string>
+    <string name="learning_senders_body">It also knows who you are really in touch with, so it worries less about them and more about strangers who ask for money or say the way to pay has changed.</string>
+    <string name="learning_taps_body">Your taps teach it too: mark a message as safe or report one, and similar ones are judged a little differently.</string>
     <plurals name="learning_taps_count">
         <item quantity="one">Learned from %1$d tap.</item>
         <item quantity="other">Learned from %1$d taps.</item>
     </plurals>
     <string name="trace_n_taps_scam">You reported messages like this before</string>
     <string name="trace_n_taps_safe">You marked messages like this as safe before</string>
+    <string name="trace_n_payment_changed">Says the way to pay has changed</string>
+    <string name="trace_n_story_new_link">A sender you know, but a web address it never used before</string>
 </resources>

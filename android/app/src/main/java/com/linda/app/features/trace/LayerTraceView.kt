@@ -225,6 +225,8 @@ fun traceLineText(line: TraceLine): String = when (line.code) {
     "n_known_sender" -> stringResource(R.string.trace_n_known_sender)
     "n_taps_scam" -> stringResource(R.string.trace_n_taps_scam)
     "n_taps_safe" -> stringResource(R.string.trace_n_taps_safe)
+    "n_payment_changed" -> stringResource(R.string.trace_n_payment_changed)
+    "n_story_new_link" -> stringResource(R.string.trace_n_story_new_link)
     "n_link" -> stringResource(R.string.trace_n_link)
     "n_blocklist" -> stringResource(R.string.trace_n_blocklist)
     "n_pasted" -> stringResource(R.string.trace_n_pasted)
