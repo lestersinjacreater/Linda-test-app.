@@ -16,6 +16,7 @@ export interface Campaign {
   category: string;
   reports: number;
   confirmedAfterS: number | null;
+  known?: boolean;     // the gateway already knew it before this run (the fraud team's list, or earlier reports)
 }
 
 export interface DashboardState {
@@ -98,7 +99,7 @@ export function reduce(state: DashboardState, e: SimEvent): DashboardState {
     case "sender_confirmed":
       if (e.sender) {
         const c = next.campaigns[e.sender] ?? { sender: e.sender, category: "other", reports: 0, confirmedAfterS: null };
-        next.campaigns = { ...next.campaigns, [e.sender]: { ...c, confirmedAfterS: e.confirmed_after_s ?? null } };
+        next.campaigns = { ...next.campaigns, [e.sender]: { ...c, confirmedAfterS: e.confirmed_after_s ?? null, ...(e.by === "gateway" ? { known: true } : {}) } };
       }
       break;
   }
@@ -136,12 +137,22 @@ export function describe(e: SimEvent): string {
   const where = e.town ? ` in ${e.town}` : "";
   switch (e.type) {
     case "reset": return "Reset";
-    case "blast_started": return e.attack ? `Poisoning attack on ${e.sender}` : `Scam blast started from ${e.sender}`;
+    case "blast_started":
+      if (e.attack) return `Poisoning attack on ${e.sender}`;
+      if (e.scenario === "call" && e.known !== undefined) {
+        return e.known === "confirmed"
+          ? `Scam calls from ${e.sender}, a number the gateway already knows (fraud team or earlier reports)`
+          : `Scam calls from ${e.sender}, a number nobody has flagged yet`;
+      }
+      return `Scam blast started from ${e.sender}`;
     case "sms_delivered": return `${who}${where} received the scam`;
     case "linda_detected": return `${who}${where} caught it on the device (${e.category ?? "scam"})`;
     case "report_sent": return e.attack ? `Fake device accused ${e.sender}: radar says "${e.status}"` : `Report sent (no message text): radar says "${e.status}", ${e.devices ?? 0} devices`;
     case "report_failed": return "Report could not reach the radar (kept for retry)";
-    case "sender_confirmed": return `RADAR CONFIRMED ${e.sender} after ${e.confirmed_after_s}s`;
+    case "sender_confirmed":
+      return e.by === "gateway"
+        ? `${e.sender} was already confirmed: every call is protected from the first ring`
+        : `RADAR CONFIRMED ${e.sender} after ${e.confirmed_after_s}s`;
     case "warning_delivered":
       if (e.channel === "after_call") return `${who}${where} warned by SMS right after the scam call${e.real_sms ? " (real phone)" : ""}`;
       return `${who}${where} warned by the network${e.before_read ? " before reading" : ""}${e.real_sms ? " (real phone)" : ""}`;
@@ -158,3 +169,21 @@ export const STATUS_COLOR: Record<PhoneStatus, string> = {
   detected: "#FF2E88",
   warned: "#35F2A0",
 };
+
+/**
+ * One line under the headline numbers about the run: how many recipients had Linda in an adoption run, and how the
+ * calls went in a call run. Empty when neither applies.
+ */
+export function runNotes(m: Metrics): string[] {
+  const notes: string[] = [];
+  if (m.adoption_pct != null) {
+    notes.push(`Linda on ${m.adoption_pct}% of phones: ${m.linda_recipients ?? 0} of the ${m.delivered} people who got the scam had it`);
+  }
+  const c = m.calls;
+  if (c && c.placed > 0) {
+    notes.push(`${c.placed} scam calls: ${c.labelled_before_answer} labelled before answering, ` +
+      `${c.already_warned_by_sms + c.warned_after_call} warned by SMS, ${c.unprotected} unprotected` +
+      (c.protected_pct != null ? ` (${c.protected_pct}% protected)` : ""));
+  }
+  return notes;
+}

@@ -10,7 +10,8 @@ dashboard/src/
     radar-map/         Kenya map, phones as dots (grey idle, amber received, red detected, green warned)
     blast-timeline/    scrolling event feed + time-to-protection clock
     metrics/           big numbers from GET /metrics
-    controls/          Reset, Start blast, Rotating, Poison test, Call (presenter only, hotkeys)
+    controls/          Reset, Start blast, adoption levels, scam calls, fraud-team number, Rotating, Poison test
+                       (presenter only, hotkeys; the list is in lib/scenarios.ts)
     campaigns/         confirmed senders with category and report count
   lib/                 ws client with reconnect, api client, fallback data
 ```
