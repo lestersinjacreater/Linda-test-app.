@@ -12,6 +12,7 @@ data:
 	python -I ml/src/features/dataset/synthetic.py
 	python -I ml/src/features/dataset/public.py
 	python -I ml/src/features/dataset/kenya_sms.py
+	python -I ml/src/features/dataset/team_inbox.py
 
 train: data
 	python -I ml/src/features/train/train.py

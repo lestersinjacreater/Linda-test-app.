@@ -932,3 +932,30 @@ what you said. The main model file never changes.
 - **Kiswahili**: every reason and the "What Linda learns" texts were re-read for grammar and natural wording (for
   example plural "jumbe zako halisi za M-Pesa" instead of "ujumbe wako", and a clear subject in "Ujumbe huu unaomba PIN
   yako"). This was done by Claude, not a native speaker, so one read by a Kiswahili speaker before the demo is still wise.
+
+## Training on a real Kenyan inbox (model 2026.10.25-1, `ml/src/features/dataset/team_inbox.py`)
+
+**What it is.** A team member donated their own inbox: 19,105 real SMS over two years (M-Pesa, Safaricom, Airtel,
+banks, loan apps, betting adverts, friends, family, and the scams they actually received). It is the most realistic
+data Linda has: what a real Kenyan phone receives.
+
+**How it was used.**
+- *Labelled by hand, by template.* Messages from verified senders (MPESA, Safaricom...) are genuine by their sender.
+  The other 5,700 messages collapse into 964 templates (same text apart from amounts, codes and names); Claude read and
+  labelled each one: 28 distinct scams (rent "new paybill" tricks, "madam Ann / Bank of Baroda" wrong-number setups,
+  task-job and romance lures, fake loan "M-PESA CONFIRMED" texts, "nitumie zile pesa kwa hii..."), 9 betting adverts,
+  and genuine everything else. Unsure ones are left out.
+- *Private by design.* The raw file, the labels and the processed rows never leave the training machine and are never
+  committed; Safaricom staff messages and very sensitive ones (passwords, tax IDs, health, a minor's exam result) are
+  never used. Everything is scrubbed first: names, the donor's family names, phone and account numbers, M-Pesa codes.
+  Only the trained model (hashed weights, no text) and aggregate numbers leave.
+- *Honest test.* 30% of the message groups are kept for testing and never trained on; near-identical messages stay in
+  one split, and repeated templates are capped at one message per group so 7,000 M-Pesa texts cannot dominate.
+
+**What it changed (model alone, before the app's sender rules):**
+- On the real inbox's test part, genuine messages wrongly warned dropped from **20% to 3.8%**, and all test scams are
+  still caught (7 of 7). Many of the old false alarms were Safaricom's own sub-senders (data-balance and Okoa Jahazi
+  texts), banks and loan apps.
+- On the Kenyan public set, false alarms fell from 31.8% to 21.2%, but 3 fewer of 51 scams are caught (82.4% to
+  76.5%): vague lures such as "Hi ni Phoebe, text me on WhatsApp" now look like the donor's real friends. We chose
+  fewer false alarms, because people uninstall an app that cries wolf, and in the app an unknown sender still adds a push.
