@@ -15,8 +15,9 @@ object ReasonCatalogue {
         ),
         "sent_by_mistake" to Reason(
             "sent_by_mistake",
-            "Scammers say they sent money \"by mistake\" and beg you to send it back. Check your real M-Pesa messages first, and never send it back yourself: the sender can forward their M-PESA message to 456.",
-            "Matapeli hudai wamekutumia pesa \"kimakosa\" na kukusihi uzirudishe. Angalia kwanza jumbe zako halisi za M-Pesa, na usizirudishe wewe mwenyewe: mtumaji anaweza kutuma ujumbe wake wa M-PESA kwa 456.",
+            // Spoken aloud too: short, and no digits (VoiceLogicTest). The 456 detail is in the memory reasons below.
+            "Scammers say they sent money \"by mistake\" and beg you to send it back. Never send it back yourself: a real mistake is reversed through Safaricom.",
+            "Matapeli hudai wamekutumia pesa \"kimakosa\" na kukusihi uzirudishe. Usizirudishe wewe mwenyewe: makosa halisi hurekebishwa kupitia Safaricom.",
         ),
         "prize" to Reason(
             "prize",

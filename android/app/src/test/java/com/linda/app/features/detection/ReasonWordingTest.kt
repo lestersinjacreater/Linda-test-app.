@@ -29,7 +29,8 @@ class ReasonWordingTest {
 
     @Test fun sentByMistakeAdviceFollowsSafaricom() {
         val r = ReasonCatalogue.forCategory("sent_by_mistake")
-        assertTrue(r.english.contains("456") && r.swahili.contains("456"))
+        assertTrue(r.english.contains("Never send it back yourself") && r.swahili.contains("Usizirudishe"))
+        assertFalse("spoken aloud: no digits", r.english.any { it.isDigit() } || r.swahili.any { it.isDigit() })
         val real = ReasonCatalogue.memoryRealPayment("Ksh 2,500")
         assertTrue(real.english.contains("456") && real.english.contains("Do not send it back yourself"))
         assertTrue(ReasonCatalogue.memoryNoPayment("Ksh 2,500").english.contains("333"))

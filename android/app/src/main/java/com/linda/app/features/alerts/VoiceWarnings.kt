@@ -52,7 +52,9 @@ object VoiceWarnings {
         if (!allowed) return null
         lastSpokeAt = now
         val preferred = Prefs.effectiveLanguage(app)
-        val reason = verdict.reasons.firstOrNull()
+        // Read aloud the first reason without digits: a reason like "no Ksh 2,500 received" repeats the message's own
+        // amount, and a warning spoken on arrival must not tell people nearby what the message says.
+        val reason = verdict.reasons.firstOrNull { r -> r.english.none { it.isDigit() } } ?: verdict.reasons.firstOrNull()
         return scope.launch {
             say(app, preferred) { lang -> VoiceScript.warning(lang, reason?.let { ReasonsJson.text(it, lang) }) }
         }
