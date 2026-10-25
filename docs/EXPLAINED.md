@@ -823,30 +823,13 @@ receiver and call screening run. `uiautomator dump` lists the words on screen, s
 **Limits.** An emulator is not a cheap phone: it does not kill background apps, and installing with adb skips Play
 Protect and restricted settings. A real-phone check before the demo is still needed.
 
-### The live phone (`.github/workflows/live-phone.yml`)
+### A "live phone" was tried and removed (24–25 Oct)
 
-**What it is.** The same emulator, kept on for up to five hours so a person can use it from a browser, and so
-anyone on the team (or Claude) can fire real scam texts and calls at it by posting `/phone` commands on the repo's
-"Live phone" issue. The phone replies on the issue with a screenshot and the text on screen.
-
-**Why.** The tour checks a fixed script; testing a new feature needs hands. Before this, the only way to try a change
-by hand was to download and install the APK on a real phone.
-
-**How it works, in plain terms.**
-- *The screen:* ws-scrcpy (an open-source tool) streams the emulator's screen to a web page and sends clicks back.
-- *The key:* ws-scrcpy has no password, so our small `gate.py` sits in front of it and refuses every connection whose
-  address does not start with the team's secret key (`LIVE_PHONE_KEY`). cloudflared gives the gate a temporary
-  public address, so the page opens from any phone or laptop.
-- *The commands:* `listen.py` reads new comments on the issue every five seconds. It obeys only the repo owner and
-  collaborators (anyone can comment on a public repo), runs each `/phone` line with the same adb helpers as the tour,
-  and answers with the result.
-
-**Judges might ask "is this safe?"** The phone holds only fake numbers and test messages; the screen needs the
-secret key; strangers' commands are ignored; and the session switches itself off when its time is up.
-
-**What it has found so far.** Turning the phone sideways emptied the Check screen (the pasted message and its
-verdict were kept in `remember`, which Android throws away when it rebuilds the screen). They now live in
-`CheckerViewModel`, which survives rotation and a language change.
+For two days a second workflow kept the emulator on so a person could use it in a browser and send it texts by
+commenting on a GitHub issue. It found one real bug (rotating the phone emptied the Check screen, now fixed), but the
+browser screen was too fiddly for the team to use (a secret key spliced into a temporary address, a choice of video
+player, lag through a tunnel), and starting a new session silently ended someone else's. With real phones available
+for the last days it was not worth keeping, so it was removed: the automatic tour above stays and runs on every app PR.
 
 ## M-Pesa memory: Linda learns your real payments, on your phone (`features/learning/`)
 
@@ -905,7 +888,7 @@ conversation counts, and a number Linda ever warned on never counts.
 ## Learn from your taps (`features/learning/PersonalModel.kt`)
 
 **What it does.** When you tap **Mark as safe** or confirm a **Report**, Linda learns from it on the phone: similar
-messages from other senders are judged a little differently. Example from the live phone: after marking one "we are
+messages from other senders are judged a little differently. Example from a test on the emulator: after marking one "we are
 hiring drivers for Uber" text as safe, the same kind of text from another number was no longer warned on.
 
 **How, in plain terms.** Linda's model reads a message as numbered slots (letter pieces hashed into 32,768 slots). The

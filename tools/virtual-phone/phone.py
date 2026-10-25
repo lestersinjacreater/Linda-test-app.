@@ -1,4 +1,4 @@
-"""Phone: small helpers that drive an Android emulator (or a phone) over adb, used by the tour and the live phone.
+"""Phone: small helpers that drive an Android emulator (or a phone) over adb, used by the tour.
 
 Only adb and the Python standard library:
   - `adb emu sms send` / `adb emu gsm call` make the emulator receive a REAL text and a REAL call;
@@ -13,11 +13,6 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 PKG = "com.linda.app"
-
-
-def input_text_arg(text: str) -> str:
-    """Quote text for `adb shell input text`: spaces become %s, and the whole thing is single-quoted for the shell."""
-    return "'" + text.replace("'", "'\\''").replace(" ", "%s") + "'"
 
 
 class Phone:
@@ -118,10 +113,6 @@ class Phone:
         time.sleep(1.5)
         return True
 
-    def type_text(self, text: str) -> None:
-        """Type into whatever field has focus (plain letters, digits and punctuation; no emoji)."""
-        self.shell(f"input text {input_text_arg(text)}")
-
     def swipe_up(self) -> None:
         """Scroll the page down (finger moves up)."""
         w, h = self.size()
@@ -144,18 +135,6 @@ class Phone:
 
     def count(self, title: str) -> int:
         return self.notifications().count(title)
-
-    def linda_notifications(self) -> list[str]:
-        """Title and text of every notification Linda is showing now, newest first."""
-        found = []
-        for block in self.notifications().split("NotificationRecord(")[1:]:
-            if f"pkg={PKG}" not in block[:300]:
-                continue
-            title = re.search(r"android\.title=String \((.*?)\)\n", block)
-            text = re.search(r"android\.text=String \((.*?)\)\n", block)
-            if title:
-                found.append(title.group(1) + (f": {text.group(1)}" if text else ""))
-        return found
 
     def wait_for(self, fn, seconds: float = 20, every: float = 1.0) -> bool:
         end = time.time() + seconds

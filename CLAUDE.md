@@ -285,9 +285,8 @@ public Kenyan SMS set re-labelled by Claude (82% of Kenyan test scams caught, up
 
 **Dates (extended):** building continues until the end of **27 Oct**, then FEATURE FREEZE. Hack day is 28–29 Oct.
 
-**Done since 22 Oct:** the virtual phone tour (`tools/virtual-phone/tour.py`, CI on every app PR) and the live phone
-(`.github/workflows/live-phone.yml`: a browser-usable emulator plus `/phone` commands on the "Live phone" issue);
-on-device learning in `android/.../features/learning/` (never leaves the phone): **M-Pesa memory** (checks "I sent you
+**Done since 22 Oct:** the virtual phone tour (`tools/virtual-phone/tour.py`, CI on every app PR; a browser-usable
+"live phone" was tried and removed on 25 Oct, see `docs/EXPLAINED.md`); on-device learning in `android/.../features/learning/` (never leaves the phone): **M-Pesa memory** (checks "I sent you
 money by mistake" claims against the person's real M-Pesa messages), **know your senders** (softens wording-only
 warnings from numbers the person really talks to; warns on the "new number" trick and strangers asking for money),
 **learn from your taps** (a capped personal layer trained by "Mark as safe" and "Report").
