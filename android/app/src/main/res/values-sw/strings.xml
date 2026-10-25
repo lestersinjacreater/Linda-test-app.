@@ -103,6 +103,8 @@
     <string name="demo_prize">Ulaghai wa zawadi (Kiswahili)</string>
     <string name="demo_fuliza">Kiungo cha nyongeza ya Fuliza</string>
     <string name="demo_pin">Ombi la PIN (Kiswahili)</string>
+    <string name="demo_new_number">Mgeni anasema \"namba mpya\", anaomba pesa</string>
+    <string name="demo_payment_changed">\"Paybill yetu imebadilika\" (kodi)</string>
     <string name="demo_real_mpesa">Ujumbe HALISI wa M-Pesa (kutoka MPESA)</string>
     <string name="demo_chat">Ujumbe wa kawaida wa mazungumzo</string>
     <string name="demo_call">Igiza simu kutoka nambari ya M-Pesa ya kughushi</string>

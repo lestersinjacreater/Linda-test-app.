@@ -27,6 +27,9 @@ object DemoSamples {
             "Dear customer, your Fuliza limit has been increased. Click http://safaricom-bonus.xyz to activate",
         ),
         DemoSample(R.string.demo_pin, "254700000781", "Tafadhali tuma PIN yako ya M-Pesa ili tuthibitishe akaunti yako, la sivyo itafungwa leo."),
+        // What Linda learns on the phone (features/learning): a stranger claiming to be family, and changed payment details.
+        DemoSample(R.string.demo_new_number, "254700000782", "Hi mum, this is my new number. Please send me Ksh 3,000 for fare, I will explain later."),
+        DemoSample(R.string.demo_payment_changed, "254700000783", "Hello tenant, kindly note our new Paybill for rent is 400200, account 12B."),
         DemoSample(
             R.string.demo_real_mpesa, "MPESA",
             "SJ34K9L2QW Confirmed. You have received Ksh2,500.00 from JOHN KAMAU 0700000024 on 12/10/26 at 4:12 PM. New M-PESA balance is Ksh3,140.00. Transaction cost, Ksh0.00.",

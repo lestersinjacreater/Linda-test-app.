@@ -38,6 +38,7 @@ services:
       DATABASE_URL: postgresql://linda:${POSTGRES_PASSWORD}@postgres:5432/linda
       TELCO_URL: http://telco:8000
       FRAUDINTEL_URL: http://fraudintel:8002
+      INTEL_SYNC_S: ${INTEL_SYNC_S:-5}  # how often the fraud team's list is pulled; 5 s for the demo
       RADAR_MIN_DEVICES: ${RADAR_MIN_DEVICES:-3}
       RADAR_MIN_SCORE: ${RADAR_MIN_SCORE:-2.4}
       RADAR_NO_TOKEN_TRUST_CAP: ${RADAR_NO_TOKEN_TRUST_CAP:-1.0}

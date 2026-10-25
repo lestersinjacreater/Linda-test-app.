@@ -48,6 +48,20 @@ demo:
 	@echo
 	curl -s -X POST "$(TELCO)/scenarios/blast?wait=true" | python3 -m json.tool
 
+# A fresh demo: clears the gateway's reports and confirmations, resets the mock fraud team and the telco, and restarts
+# the gateway so it pulls the fraud team's list again. It runs inside the containers, so it needs no ports or
+# passwords. Repeating blasts does not need it (each run uses fresh numbers); do it before the show so the dashboard,
+# the metrics and the fraud team's inbox start empty. On the server: make prod-demo-reset.
+COMPOSE ?= docker compose
+RESET_SQL = TRUNCATE devices, senders, reports, intel_numbers, intel_fingerprints, security_events RESTART IDENTITY CASCADE;
+POST_INSIDE = python -c "import sys, urllib.request as u; print(u.urlopen(u.Request(sys.argv[1], method='POST'), timeout=10).read().decode())"
+demo-reset:
+	$(COMPOSE) exec -T fraudintel $(POST_INSIDE) http://127.0.0.1:8002/admin/reset
+	$(COMPOSE) exec -T postgres psql -U linda -d linda -c "$(RESET_SQL)"
+	$(COMPOSE) restart radar
+	$(COMPOSE) exec -T telco $(POST_INSIDE) http://127.0.0.1:8000/reset
+	@echo "Demo reset done: the gateway, the fraud team and the telco start fresh."
+
 # The same 500-person blast at 0.5%, 1% and 2% Linda adoption, then the average over many replays.
 demo-adoption:
 	@for a in 0.5 1 2; do \
@@ -63,6 +77,9 @@ prod-up:
 
 prod-down:
 	$(PROD) down
+
+prod-demo-reset:
+	$(MAKE) demo-reset COMPOSE="$(PROD)"
 
 prod-ps:
 	$(PROD) ps

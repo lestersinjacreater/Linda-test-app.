@@ -991,3 +991,18 @@ notices from personal numbers, and bank texts that arrive seconds *before* the M
 
 **Tried and dropped.** Warning when a business quotes a code that is *not* among your M-Pesa messages: on the real
 inbox it fired only on genuine bank texts (which often arrive first) and never on a scam.
+
+## Demo readiness (26 Oct)
+
+- **A restarted telco reused old scammer numbers.** The simulator numbered its runs from 1 each time it started, so after
+  a restart (a deploy, a crash) run 1 used the same scammer number as before. The gateway remembers it confirmed that
+  number, so it never told the network again: no warning wave, and every report waited for a confirmation that never
+  came. Each start now picks a random block of numbers and device ids (`run_base` in the engine), and an end-to-end
+  test restarts the telco between two blasts against the same gateway.
+- **`make demo-reset` / `make prod-demo-reset`** clear the gateway's reports and confirmations, reset the mock fraud team
+  and the telco, and restart the gateway so it pulls the fraud team's list again. They run inside the containers, so they
+  need no ports or passwords.
+- **`INTEL_SYNC_S=5`** for the demo: a number the presenter flags on the mock fraud team reaches the gateway in seconds.
+- **`docs/demo-script.md`**: the moments, what judges see, what to say, and what to do when something breaks.
+- **Demo mode** has two more messages, the "new number" trick and "our Paybill has changed", and the virtual phone tour
+  checks them on real SMS, with the M-Pesa memory and Mark as safe.

@@ -15,6 +15,7 @@ warns new recipients on delivery and anyone the sender calls, right after the ca
 import asyncio
 import heapq
 import random
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any, Awaitable, Callable, Optional
 
@@ -32,6 +33,7 @@ from src.vendor.linda.simhash import simhash64
 BASE_TIME = datetime(2026, 10, 20, 14, 0, 0, tzinfo=timezone.utc)  # the "wall clock" of sim time 0
 NAMES = ["JOHN KAMAU", "MARY ACHIENG", "PETER OTIENO", "JANE WANJIKU", "DAVID KIPROP", "GRACE NYAMBURA"]
 CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"
+RUN_SLOTS = 10_000  # blocks of 10 placeholder scammer numbers: 254700900000 to 254700999999
 
 
 class Engine:
@@ -42,6 +44,10 @@ class Engine:
         self.sms = sms or NoSms()
         self.scorer = Scorer.from_file(settings.model_path)
         self.run_number = 0
+        # Scammer numbers and device ids must be fresh in every run, also after the telco restarts: the gateway keeps
+        # what it learned, so a restarted telco that reused run 1's number would find it already confirmed, and the
+        # network would never be told again (no warning wave). A random start per boot keeps them apart.
+        self.run_base = secrets.randbelow(RUN_SLOTS)
         self.running = False
         self._task: Optional[asyncio.Task] = None
         self._reset_state()
@@ -66,6 +72,10 @@ class Engine:
         self.caller_status: dict[str, str] = {}                       # what the gateway said about a known caller
         self.real_sms: list[dict[str, Any]] = []                      # what happened to each real SMS
         self._sms_tasks: list[asyncio.Task] = []
+
+    def _run_slot(self) -> int:
+        """Which block of placeholder numbers (254700900000 to 254700999999) and device ids this run uses."""
+        return (self.run_base + self.run_number) % RUN_SLOTS
 
     def emit(self, type_: str, **fields: Any) -> None:
         self.bus.publish({"type": type_, "sim_time": round(self.sim_now, 2), "run": self.run_number, **fields})
@@ -106,12 +116,12 @@ class Engine:
         s = self.settings
         self.adoption = adoption
         if adoption is None:
-            self.phones = build_population(s.sim_seed, self.run_number, s.linda_phones, s.smartphones, s.feature_phones, s.device_prefix)
+            self.phones = build_population(s.sim_seed, self._run_slot(), s.linda_phones, s.smartphones, s.feature_phones, s.device_prefix)
         else:
-            self.phones = build_adoption_population(s.sim_seed, self.run_number, s.adoption_population, adoption,
+            self.phones = build_adoption_population(s.sim_seed, self._run_slot(), s.adoption_population, adoption,
                                                     s.feature_share, s.device_prefix)
         self.phones += real_phones(s.real_phones, first_id=len(self.phones))
-        senders = [f"254700{900000 + 10 * self.run_number + k}" for k in range(3)]  # fresh numbers every run
+        senders = [f"254700{900000 + 10 * self._run_slot() + k}" for k in range(3)]  # fresh numbers every run
         if caller:
             senders = [caller]
         self.summary = {"scenario": scenario, "run": self.run_number, "senders": senders[: 3 if scenario == "rotating" else 1],
