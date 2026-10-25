@@ -882,3 +882,41 @@ reads the last 30 days of M-Pesa messages once, and re-reads the recent ones rig
 a "money arrived" claim and its amount ("2,500", "Ksh 2,500", "2500/="), ignoring times, dates and phone numbers.
 `MpesaMemory.check` compares them. All three are plain Kotlin, unit-tested in `MpesaMemoryTest`. The detector
 (`LindaDetector`) uses the answer; `LearningStore` holds the receipts in the on-device database.
+
+## Know your senders (`features/learning/SenderHistory.kt`)
+
+**What it does.** For texts from phone numbers, Linda uses what your own messages say about the number:
+- **Someone you are really in touch with** (you texted them a week or more ago, or they have texted you 5+ times over
+  two weeks, and Linda never warned on them): a warning based on wording alone is softened one step (a SCAM becomes a
+  caution, "You have been in touch with this number for a while... If it asks for money, call them first"; a caution
+  becomes no warning). Never when there is a hard sign (a link, a PIN, a fake M-Pesa, the brand used by someone else),
+  and never when the M-Pesa memory found that the claimed money never arrived.
+- **The "new number" trick** ("Hi mum, this is my new number, please send me Ksh 3,000"): a warning that says to call
+  the old number or meet them first.
+- **A stranger's very first message asking for money**: at least a caution.
+
+**What it keeps.** Two counters per sender in the database Linda already had: how many texts came from it and how many
+Linda warned on. With "read messages" allowed it also counts your texts to and from that number in the phone's own
+message store (only counts and dates). Never the messages. Forget clears it.
+
+**Why "you texted them a week ago".** Replying to a scammer today must not make them a "friend": only an older
+conversation counts, and a number Linda ever warned on never counts.
+
+## Learn from your taps (`features/learning/PersonalModel.kt`)
+
+**What it does.** When you tap **Mark as safe** or confirm a **Report**, Linda learns from it on the phone: similar
+messages from other senders are judged a little differently. Example from the live phone: after marking one "we are
+hiring drivers for Uber" text as safe, the same kind of text from another number was no longer warned on.
+
+**How, in plain terms.** Linda's model reads a message as numbered slots (letter pieces hashed into 32,768 slots). The
+personal layer keeps one extra weight per slot. A tap runs a few steps of logistic regression (the same maths as the
+main model) on those weights only, so the tapped message, and messages sharing many of its letter pieces, move towards
+what you said. The main model file never changes.
+
+**Why it is safe.**
+- *Capped:* its total push is at most 1.5 on the model's total, and it can move a verdict by one step at most.
+- *Hard rules win:* it never talks down a link, a PIN request, a fake M-Pesa or the brand used by someone else; it is
+  never applied to verified senders; the M-Pesa memory's "this money never arrived" still beats it.
+- *Private:* only slot numbers and weights are stored, in the app's private files; never words or messages.
+  Settings shows how many taps it learned from, and Forget deletes it.
+- *Honest:* when it changed a verdict, the warning says so ("You reported messages like this one before").

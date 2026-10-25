@@ -61,7 +61,8 @@ class Tour(Phone):
 
     def welcome_and_home(self) -> None:
         self.open_app()
-        welcome = self.find("Welcome to Linda", scrolls=0) is not None
+        # The first launch can take a while to draw on a slow runner: wait for it instead of looking once.
+        welcome = self.wait_for(lambda: "Welcome to Linda" in self.screen_text(), 15)
         self.check("Welcome screen on first launch", welcome)
         tapped = self.tap_text("I am ready")
         time.sleep(1.5)

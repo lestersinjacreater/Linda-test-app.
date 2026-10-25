@@ -4,6 +4,7 @@ import com.linda.app.features.learning.Money
 import com.linda.app.features.learning.MoneyClaim
 import com.linda.app.features.learning.MoneyClaims
 import com.linda.app.features.learning.MpesaMemory
+import com.linda.app.features.learning.PersonalModel
 import com.linda.app.features.learning.SenderSignals
 
 /**
@@ -46,17 +47,30 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
         // "A stranger's first message" is a warning sign for a phone number, not for a business name or short code:
         // every business that ever texts you sends a first message, and Scan my inbox sees all of them as first.
         val unknownFirst = input.senderInContacts == false && input.firstMessageFromSender == true && !registered
-        var score = detail.probability
+        // Learn from your taps (features/learning): the person's own "Mark as safe" and "Report" taps, as a small, capped
+        // push on the model's total. Never for a verified sender, and a hard sign (link, PIN, fake M-Pesa...) is never
+        // talked down by it.
+        var personal = if (isVerified) 0.0 else input.personalModel?.adjustment(detail.slots) ?: 0.0
+        if (personal < 0 && Senders.hasStrongSign(input.body, detail.meta)) personal = 0.0
+        var base = detail.probability // without the personal layer, to know whether it changed the verdict
+        var score = if (personal != 0.0) PersonalModel.sigmoid(detail.logit + personal) else base
         if (!isVerified) {
-            if (unknownFirst) score += config.unknownSenderBump
-            if (input.senderInContacts == true && !fake) score -= config.knownContactDrop
+            val bump = (if (unknownFirst) config.unknownSenderBump else 0.0) -
+                (if (input.senderInContacts == true && !fake) config.knownContactDrop else 0.0)
+            score += bump
+            base += bump
         }
         score = score.coerceIn(0.0, 1.0)
 
-        var level = when {
-            score >= scorer.scamThreshold -> RiskLevel.SCAM
-            score >= scorer.warnThreshold -> RiskLevel.CAUTION
-            else -> RiskLevel.SAFE
+        val baseLevel = levelOf(base.coerceIn(0.0, 1.0))
+        var level = levelOf(score)
+        // One verdict step at most, either way: the person's taps refine Linda, they do not replace it.
+        if (level.ordinal - baseLevel.ordinal > 1) level = RiskLevel.CAUTION
+        if (baseLevel.ordinal - level.ordinal > 1) level = RiskLevel.CAUTION
+        val personalReason = when {
+            level.ordinal > baseLevel.ordinal -> ReasonCatalogue.TAPS_SCAM
+            level.ordinal < baseLevel.ordinal -> ReasonCatalogue.TAPS_SAFE
+            else -> null
         }
         // A registered sender (business name or short code): wording alone does not warn (see Senders for why).
         // A name that copies a brand is impersonation, so it can still warn, but only as CAUTION on wording alone.
@@ -145,10 +159,17 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
         if (unknownFirst && senderReason !== ReasonCatalogue.FIRST_ASKS_MONEY) reasons += ReasonCatalogue.UNKNOWN_SENDER
         topWords(detail)?.let { reasons += it }
         if (senderReason === ReasonCatalogue.KNOWN_SENDER) reasons += ReasonCatalogue.KNOWN_SENDER // last: why only a caution
+        personalReason?.let { reasons += it } // the person's own taps changed this verdict: say so
         return Verdict(level, score.toFloat(), reasons, scorer.version, category, fingerprint)
     }
 
     private fun higher(a: RiskLevel, b: RiskLevel) = if (a.ordinal >= b.ordinal) a else b
+
+    private fun levelOf(score: Double) = when {
+        score >= scorer.scamThreshold -> RiskLevel.SCAM
+        score >= scorer.warnThreshold -> RiskLevel.CAUTION
+        else -> RiskLevel.SAFE
+    }
 
     /** The n-grams that raised the score most, trimmed to whole-looking words, as an explanation. */
     private fun topWords(detail: ModelScorer.Detail): Reason? {

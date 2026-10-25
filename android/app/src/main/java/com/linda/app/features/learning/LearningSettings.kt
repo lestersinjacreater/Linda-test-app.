@@ -33,6 +33,7 @@ fun LearningSettings() {
     var note by remember { mutableStateOf<String?>(null) }
     val countFlow = remember { LearningStore.observeCount(context) }
     val remembered by countFlow.collectAsState(initial = 0)
+    val taps by remember { LearningStore.observeTaps(context) }.collectAsState()
 
     Text(stringResource(R.string.learning_title), style = MaterialTheme.typography.titleMedium)
     Text(stringResource(R.string.learning_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -55,6 +56,12 @@ fun LearningSettings() {
             }
         })
     }
+    Text(
+        stringResource(R.string.learning_taps_body) + " " +
+            context.resources.getQuantityString(R.plurals.learning_taps_count, taps, taps),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
     if (mpesaOn && !LearningStore.canReadInbox(context)) {
         Text(stringResource(R.string.learning_inbox_off), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }

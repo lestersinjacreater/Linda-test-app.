@@ -55,7 +55,9 @@ class MessageProcessor(private val context: Context) {
             } else null
             // Know your senders: what the person's own messages say about this phone number (null for business names).
             val history = LearningStore.senderHistory(context, sender)
-            val verdict = app.detector.analyse(MessageInput(body, sender, receivedAt, inContacts, first, memory, history))
+            val verdict = app.detector.analyse(
+                MessageInput(body, sender, receivedAt, inContacts, first, memory, history, LearningStore.personalModel(context)),
+            )
             if (sender != null) LearningStore.countMessage(context, sender, receivedAt, warned = verdict.level != RiskLevel.SAFE)
 
             if (verdict.level == RiskLevel.SAFE) {

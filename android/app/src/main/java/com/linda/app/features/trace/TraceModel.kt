@@ -73,6 +73,9 @@ object LayerTraceBuilder {
         if ("new_number_trick" in input.reasonCodes) lines += TraceLine("n_new_number")
         if ("first_asks_money" in input.reasonCodes) lines += TraceLine("n_first_money")
         if ("known_sender" in input.reasonCodes) lines += TraceLine("n_known_sender")
+        // Learn from your taps.
+        if ("taps_scam" in input.reasonCodes) lines += TraceLine("n_taps_scam")
+        if ("taps_safe" in input.reasonCodes) lines += TraceLine("n_taps_safe")
         if (lines.isEmpty()) lines += TraceLine(if (input.isPasted) "n_pasted" else "n_none")
         val signals = lines.none { it.code == "n_none" || it.code == "n_pasted" }
         return LayerResult(Layer.NETWORK, flagged = risky && signals, lines = lines)

@@ -1,5 +1,6 @@
 package com.linda.app.features.detail
 
+import com.linda.app.features.learning.LearningStore
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -134,6 +135,8 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
                         scope.launch {
                             app.database.detectionDao().markSafe(d.id)
                             d.sender?.let { app.database.senderDao().allow(AllowedSenderEntity(it)) } // stop scoring this sender
+                            // Learn from your taps: messages that look like this one, from other senders, worry Linda less.
+                            LearningStore.learnFromTap(context, d.body, d.sender, isScam = false)
                             refresh++
                         }
                     },

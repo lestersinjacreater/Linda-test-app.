@@ -5,6 +5,7 @@ import com.linda.app.features.detection.RiskLevel
 import com.linda.app.features.detection.ScamDetector
 import com.linda.app.features.detection.Verdict
 import com.linda.app.features.learning.MpesaMemory
+import com.linda.app.features.learning.PersonalModel
 
 /** One message read from the phone's inbox. */
 data class RawSms(val sender: String?, val body: String, val date: Long)
@@ -29,6 +30,7 @@ class InboxScanner(
     private val inContacts: (String?) -> Boolean?,   // the slow part on a phone, so it is asked once per sender
     private val isAllowed: (String) -> Boolean,      // senders the person marked as safe
     private val memory: MpesaMemory? = null,         // the person's real M-Pesa payments, to check "sent you money" claims
+    private val personal: PersonalModel? = null,     // what the person's own taps taught Linda
 ) {
     private val contactsCache = HashMap<String, Boolean?>()
 
@@ -50,7 +52,7 @@ class InboxScanner(
             val sender = row.sender?.takeIf { it.isNotBlank() }
             if (sender == null || !isAllowed(sender)) {
                 val contact = if (sender == null) null else contactsCache.getOrPut(sender) { inContacts(sender) }
-                val verdict = detector.analyse(MessageInput(row.body, sender, row.date, senderInContacts = contact, firstMessageFromSender = null, mpesaMemory = memory))
+                val verdict = detector.analyse(MessageInput(row.body, sender, row.date, senderInContacts = contact, firstMessageFromSender = null, mpesaMemory = memory, personalModel = personal))
                 if (verdict.level != RiskLevel.SAFE) found += Flagged(sender, row.body, row.date, verdict)
             }
             if (checked % progressEvery == 0) onProgress(checked, found.size)

@@ -1,6 +1,7 @@
 package com.linda.app.features.detection
 
 import com.linda.app.features.learning.MpesaMemory
+import com.linda.app.features.learning.PersonalModel
 import com.linda.app.features.learning.SenderHistory
 
 /**
@@ -32,6 +33,8 @@ data class MessageInput(
     val mpesaMemory: MpesaMemory? = null,
     /** What the person's own messages say about this phone number (features/learning), or null. */
     val senderHistory: SenderHistory? = null,
+    /** The person's own taps ("Mark as safe", "Report"), learned on this phone (features/learning), or null. */
+    val personalModel: PersonalModel? = null,
 )
 
 enum class RiskLevel { SAFE, CAUTION, SCAM }

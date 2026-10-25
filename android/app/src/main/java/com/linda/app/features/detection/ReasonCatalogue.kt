@@ -123,6 +123,20 @@ object ReasonCatalogue {
         "Mtu anasema hii ni nambari yake mpya na anaomba pesa. Piga nambari yake ya zamani, au mkutane, kabla ya kutuma chochote.",
     )
 
+    // ---- Learn from your taps (features/learning) ----
+
+    val TAPS_SAFE = Reason(
+        "taps_safe",
+        "You marked messages like this as safe before, so Linda is less worried about this one.",
+        "Uliweka alama ya salama kwenye ujumbe kama huu awali, kwa hivyo Linda haina wasiwasi sana na huu.",
+    )
+
+    val TAPS_SCAM = Reason(
+        "taps_scam",
+        "You reported messages like this one before.",
+        "Uliripoti ujumbe kama huu awali.",
+    )
+
     fun forCategory(category: String): Reason = BY_CATEGORY.getValue(if (category in BY_CATEGORY) category else "other")
 
     /** "Words like ..." built from the n-grams that pushed the score up most. */

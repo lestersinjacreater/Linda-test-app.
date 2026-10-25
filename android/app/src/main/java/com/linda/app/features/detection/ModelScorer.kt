@@ -98,6 +98,10 @@ class ModelScorer(modelJson: String) {
         private val slotContribution: Map<Int, Double>,
         private val slotOf: (String) -> Int,
         val meta: Map<String, Double>,
+        /** The message as the model sees it: slot to normalised weight. Used by the personal layer (features/learning). */
+        val slots: Map<Int, Double> = emptyMap(),
+        /** The total before it is squashed into 0..1 (probability = 1 / (1 + e^-logit)). */
+        val logit: Double = 0.0,
     ) {
         val ngramContributions: List<Pair<String, Double>> by lazy {
             grams.distinct().map { it to (slotContribution[slotOf(it)] ?: 0.0) }.sortedByDescending { it.second }
@@ -112,7 +116,7 @@ class ModelScorer(modelJson: String) {
         var z = intercept + contributions.values.sum()
         for ((name, value) in meta) z += metaCoef.getValue(name) * value
         val p = if (z >= 0) 1.0 / (1.0 + exp(-z)) else exp(z) / (1.0 + exp(z))
-        return Detail(p, grams, contributions, ::bucketOf, meta)
+        return Detail(p, grams, contributions, ::bucketOf, meta, weights, z)
     }
 
     fun score(text: String, sender: String?): Double = explain(text, sender).probability
