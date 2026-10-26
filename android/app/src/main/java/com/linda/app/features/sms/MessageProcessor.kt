@@ -31,7 +31,8 @@ data class ProcessResult(val verdict: Verdict, val detectionId: Long?, val speec
 
 /**
  * The single path every message takes: real SMS, pasted text, and demo mode all come through here,
- * so a demo behaves exactly like a real message. Order: M-Pesa memory, allow-list, context, ScamDetector, save, warn.
+ * so a demo behaves exactly like a real message. Order: M-Pesa memory, allow-list, context and inbox story, ScamDetector,
+ * save, warn.
  */
 class MessageProcessor(private val context: Context) {
     private val app = context.applicationContext as LindaApp
@@ -55,10 +56,13 @@ class MessageProcessor(private val context: Context) {
             } else null
             // Know your senders: what the person's own messages say about this phone number (null for business names).
             val history = LearningStore.senderHistory(context, sender)
+            // The inbox story: what this business usually sends, and whether a quoted M-Pesa code is real (null otherwise).
+            val story = LearningStore.storyFacts(context, sender, body, receivedAt)
             val verdict = app.detector.analyse(
-                MessageInput(body, sender, receivedAt, inContacts, first, memory, history, LearningStore.personalModel(context)),
+                MessageInput(body, sender, receivedAt, inContacts, first, memory, history, LearningStore.personalModel(context), story),
             )
             if (sender != null) LearningStore.countMessage(context, sender, receivedAt, warned = verdict.level != RiskLevel.SAFE)
+            if (source == "sms" || source == "demo") LearningStore.rememberStory(context, sender, body, receivedAt)
 
             if (verdict.level == RiskLevel.SAFE) {
                 recordForDemoOverlay(body, sender, source, inContacts, first, verdict, allowListed = false, actions = emptyList())

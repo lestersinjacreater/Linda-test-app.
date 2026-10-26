@@ -125,6 +125,20 @@ object ReasonCatalogue {
         "Mtu anasema hii ni nambari yake mpya na anaomba pesa. Piga nambari yake ya zamani, au mkutane, kabla hujatuma chochote.",
     )
 
+    // ---- The inbox story (features/learning) ----
+
+    val PAYMENT_CHANGED = Reason(
+        "payment_changed",
+        "This says the way to pay has changed. Scammers do this to take rent, fees or a supplier's money. Call the number you already know before you pay.",
+        "Ujumbe huu unasema njia ya kulipa imebadilika. Walaghai hufanya hivi kuchukua kodi, karo au pesa za msambazaji. Piga nambari unayoijua kabla ya kulipa.",
+    )
+
+    val STORY_NEW_LINK = Reason(
+        "story_new_link",
+        "This sender often texts you, but never with this web address before.",
+        "Mtumaji huyu hukutumia ujumbe mara kwa mara, lakini hajawahi kutuma anwani hii ya mtandao.",
+    )
+
     // ---- Learn from your taps (features/learning) ----
 
     val TAPS_SAFE = Reason(

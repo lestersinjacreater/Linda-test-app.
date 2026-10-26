@@ -38,6 +38,9 @@ object ReportingService {
         app.database.detectionDao().markReported(detectionId, System.currentTimeMillis())
         ReportWorker.schedule(context)
         // Learn from your taps: messages that look like this one get a little more suspicious (on this phone only).
-        app.database.detectionDao().getById(detectionId)?.let { LearningStore.learnFromTap(context, it.body, it.sender, isScam = true) }
+        app.database.detectionDao().getById(detectionId)?.let {
+            LearningStore.learnFromTap(context, it.body, it.sender, isScam = true)
+            LearningStore.storyReported(context, it.sender) // a business the person reported is never "routine" again
+        }
     }
 }

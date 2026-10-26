@@ -942,3 +942,52 @@ data Linda has: what a real Kenyan phone receives.
 - On the Kenyan public set, false alarms fell from 31.8% to 21.2%, but 3 fewer of 51 scams are caught (82.4% to
   76.5%): vague lures such as "Hi ni Phoebe, text me on WhatsApp" now look like the donor's real friends. We chose
   fewer false alarms, because people uninstall an app that cries wolf, and in the app an unknown sender still adds a push.
+
+## The inbox story: relationships between messages (`features/learning/InboxStory.kt`)
+
+**Why.** On the donated inbox, the app (before model 2026.10.25-1) warned on 1 in 13 genuine texts. Most came from
+Safaricom's own sub-senders (SAF_Balance sends your balance with a link every day), Airtel, banks and loan apps. The
+business rule (Senders.kt) warns on a business text that has a link or the word "Safaricom", and those genuine texts
+have both. A person is not fooled by them because they know their own inbox: "SAF_Balance always sends this". The
+inbox story gives Linda the same knowledge.
+
+**What it does.**
+1. **A business's routine.** For each business name or short code, Linda keeps how many texts it sent since when, the
+   *shape* of its last 30 texts (a SimHash fingerprint: two texts that differ only in amounts and dates have nearly
+   the same one) and the web addresses it uses. After 5 texts over 2 weeks (10 over 30 days for a name that copies a
+   brand), a text close to one of its shapes, or with only web addresses it has used before, is not warned on.
+   It is still warned on if it has a **new web address** (the warning then says "This sender often texts you, but never
+   with this web address before"), a **PIN**, a **personal phone number** or a fake M-Pesa confirmation: those are what
+   a copied or hijacked sender would add. A sender the person reported is never routine again.
+2. **Two senders, one payment.** Linda keeps a hash of every transaction code in your real M-Pesa messages (30 days).
+   A bank text quoting one of those codes is about a real payment, so its link does not make it a warning.
+3. **"The way to pay has changed."** "Our new Paybill for rent is...", "akaunti mpya" from a phone number you are not
+   really in touch with is a caution: "Call the number you already know before you pay." It is a known trick to take
+   rent, school fees or a supplier's money.
+
+**Day one.** The first time Linda meets a business, it reads that sender's earlier texts in the inbox (the last 90
+days, when "read messages" is allowed), so SAF_Balance is known from the start. The text being judged never vouches
+for itself. "Scan my inbox" now reads oldest first and builds the story as it goes, so each old text is judged only on
+what came before it.
+
+**What it keeps.** Per business: counts, dates, fingerprints and web addresses. Per M-Pesa message: a hash of the code.
+Never message text, never anything about personal numbers beyond Know your senders. Nothing leaves the phone. Forget
+clears it.
+
+**Tested how, honestly.** `ml/src/features/evaluate/inbox_replay.py` is a Python mirror of the app's decision. It
+replays the donated inbox in date order, so every text is judged only on what came before it, with the **old model
+(2026.10.21-1), which never saw this inbox**:
+
+| | Genuine texts warned | Scams warned |
+|---|---|---|
+| App without the story | 1,441 of 18,888 (7.6%) | 37 of 44 |
+| App with the story | 202 of 18,888 (1.1%) | 37 of 44 |
+
+The routine rule cleared 1,177 genuine texts and the code rule 64, and neither cleared a scam. The "way to pay has
+changed" rule fired on 11 scams and no genuine text, but the model already warned on those 11, so on this inbox it gave
+a clearer reason rather than a new catch. Honest limits: the rules' numbers (5 texts, 2 weeks, 12 bits) were chosen on
+this same inbox, so another person's inbox may do a little worse; and the 44 scams are few. What is left: call-me
+notices from personal numbers, and bank texts that arrive seconds *before* the M-Pesa message they match.
+
+**Tried and dropped.** Warning when a business quotes a code that is *not* among your M-Pesa messages: on the real
+inbox it fired only on genuine bank texts (which often arrive first) and never on a scam.

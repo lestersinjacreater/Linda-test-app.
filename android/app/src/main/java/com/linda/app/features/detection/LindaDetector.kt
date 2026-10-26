@@ -3,6 +3,7 @@ package com.linda.app.features.detection
 import com.linda.app.features.learning.Money
 import com.linda.app.features.learning.MoneyClaim
 import com.linda.app.features.learning.MoneyClaims
+import com.linda.app.features.learning.InboxStory
 import com.linda.app.features.learning.MpesaMemory
 import com.linda.app.features.learning.PersonalModel
 import com.linda.app.features.learning.SenderSignals
@@ -22,6 +23,9 @@ import com.linda.app.features.learning.SenderSignals
  * confirmation) is checked against the person's real M-Pesa messages. "No such money arrived" makes a stranger's
  * text a SCAM, with that fact as the first reason. The memory only ever raises a warning, with one exception: a
  * pasted copy of the person's own genuine M-Pesa message (same transaction code) is confirmed as real.
+ *
+ * The inbox story (features/learning/InboxStory): relationships between messages. A business's routine texts and bank
+ * texts about a real M-Pesa payment are not warned on; "the way to pay has changed" from a stranger is a caution.
  */
 class LindaDetector(private val scorer: ModelScorer, private val config: FusionConfig = FusionConfig()) : ScamDetector {
 
@@ -77,6 +81,18 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
         if (registered && level != RiskLevel.SAFE && !Senders.hasStrongSign(input.body, detail.meta)) {
             level = if (kind == SenderKind.LOOKALIKE) RiskLevel.CAUTION else RiskLevel.SAFE
         }
+        // The inbox story (features/learning): a business that always sends this kind of text, or a text about a payment
+        // that is in the person's real M-Pesa messages, is not warned on for its link or the word "Safaricom".
+        // A new web address, a PIN or a personal number in the text keep the warning (InboxStory.clears).
+        var storyReason: Reason? = null
+        val story = input.story
+        if (story != null && registered && level != RiskLevel.SAFE) {
+            if (InboxStory.clears(story, kind, input.body, fake, input.receivedAt) != null) {
+                level = RiskLevel.SAFE
+            } else if (InboxStory.established(story.sender, kind, input.receivedAt) && InboxStory.newDomain(story.sender, input.body)) {
+                storyReason = ReasonCatalogue.STORY_NEW_LINK // explain why a sender the person knows is warned on
+            }
+        }
 
         // M-Pesa memory (features/learning): a message that says money arrived is checked against the person's REAL
         // M-Pesa messages. Banks and businesses (registered senders) are skipped: they really do announce payments.
@@ -128,6 +144,13 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
                     score = maxOf(score, scorer.warnThreshold)
                     senderReason = ReasonCatalogue.NEW_NUMBER_TRICK
                 }
+                // "Our Paybill has changed": a way to redirect rent, fees or a supplier payment. From a number the
+                // person is not really in touch with, a caution (a context sign: not a SCAM on its own).
+                !established && InboxStory.paymentChanged(input.body) -> {
+                    level = higher(level, RiskLevel.CAUTION)
+                    score = maxOf(score, scorer.warnThreshold)
+                    senderReason = ReasonCatalogue.PAYMENT_CHANGED
+                }
                 // A stranger's very first message asks for money. A context sign: it can raise to CAUTION, not to SCAM.
                 stranger && first && SenderSignals.asksForMoney(input.body) -> {
                     level = higher(level, RiskLevel.CAUTION)
@@ -152,6 +175,7 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
         val reasons = mutableListOf<Reason>()
         if (category != "fake_mpesa") memoryReason?.let { reasons += it }
         senderReason?.let { if (it !== ReasonCatalogue.KNOWN_SENDER) reasons += it }
+        storyReason?.let { reasons += it }
         reasons += ReasonCatalogue.forCategory(category, input.body)
         if (category == "fake_mpesa") memoryReason?.let { reasons += it }
         if (detail.meta.getValue("has_link") == 1.0 && category != "phishing_link") reasons += ReasonCatalogue.LINK

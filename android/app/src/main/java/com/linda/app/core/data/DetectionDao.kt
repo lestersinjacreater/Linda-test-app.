@@ -136,4 +136,32 @@ interface LearningDao {
 
     @Query("SELECT COUNT(*) FROM mpesa_receipts")
     fun observeReceiptCount(): Flow<Int>
+
+    // ---- The inbox story ----
+    @Query("SELECT * FROM sender_stories WHERE sender = :sender")
+    suspend fun story(sender: String): SenderStoryEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveStory(story: SenderStoryEntity)
+
+    @Query("UPDATE sender_stories SET reported = 1 WHERE sender = :sender")
+    suspend fun markStoryReported(sender: String)
+
+    @Query("DELETE FROM sender_stories")
+    suspend fun forgetAllStories()
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addCodes(codes: List<MpesaCodeEntity>)
+
+    @Query("SELECT COUNT(*) FROM mpesa_codes WHERE codeHash IN (:hashes)")
+    suspend fun countKnownCodes(hashes: List<String>): Int
+
+    @Query("SELECT codeHash FROM mpesa_codes")
+    suspend fun allCodes(): List<String>
+
+    @Query("DELETE FROM mpesa_codes WHERE at < :before")
+    suspend fun forgetCodesBefore(before: Long)
+
+    @Query("DELETE FROM mpesa_codes")
+    suspend fun forgetAllCodes()
 }
