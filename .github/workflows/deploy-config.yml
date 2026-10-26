@@ -46,7 +46,9 @@ jobs:
         run: docker build -f deploy/render/Dockerfile -t linda-render .
       - name: Start it the way Render does (one port, a presenter password, no database = SQLite inside)
         run: |
-          docker run -d --name linda -p 10000:10000 -e PORT=10000 -e PRESENTER_PASSWORD=ci-password linda-render
+          # No extra Linux permissions, like Render: a program that needs one fails here too (it did on Render once).
+          docker run -d --name linda -p 10000:10000 -e PORT=10000 -e PRESENTER_PASSWORD=ci-password \
+            --cap-drop ALL --security-opt no-new-privileges linda-render
           for i in $(seq 1 60); do
             curl -sf http://127.0.0.1:10000/radar/health >/dev/null && break
             sleep 2
