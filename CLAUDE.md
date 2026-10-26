@@ -160,7 +160,8 @@ calls, real_phone_sms). Scenarios take `?adoption=<percent>` (0.5, 1, 2: a 2,000
 
 ### 5.6 USSD (Africa's Talking callback): `POST /ussd` (form fields)
 `sessionId, serviceCode, phoneNumber, networkCode, text` → plain-text reply starting with
-`CON ` (menu continues) or `END ` (session ends). Menu: 1 Check a number, 2 How to stay safe.
+`CON ` (menu continues) or `END ` (session ends). Menu: 1 Check a number, 2 How to stay safe, 3 Kiswahili
+(the same two choices: `3*1`, `3*2`). Each dialling phone may check `LOOKUP_RATE_PER_HOUR` numbers an hour.
 
 ### 5.7 Payment precheck: `POST /v1/payments/precheck`
 `{ "recipient": "2547...", "amount": 1500 }` → `{ "allow": false, "reason": "...", "status": "confirmed" }`
@@ -303,7 +304,7 @@ warnings from numbers the person really talks to; warns on the "new number" tric
 6. ~~Network effect in the simulator: adoption levels (0.5%, 1%, 2%), warnings after scam calls, warning
    SMS to a real basic phone via Africa's Talking (if organisers allow).~~ Done. A real SIM needs a live Africa's
    Talking account (the sandbox only reaches its web simulator) and the organisers' OK.
-7. USSD checker (5.6). Stretch.
+7. ~~USSD checker (5.6). Stretch.~~ Done (`backend/src/features/ussd/`; Africa's Talking sandbox callback `/radar/ussd`).
 8. Payment precheck (5.7). Drop if short of time.
 9. ~~Dashboard updates for fraud-intel hits, verified callers and adoption levels.~~ Done: adoption, call and
    fraud-team buttons, run notes, KNOWN numbers. Verified callers show on the phone (the simulator has no verified calls).

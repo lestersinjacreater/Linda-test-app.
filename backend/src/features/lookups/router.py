@@ -19,11 +19,15 @@ def _iso(ts: Optional[float]) -> Optional[str]:
 
 @router.get("/v1/numbers/{msisdn}/risk")
 def number_risk(msisdn: str, request: Request) -> dict:
-    app = request.app
+    if msisdn.upper() not in request.app.state.verified and not _MSISDN.fullmatch(msisdn):
+        raise HTTPException(422, "msisdn must look like 2547XXXXXXXX")
+    return risk_of(request.app, msisdn)
+
+
+def risk_of(app, msisdn: str) -> dict:
+    """What the gateway knows about one number (5.2). Also used by the USSD checker, which runs on the server."""
     if msisdn.upper() in app.state.verified:
         return {"msisdn": msisdn, "status": "allowlisted", "category": None, "reports": 0, "confirmed_at": None}
-    if not _MSISDN.fullmatch(msisdn):
-        raise HTTPException(422, "msisdn must look like 2547XXXXXXXX")
     caller = app.state.verified_callers.get(msisdn)
     if caller is not None:  # a genuine number: say who it is, never "risky"
         return {"msisdn": msisdn, "status": "verified", "category": None, "reports": 0, "confirmed_at": None,
