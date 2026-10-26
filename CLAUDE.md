@@ -164,8 +164,10 @@ calls, real_phone_sms). Scenarios take `?adoption=<percent>` (0.5, 1, 2: a 2,000
 (the same two choices: `3*1`, `3*2`). Each dialling phone may check `LOOKUP_RATE_PER_HOUR` numbers an hour.
 
 ### 5.7 Payment precheck: `POST /v1/payments/precheck`
-`{ "recipient": "2547...", "amount": 1500 }` → `{ "allow": false, "reason": "...", "status": "confirmed" }`
-If allowed, the demo payment screen triggers a Daraja **sandbox** STK Push via `POST /v1/payments/stk`.
+`{ "recipient": "2547...", "amount": 1500 }` → `{ "allow": false, "reason": "...", "reason_sw": "...", "status": "confirmed" }`
+(only `confirmed` blocks; rate-limited like 5.10). If allowed, the demo payment triggers a Daraja **sandbox** STK Push via
+`POST /v1/payments/stk` `{ "payer", "recipient", "amount" }`, which re-checks the recipient and only prompts phones in
+`DARAJA_ALLOWED_PAYERS`; the sandbox reports back to `POST /v1/payments/stk/callback`.
 Lowest priority: Linda's story is the conversation, not the payment.
 
 ### 5.8 Model artifact: `shared/models/model-<version>.json`
@@ -305,7 +307,7 @@ warnings from numbers the person really talks to; warns on the "new number" tric
    SMS to a real basic phone via Africa's Talking (if organisers allow).~~ Done. A real SIM needs a live Africa's
    Talking account (the sandbox only reaches its web simulator) and the organisers' OK.
 7. ~~USSD checker (5.6). Stretch.~~ Done (`backend/src/features/ussd/`; Africa's Talking sandbox callback `/radar/ussd`).
-8. Payment precheck (5.7). Drop if short of time.
+8. ~~Payment precheck (5.7). Drop if short of time.~~ Done in the gateway (`backend/src/features/payments/`); no app screen.
 9. ~~Dashboard updates for fraud-intel hits, verified callers and adoption levels.~~ Done: adoption, call and
    fraud-team buttons, run notes, KNOWN numbers. Verified callers show on the phone (the simulator has no verified calls).
 

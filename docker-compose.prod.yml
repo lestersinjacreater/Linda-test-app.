@@ -39,6 +39,13 @@ services:
       TELCO_URL: http://telco:8000
       FRAUDINTEL_URL: http://fraudintel:8002
       INTEL_SYNC_S: ${INTEL_SYNC_S:-5}  # how often the fraud team's list is pulled; 5 s for the demo
+      # Daraja SANDBOX for the payment demo (empty = off). Never live credentials.
+      DARAJA_CONSUMER_KEY: ${DARAJA_CONSUMER_KEY-}
+      DARAJA_CONSUMER_SECRET: ${DARAJA_CONSUMER_SECRET-}
+      DARAJA_SHORTCODE: ${DARAJA_SHORTCODE:-174379}
+      DARAJA_PASSKEY: ${DARAJA_PASSKEY-}
+      DARAJA_CALLBACK_URL: ${DARAJA_CALLBACK_URL-}
+      DARAJA_ALLOWED_PAYERS: ${DARAJA_ALLOWED_PAYERS-}
       RADAR_MIN_DEVICES: ${RADAR_MIN_DEVICES:-3}
       RADAR_MIN_SCORE: ${RADAR_MIN_SCORE:-2.4}
       RADAR_NO_TOKEN_TRUST_CAP: ${RADAR_NO_TOKEN_TRUST_CAP:-1.0}

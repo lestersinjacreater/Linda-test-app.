@@ -81,3 +81,14 @@ Text shorter than 3 characters is one piece; empty text gives `0000000000000000`
   fraud team's "reported") → a caution with the report count; `verified` → the caller's name; `unknown` → "no reports yet",
   never "safe". Every reply fits 182 characters.
 - Rate limit: `LOOKUP_RATE_PER_HOUR` number checks per `phoneNumber`, then `END` "too many checks".
+
+## Payment precheck (5.7, implemented in backend/src/features/payments/)
+
+- `POST /v1/payments/precheck` `{recipient, amount}` (2547XXXXXXXX, Ksh 1 to 250,000; unknown fields refused) →
+  `{allow, status, reason, reason_sw}`. Only `confirmed` gives `allow: false`. `suspected` and `unknown` are allowed with
+  a caution, never called "safe"; `verified` names the caller. Rate limit `LOOKUP_RATE_PER_HOUR` per `X-Linda-Device` or
+  caller address, then 429.
+- `POST /v1/payments/stk` `{payer, recipient, amount}` → `{checkout_request_id, message, precheck}`. 503 when the
+  `DARAJA_*` settings are empty, 403 when the payer is not in `DARAJA_ALLOWED_PAYERS` or the recipient is confirmed (no
+  prompt is sent), 502 when the sandbox refuses. The host is fixed to `sandbox.safaricom.co.ke` in code.
+- `POST /v1/payments/stk/callback`: the sandbox's result; answered `{ResultCode: 0}`, nothing stored.

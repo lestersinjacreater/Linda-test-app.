@@ -1040,3 +1040,24 @@ place as the server-side risk lookup (5.2), so the app, the network and USSD alw
 
 **To try it:** in the Africa's Talking sandbox, create a USSD channel with callback `https://DOMAIN/radar/ussd`, then use
 their web phone simulator. Locally: `curl -d "phoneNumber=+254711000001&text=1*0722000000" localhost:8001/ussd`.
+
+## Payment precheck and the sandbox payment (`backend/src/features/payments/`)
+
+**What it does.** Before money moves, a payment screen can ask the gateway about the recipient:
+`POST /v1/payments/precheck {"recipient": "2547...", "amount": 1500}`. A confirmed scam number gets `allow: false` and
+"Stop: this number is a confirmed scam number. Do not send money to it." (also in Kiswahili). A reported number is allowed
+with a caution, an unknown one with "No reports about this number. Pay only people you know", never "safe".
+`POST /v1/payments/stk` then sends a Daraja **sandbox** STK Push: the payer's phone asks for their M-PESA PIN (Linda never
+sees it).
+
+**Why it is safe to leave on a public server.**
+- The Daraja host is written in the code as the sandbox, not read from a setting, so nothing can point it at live M-PESA.
+- Only the team's phones (`DARAJA_ALLOWED_PAYERS`) can receive a payment prompt, so nobody can use the gateway to send
+  prompts to strangers.
+- The STK endpoint checks the recipient again on the server: a confirmed scammer is never even proposed to the payer.
+- The precheck takes full numbers, so it is rate-limited like the private lookups (no sweeping the flagged list).
+- Credentials come from `.env` only; with them empty the payment demo is simply off (503).
+
+**Honest scope.** Lowest priority in the project, and there is no payment screen in the app: it is shown with `curl`,
+or left out of the demo. Tested against a fake Daraja (the password, the timestamp in Kenyan time, the sandbox host); the
+first real sandbox call needs the team's sandbox key.
