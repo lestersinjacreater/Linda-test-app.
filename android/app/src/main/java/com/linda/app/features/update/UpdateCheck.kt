@@ -21,16 +21,18 @@ object UpdateCheck {
     fun buildNumber(releaseName: String): Int? = Regex("""#(\d+)""").find(releaseName)?.groupValues?.get(1)?.toIntOrNull()
 
     /** The update, or null when the release is not newer than [installedBuild] or has no linda.apk. */
-    fun newer(releaseJson: String, installedBuild: Int): AvailableUpdate? = try {
-        val release = JSONObject(releaseJson)
-        val build = buildNumber(release.optString("name")) ?: return null
-        if (build <= installedBuild) return null
-        val assets = release.getJSONArray("assets")
-        (0 until assets.length()).map { assets.getJSONObject(it) }
-            .firstOrNull { it.optString("name") == APK_NAME }
-            ?.let { AvailableUpdate(build, it.getString("browser_download_url"), it.optLong("size")) }
-    } catch (e: Exception) {
-        null // a page we cannot read is "no update", never a crash
+    fun newer(releaseJson: String, installedBuild: Int): AvailableUpdate? {
+        return try {
+            val release = JSONObject(releaseJson)
+            val build = buildNumber(release.optString("name")) ?: return null
+            if (build <= installedBuild) return null
+            val assets = release.getJSONArray("assets")
+            (0 until assets.length()).map { assets.getJSONObject(it) }
+                .firstOrNull { it.optString("name") == APK_NAME }
+                ?.let { AvailableUpdate(build, it.getString("browser_download_url"), it.optLong("size")) }
+        } catch (e: Exception) {
+            null // a page we cannot read is "no update", never a crash
+        }
     }
 
     /** "2.3" for the row's "About 2.3 MB". */
