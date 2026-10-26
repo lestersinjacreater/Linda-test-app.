@@ -41,6 +41,13 @@
     <string name="detail_why">Why LINDA flagged this</string>
     <string name="detail_marked_safe">You marked this sender as safe. Linda will stop checking their messages.</string>
     <string name="action_mark_safe">Mark as safe</string>
+    <string name="detail_how_decided">How Linda decided</string>
+    <string name="marked_safe_bar">Marked as safe</string>
+    <string name="action_undo">Undo</string>
+    <string name="report_details_show">Show technical details</string>
+    <string name="report_details_hide">Hide technical details</string>
+    <string name="disclosure_shown">Shown</string>
+    <string name="disclosure_hidden">Hidden</string>
     <string name="action_back">Back</string>
 
     <string name="checker_help">Paste a message, or share one from WhatsApp or any app to Linda. It never leaves your phone.</string>

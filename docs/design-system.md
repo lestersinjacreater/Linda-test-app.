@@ -19,6 +19,10 @@ If it ever conflicts with CLAUDE.md, CLAUDE.md wins and this file is updated.
 >   border (the `border` token is 1.3:1, below the 3:1 a control needs); the takeover headline is 28sp Bold; warning notifications carry no
 >   emoji (the risk colour tints the icon instead) and get "See why" and, for scams, "Report this number" buttons; reports are described to
 >   people as going to "Safaricom's fraud team", not "the radar"; Home adds the Network card (7.10).
+> - Simplicity pass (2026-10-26, Lester: "simple and easy to use, like Apple designs its apps"): the Layer Trace moves under a
+>   "How Linda decided" disclosure on verdict cards (open from the start in demo mode, so judges still watch the layers work);
+>   one primary button with quiet text buttons under it; at most three reasons, never the model's letter pieces; "Mark as safe"
+>   gets Undo instead of a dialog; the report sheet shows the number and scam type, with the codes one tap away (7.3, 7.9, 7.11, 7.12).
 
 ---
 
@@ -38,7 +42,7 @@ The five letters are not just a logo. They are the app's core visual element:
 They appear as:
 - the **logo** (five segments forming a shield),
 - the **home status ring** (five arcs, one per layer),
-- the **Layer Trace** on every verdict (which layers fired, and why),
+- the **Layer Trace** behind "How Linda decided" on every verdict (which layers fired, and why), open from the start in demo mode,
 - the **scan animation** (layers light up left to right),
 - the **code structure** (`features/language`, `features/intelligence`, `features/network`, `features/decision`, `features/alert`).
 
@@ -49,7 +53,7 @@ When a judge watches a scam arrive, they should *see* the five layers work. That
 ## 2. Design principles
 
 1. **Calm protector, not alarm bell.** LINDA is confident and quiet. It speaks up only when it matters, then speaks clearly.
-2. **Show the reasoning.** Never a bare score. Every verdict shows which layers fired and why.
+2. **Show the reasoning.** Never a bare score. Every verdict says why in plain words; which layers fired is one tap away.
 3. **One next step.** Every warning ends with one obvious action.
 4. **Safaricom family.** Familiar green, familiar warmth, nothing that feels like a foreign app.
 5. **Built for everyone.** Big text, plain words, English and Swahili, icons plus labels, never colour alone.
@@ -180,7 +184,7 @@ Each segment has four states:
 
 ### 7.1 Layer Trace (the hero component)
 A horizontal row of five rounded segments (Small radius, 8dp gaps), each showing its letter.
-- Appears on every verdict card, in the notification detail screen, and in demo mode.
+- Appears on every verdict card under the "How Linda decided" disclosure (7.11), and in demo mode. In demo mode the disclosure starts open.
 - Tapping a segment expands it to show that layer's findings, for example:
   - **L:** "Undid a disguise: 'M-P3SA' → 'M-PESA'"
   - **I:** "94% similar to 'sent by mistake' scams"
@@ -198,11 +202,12 @@ A large circle (200dp) made of **five arcs**, one per layer, in the layer tints.
 ### 7.3 Verdict Card
 Large radius, 24dp padding, risk background tint, 4dp left border in risk colour.
 1. Risk icon (32dp) + label (Heading), in the risk colour.
-2. Message preview (Body, max 3 lines), sender and time (Caption).
-3. **Layer Trace.**
-4. "Why LINDA flagged this": reasons as separate lines, Body Large.
-5. **One primary action:** "Don't send money" / "Usitume pesa".
-6. Secondary: "I already sent money →" (opens Recovery) and "Mark as safe".
+2. Message preview (Body, max 3 lines), sender and time (Caption). The Fake M-PESA badge (7.7) when it applies.
+3. "Why LINDA flagged this": at most **three** reasons, Body Large. Never the model's letter pieces ("nant"), and not the fake
+   M-PESA reason when the badge already says it.
+4. **One primary action:** "Don't send money" / "Usitume pesa".
+5. Text buttons under it (7.9): "I already sent money →" (opens Recovery), "Report this number", and a grey "Mark as safe" (with Undo, 7.12).
+6. **"How Linda decided"** (7.11): the Layer Trace. The Caution or Scam buzz still plays once when the card appears.
 
 ### 7.4 Scam Alert Takeover
 For high-confidence scams when the user opens the warning:
@@ -225,6 +230,7 @@ Hidden toggle (tap the logo 7 times). Shows a translucent panel at the bottom of
 
 ### 7.9 Standard components
 - **Buttons:** 52dp tall, Medium radius, 24dp horizontal padding. Primary = `green700` fill, white text. Secondary = 1dp outline in `textSecondary` (3:1 or more; `border` is too faint for a control), `textPrimary`. Pressed: scale 0.97, darken 8%. No hover states. 48dp minimum touch target.
+- **Text buttons:** for the actions under a screen's one primary button. 48dp tall, no outline, Label text in `primary`; a "quiet" one in `textSecondary` for an action that should be findable but not suggested.
 - **Inputs:** 52dp, Small radius, `surfaceRaised` fill, 1dp `textSecondary` outline; focus 2dp `green500`.
 - **Warning notifications:** no emoji in titles. The risk colour (`scamRed`, `cautionAmber`, `green500` for verified callers) tints the small icon and app name. A message warning has a "See why" button (opens the explanation) and, for a Scam, "Report this number" (opens the report sheet, which always shows what will be sent). Tapping the warning itself opens the takeover for a Scam.
 - **Cards:** `surface`, Medium radius, 16dp padding, soft green shadow.
@@ -237,6 +243,16 @@ Shown only to people who agreed to send reports (only they help warn others). Mi
 16dp padding, a small three-phones mark in `primary`, title "You help protect others too" / "Unasaidia kulinda wengine pia" in Heading
 `primary`, body in Body `textPrimary`: "When Linda phones catch the same scammer, Safaricom can warn everyone who got it, even on basic
 phones." No number on it: never a figure we cannot prove.
+
+### 7.11 Disclosure
+A row that shows or hides detail: Label text in `primary`, a 16dp chevron on the right that turns 180° when open, 48dp tall.
+The content expands with the calm spring (fades only with "remove animations"). Used for "How Linda decided" and the report
+sheet's technical details. The common path stays on screen; the detail is one tap away.
+
+### 7.12 Undo bar
+After a reversible action ("Mark as safe"), a bar floats at the bottom of the screen for 8 seconds: `surfaceRaised`, Medium
+radius, a soft shadow, the result in Body Large ("Marked as safe" / "Imewekwa kuwa salama") and an "Undo" / "Tendua" text button.
+Undo instead of "Are you sure?": quick to do, easy to take back.
 
 ---
 
@@ -317,7 +333,7 @@ Name colour tokens exactly as in this file (`green500`, `scamRed`, `layerL`…),
 
 1. Never introduce colours outside this palette.
 2. Risk colours mean risk and nothing else. Green means protected.
-3. Every verdict shows the Layer Trace. No bare scores.
+3. Every verdict explains itself in plain words, with the Layer Trace one tap away. No bare scores.
 4. One primary action per screen.
 5. Only use the spacing scale and the radius assigned to each component.
 6. Every user-facing string lives in `strings.xml` with a Swahili translation in `values-sw/strings.xml`.

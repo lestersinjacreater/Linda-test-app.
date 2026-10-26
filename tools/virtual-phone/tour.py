@@ -186,6 +186,14 @@ class Tour(Phone):
                              self.find("You marked this sender as safe", scrolls=2) is not None, 6)
         self.check("Mark as safe on a warning (History, detail)", bool(opened and marked and said),
                    f"opened: {opened}; tapped: {marked}; confirmed: {said}")
+        # Undo puts the warning back; marking it again leaves the sender safe for the next check.
+        undone = said and self.tap_text("Undo", scrolls=0)
+        back = undone and self.wait_for(lambda: self.find("Mark as safe", scrolls=2) is not None, 6)
+        again = back and self.tap_text("Mark as safe")
+        resaid = again and self.wait_for(lambda: "You marked this sender as safe" in self.screen_text() or
+                                         self.find("You marked this sender as safe", scrolls=2) is not None, 6)
+        self.check("Undo after Mark as safe brings the warning back", bool(back and resaid),
+                   f"undo tapped: {undone}; button back: {back}; marked again: {resaid}")
         self.go_home()
         before = self.warnings()
         self.adb("emu", "sms", "send", LANDLORD_FROM, PAYMENT_CHANGED.replace("12B", "14C"))
