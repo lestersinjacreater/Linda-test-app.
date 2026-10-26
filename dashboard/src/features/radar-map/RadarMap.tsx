@@ -9,16 +9,20 @@ const LEGEND: { status: PhoneStatus; label: string }[] = [
   { status: "warned", label: "Warned" },
 ];
 
-/** Kenya with one dot per phone: grey idle, amber received, red detected on the device, green warned. */
+/** Kenya with one dot per phone: grey quiet, amber got the scam, red Linda caught it, green warned. */
 export function RadarMap({ state }: { state: DashboardState }) {
   const phones = Object.values(state.phones);
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl bg-card p-4">
+    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-card bg-card p-5 shadow-card">
+      <div className="mb-2 flex items-center gap-3">
+        <h2 className="text-lg font-semibold text-ink">Kenya, live</h2>
+        <span className="text-base text-muted">{phones.length} phones</span>
+      </div>
       <svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} preserveAspectRatio="xMidYMid meet" className="min-h-0 w-full flex-1" role="img" aria-label="Map of Kenya with phones">
-        <path d={OUTLINE_PATH} fill="#10162A" stroke="#2B3556" strokeWidth={2} />
+        <path d={OUTLINE_PATH} fill="#EEF2F0" stroke="#C9D3CD" strokeWidth={2} />
         {TOWN_LABELS.map((t) => {
           const [x, y] = project(t.lon, t.lat);
-          return <text key={t.name} x={x + 10} y={y - 8} fill="#6D7899" fontSize={14}>{t.name}</text>;
+          return <text key={t.name} x={x + 10} y={y - 8} fill="#5B6B62" fontSize={14}>{t.name}</text>;
         })}
         {phones.map((p) => {
           const [x, y] = project(p.lon, p.lat);
@@ -27,7 +31,7 @@ export function RadarMap({ state }: { state: DashboardState }) {
             <rect key={p.phone} className="dot" x={x - 4.5} y={y - 4.5} width={9} height={9} rx={2} fill={STATUS_COLOR[p.status]} />
           ) : (
             <circle key={p.phone} className="dot" cx={x} cy={y} r={p.kind === "linda" ? 6.5 : 5.5} fill={STATUS_COLOR[p.status]}
-              stroke={p.kind === "linda" ? "#00E5FF" : "none"} strokeWidth={1.5} />
+              stroke={p.kind === "linda" ? "#007A3D" : "none"} strokeWidth={2} />
           );
         })}
       </svg>
@@ -38,8 +42,8 @@ export function RadarMap({ state }: { state: DashboardState }) {
             {l.label}
           </span>
         ))}
-        <span className="ml-auto text-sm">● smartphone · ◉ Linda phone · ■ basic phone</span>
+        <span className="ml-auto text-sm">● smartphone · ◉ Linda phone (green ring) · ■ basic phone</span>
       </div>
-    </div>
+    </section>
   );
 }

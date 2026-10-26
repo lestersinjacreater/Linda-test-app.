@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body { background: #0B0F1A; color: #F2F5FA; height: 100%; }
+html, body { background: #F6F8F7; color: #0F1A14; height: 100%; }
 body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 
 /* A phone that just changed colour gets a quick pulse so the room can see where things are happening. */

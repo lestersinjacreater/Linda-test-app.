@@ -164,10 +164,10 @@ export function describe(e: SimEvent): string {
 
 /** Colours for each phone status, shared by the map and its legend. */
 export const STATUS_COLOR: Record<PhoneStatus, string> = {
-  idle: "#4A5470",
-  received: "#FFC940",
-  detected: "#FF2E88",
-  warned: "#35F2A0",
+  idle: "#C9D3CD",     // quiet: light grey
+  received: "#F2A900", // got the scam: amber
+  detected: "#E4002B", // Linda caught it on the phone: red (risk)
+  warned: "#00A651",   // warned: Safaricom green (protected)
 };
 
 /**
