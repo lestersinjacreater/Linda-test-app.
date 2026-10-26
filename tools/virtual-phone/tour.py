@@ -226,6 +226,8 @@ class Tour(Phone):
         time.sleep(2)
 
     def tabs(self) -> None:
+        # The call step leaves the app on an alert's details, where the tabs step aside: start afresh on Home.
+        self.shell(f"am force-stop {PKG}")
         self.open_app()
         self.tap_exact("Alerts", scrolls=0)
         time.sleep(1.5)
