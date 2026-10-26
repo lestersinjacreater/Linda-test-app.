@@ -1,5 +1,11 @@
 package com.linda.app.features.recovery
 
+import com.linda.app.core.util.Prefs
+import com.linda.app.core.ui.components.ListSwitchRow
+import com.linda.app.core.ui.components.ListGroup
+import com.linda.app.core.ui.components.ListChoiceRow
+import com.linda.app.core.ui.components.Disclosure
+import androidx.compose.runtime.saveable.rememberSaveable
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -136,51 +142,19 @@ fun RecoveryScreen(detectionId: Long, onBack: () -> Unit) {
             color = if (RecoveryPlan.isUrgent(timing)) LindaTheme.colors.textPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
-        // ---- a few optional questions: they only make the steps and the report text exact ----
-        LindaCard(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(stringResource(R.string.recovery_form_title), style = MaterialTheme.typography.titleMedium)
-                Text(stringResource(R.string.recovery_form_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(stringResource(R.string.recovery_when_title), style = MaterialTheme.typography.titleSmall)
-                listOf(
-                    Timing.JUST_NOW to R.string.recovery_when_now,
-                    Timing.WITHIN_24H to R.string.recovery_when_24h,
-                    Timing.OVER_24H to R.string.recovery_when_over,
-                ).forEach { (t, label) ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(selected = timing == t, onClick = { timing = t })
-                        Text(stringResource(label), style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
-                LindaTextField(
-                    value = amountText, onValueChange = { amountText = it.filter { c -> c.isDigit() }.take(9) },
-                    label = { Text(stringResource(R.string.recovery_amount)) }, singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth(),
-                )
-                LindaTextField(
-                    value = paidTo, onValueChange = { paidTo = it; paidToEdited = true },
-                    label = { Text(stringResource(R.string.recovery_paid_to)) }, singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), modifier = Modifier.fillMaxWidth(),
-                )
-                LindaTextField(
-                    value = code, onValueChange = { code = it.take(12) },
-                    label = { Text(stringResource(R.string.recovery_code)) }, singleLine = true,
-                    isError = code.isNotBlank() && cleanedCode == null,
-                    supportingText = { if (code.isNotBlank() && cleanedCode == null) Text(stringResource(R.string.recovery_code_invalid)) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Switch(checked = viaBank, onCheckedChange = { viaBank = it })
-                    Text(stringResource(R.string.recovery_bank), modifier = Modifier.padding(start = 12.dp), style = MaterialTheme.typography.bodyLarge)
-                }
-                if (detection != null) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Switch(checked = includeMessage, onCheckedChange = { includeMessage = it })
-                        Text(stringResource(R.string.recovery_include_message), modifier = Modifier.padding(start = 12.dp), style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
+        // ---- the two answers that change the steps: when, and whether a bank was involved ----
+        ListGroup(stringResource(R.string.recovery_when_title)) {
+            listOf(
+                Timing.JUST_NOW to R.string.recovery_when_now,
+                Timing.WITHIN_24H to R.string.recovery_when_24h,
+                Timing.OVER_24H to R.string.recovery_when_over,
+            ).forEachIndexed { i, (t, label) ->
+                ListChoiceRow(stringResource(label), selected = timing == t, onSelect = { timing = t }, divider = i > 0)
             }
+            ListSwitchRow(stringResource(R.string.recovery_bank), checked = viaBank, onCheckedChange = { viaBank = it }, divider = true)
+        }
 
-        // ---- the checklist ----
+        // ---- the checklist: what to do now comes before any form ----
         Text(stringResource(R.string.recovery_steps_title), style = MaterialTheme.typography.titleLarge)
         val doneSet = done.filterValues { it }.keys
         val currentStep = RecoveryStepper.currentIndex(steps, doneSet)
@@ -200,16 +174,44 @@ fun RecoveryScreen(detectionId: Long, onBack: () -> Unit) {
         }
         Text(stringResource(R.string.recovery_action_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-        // ---- the pre-filled report text, in both languages ----
+        // ---- the pre-filled report text, in the person's language (the other one is a tap away) ----
         Text(stringResource(R.string.recovery_report_note), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        listOf("en" to R.string.recovery_report_title_en, "sw" to R.string.recovery_report_title_sw).forEach { (lang, title) ->
-            val text = ReportText.build(lang, facts)
-            LindaCard(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(stringResource(title), style = MaterialTheme.typography.titleMedium)
-                    Text(text, style = MaterialTheme.typography.bodyMedium)
-                    LindaButton(stringResource(R.string.recovery_copy), onClick = { clipboard.setText(AnnotatedString(text)); copiedLabel = lang }, modifier = Modifier.fillMaxWidth())
-                    if (copiedLabel == lang) Text(stringResource(R.string.recovery_copied), color = MaterialTheme.colorScheme.primary)
+        // Optional details only make the report text more exact, so they sit with it, folded away.
+        var showDetails by rememberSaveable { mutableStateOf(false) }
+        Disclosure(stringResource(R.string.recovery_details_title), open = showDetails, onToggle = { showDetails = !showDetails }) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(stringResource(R.string.recovery_form_help), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                LindaTextField(
+                    value = amountText, onValueChange = { amountText = it.filter { c -> c.isDigit() }.take(9) },
+                    label = { Text(stringResource(R.string.recovery_amount)) }, singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth(),
+                )
+                LindaTextField(
+                    value = paidTo, onValueChange = { paidTo = it; paidToEdited = true },
+                    label = { Text(stringResource(R.string.recovery_paid_to)) }, singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone), modifier = Modifier.fillMaxWidth(),
+                )
+                LindaTextField(
+                    value = code, onValueChange = { code = it.take(12) },
+                    label = { Text(stringResource(R.string.recovery_code)) }, singleLine = true,
+                    isError = code.isNotBlank() && cleanedCode == null,
+                    supportingText = { if (code.isNotBlank() && cleanedCode == null) Text(stringResource(R.string.recovery_code_invalid)) },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                if (detection != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Switch(checked = includeMessage, onCheckedChange = { includeMessage = it })
+                        Text(stringResource(R.string.recovery_include_message), modifier = Modifier.padding(start = 12.dp), style = MaterialTheme.typography.bodyLarge)
+                    }
                 }
+            }
+        }
+        val mine = if (Prefs.effectiveLanguage(context) == "sw") "sw" else "en"
+        val other = if (mine == "sw") "en" else "sw"
+        ReportTextCard(mine, facts, copied = copiedLabel == mine, onCopy = { clipboard.setText(AnnotatedString(it)); copiedLabel = mine })
+        var showOther by rememberSaveable { mutableStateOf(false) }
+        Disclosure(stringResource(R.string.recovery_other_language), open = showOther, onToggle = { showOther = !showOther }) {
+            ReportTextCard(other, facts, copied = copiedLabel == other, onCopy = { clipboard.setText(AnnotatedString(it)); copiedLabel = other })
         }
 
         Text(stringResource(R.string.recovery_disclaimer), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -304,5 +306,18 @@ private fun TimelineStep(
             Text(body, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary)
             actions()
         }
+    }
+}
+
+/** The ready-to-send report text in one language, with a Copy button. */
+@Composable
+private fun ReportTextCard(language: String, facts: ReportFacts, copied: Boolean, onCopy: (String) -> Unit) {
+    val text = ReportText.build(language, facts)
+    val title = if (language == "sw") R.string.recovery_report_title_sw else R.string.recovery_report_title_en
+    LindaCard(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(stringResource(title), style = MaterialTheme.typography.titleMedium)
+        Text(text, style = MaterialTheme.typography.bodyMedium)
+        LindaButton(stringResource(R.string.recovery_copy), onClick = { onCopy(text) }, modifier = Modifier.fillMaxWidth())
+        if (copied) Text(stringResource(R.string.recovery_copied), color = MaterialTheme.colorScheme.primary)
     }
 }
