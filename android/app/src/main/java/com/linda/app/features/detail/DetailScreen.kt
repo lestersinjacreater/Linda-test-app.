@@ -58,6 +58,26 @@ import com.linda.app.core.ui.components.Disclosure
 import com.linda.app.core.ui.components.LindaTextButton
 import com.linda.app.core.ui.theme.MediumShape
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
+import com.linda.app.core.ui.components.SectionCard
+import com.linda.app.core.ui.components.TintBox
+import com.linda.app.core.ui.components.RiskPill
+import com.linda.app.core.ui.components.RiskIcon
+import com.linda.app.core.ui.components.FakeMpesaBadge
+import com.linda.app.core.ui.components.relativeTime
+import com.linda.app.features.history.senderLabel
+import com.linda.app.features.demo.DemoOverlay
+import com.linda.app.features.trace.LayerTraceView
 import kotlinx.coroutines.launch
 
 /** What opens when the user taps a warning: the message, the verdict, every reason, and what to do next (F6). */
@@ -127,37 +147,96 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
     }
     val fakeMpesa = d.category == "fake_mpesa"
 
-    Box(Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Spacing.screenPadding),
-            verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+    val colors = LindaTheme.colors
+    val shownReasons = WarningReasons.shown(reasons, fakeMpesa).map { ReasonsJson.text(it, language) }
+    // The five layers, one tap away: open from the start in demo mode, so judges see them work.
+    var traceOpen by rememberSaveable(detectionId) { mutableStateOf(DemoOverlay.isOn()) }
+
+    Column(Modifier.fillMaxSize().background(colors.background)) {
+        // ---- top bar: close, and what this screen is ----
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            modifier = Modifier.fillMaxWidth().background(colors.surface).padding(horizontal = Spacing.sm, vertical = Spacing.sm),
         ) {
-            VerdictCard(
-                level = d.level,
-                sender = d.sender ?: stringResource(R.string.sender_pasted),
-                time = formatDateTime(d.receivedAt),
-                body = d.body,
-                fakeMpesa = fakeMpesa,
-                trace = trace,
-                reasons = WarningReasons.shown(reasons, fakeMpesa).map { ReasonsJson.text(it, language) },
+            CloseButton(stringResource(R.string.action_close), onBack)
+            Text(stringResource(R.string.detail_title), style = MaterialTheme.typography.titleLarge, color = colors.textPrimary)
+        }
+
+        Box(Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Spacing.screenPadding),
+                verticalArrangement = Arrangement.spacedBy(Spacing.lg),
             ) {
-                // One primary action: the answer to "what do I do now?". The rest are quiet text buttons under it.
-                LindaButton(
-                    stringResource(if (d.level == "SCAM") R.string.verdict_primary_scam else R.string.verdict_primary_caution),
-                    onClick = onBack, modifier = Modifier.fillMaxWidth(),
-                )
-                LindaTextButton(stringResource(R.string.action_i_sent_money), onClick = { onOpenRecovery(d.id) }, modifier = Modifier.fillMaxWidth())
-                // Report (F6): the person reports this number so others can be warned. Needs their confirmation each time.
-                if (cannotReport == null && !d.markedSafe) {
-                    LindaTextButton(stringResource(R.string.action_report), onClick = { showReportDialog = true }, modifier = Modifier.fillMaxWidth())
-                } else if (cannotReport == CannotReport.ALREADY_REPORTED) {
-                    Text(stringResource(R.string.report_done), style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary)
+                // 1. Overview: what kind of scam, how risky, from whom, when.
+                SectionCard(stringResource(R.string.detail_overview), trailing = { RiskPill(d.level) }) {
+                    OverviewRow(stringResource(R.string.detail_type), categoryLabel(d.category))
+                    OverviewRow(stringResource(R.string.detail_from), senderLabel(d))
+                    OverviewRow(stringResource(R.string.detail_source), stringResource(sourceLabel(d.source)))
+                    OverviewRow(stringResource(R.string.detail_received), relativeTime(d.receivedAt) + " \u00B7 " + formatDateTime(d.receivedAt))
                 }
-                reportNote?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary) }
+                // 2. The message, exactly as it arrived. It stays on this phone.
+                SectionCard(stringResource(R.string.detail_message)) {
+                    TintBox(colors.surfaceRaised) {
+                        Text(stringResource(R.string.detail_message_note), style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
+                        Text(d.body, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary)
+                    }
+                }
+                // 3. Why Linda warned: at most three plain reasons (WarningReasons).
+                SectionCard(stringResource(R.string.detail_why), mark = { RiskIcon(d.level, size = 24.dp) }) {
+                    if (fakeMpesa) FakeMpesaBadge()
+                    if (shownReasons.isNotEmpty()) {
+                        TintBox(colors.risk(d.level).tint) {
+                            shownReasons.forEach { Text(it, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary) }
+                        }
+                    }
+                }
+                // 4. What to do: one piece of plain advice for this kind of scam, and help if money already went.
+                SectionCard(stringResource(R.string.detail_what_to_do)) {
+                    TintBox(colors.safe.tint) {
+                        Text(stringResource(adviceFor(d.category)), style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary)
+                    }
+                    LindaTextButton(stringResource(R.string.action_i_sent_money), onClick = { onOpenRecovery(d.id) }, modifier = Modifier.fillMaxWidth())
+                }
+                // 5. How Linda decided: the Layer Trace, folded away.
+                trace?.let { results ->
+                    SectionCard {
+                        Disclosure(stringResource(R.string.detail_how_decided), open = traceOpen, onToggle = { traceOpen = !traceOpen }) {
+                            LayerTraceView(results, d.level)
+                        }
+                    }
+                }
+                reportNote?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = colors.primary) }
+                // Room for the Undo bar, so it never covers the last line.
+                if (undo != null) Spacer(Modifier.height(72.dp))
+            }
+
+            undo?.let { mark ->
+                UndoBar(
+                    text = stringResource(R.string.marked_safe_bar),
+                    onUndo = {
+                        undo = null
+                        scope.launch {
+                            MarkAsSafe.undo(context, mark)
+                            refresh++
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.BottomCenter).padding(Spacing.screenPadding),
+                )
+            }
+        }
+
+        // ---- the two actions, always in reach, and what a report sends ----
+        Column(
+            modifier = Modifier.fillMaxWidth().background(colors.surface).padding(Spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        ) {
+            Text(stringResource(R.string.report_promise), style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), verticalAlignment = Alignment.CenterVertically) {
                 if (d.markedSafe) {
-                    Text(stringResource(R.string.detail_marked_safe), style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary)
+                    Text(stringResource(R.string.detail_marked_safe), style = MaterialTheme.typography.bodyMedium, color = colors.primary, modifier = Modifier.weight(1f))
                 } else {
-                    LindaTextButton(
+                    LindaButton(
                         stringResource(R.string.action_mark_safe),
                         onClick = {
                             scope.launch {
@@ -165,26 +244,16 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
                                 refresh++
                             }
                         },
-                        quiet = true, modifier = Modifier.fillMaxWidth(),
+                        secondary = true, modifier = Modifier.weight(1f),
                     )
                 }
+                // Report (F6): needs the person's confirmation each time, and shows what is sent first.
+                if (cannotReport == null && !d.markedSafe) {
+                    LindaButton(stringResource(R.string.action_report), onClick = { showReportDialog = true }, modifier = Modifier.weight(1f))
+                } else if (cannotReport == CannotReport.ALREADY_REPORTED) {
+                    Text(stringResource(R.string.report_done), style = MaterialTheme.typography.bodyMedium, color = colors.primary, modifier = Modifier.weight(1f))
+                }
             }
-            // Room for the Undo bar, so it never covers the last line.
-            if (undo != null) Spacer(Modifier.height(72.dp))
-        }
-
-        undo?.let { mark ->
-            UndoBar(
-                text = stringResource(R.string.marked_safe_bar),
-                onUndo = {
-                    undo = null
-                    scope.launch {
-                        MarkAsSafe.undo(context, mark)
-                        refresh++
-                    }
-                },
-                modifier = Modifier.align(Alignment.BottomCenter).padding(Spacing.screenPadding),
-            )
         }
     }
 
@@ -249,4 +318,53 @@ private fun UndoBar(text: String, onUndo: () -> Unit, modifier: Modifier = Modif
         Text(text, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary, modifier = Modifier.weight(1f))
         LindaTextButton(stringResource(R.string.action_undo), onClick = onUndo)
     }
+}
+
+/** One line of the Overview card: a grey label on the left, the value on the right. */
+@Composable
+private fun OverviewRow(label: String, value: String) {
+    val colors = LindaTheme.colors
+    Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(Spacing.lg)) {
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+        Text(value, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
+    }
+}
+
+/** The "x" that closes the details, 48dp to tap. */
+@Composable
+private fun CloseButton(description: String, onClick: () -> Unit) {
+    val line = LindaTheme.colors.textPrimary
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.size(48.dp).clip(CircleShape).clickable(role = Role.Button, onClick = onClick).semantics { contentDescription = description },
+    ) {
+        Canvas(Modifier.size(18.dp)) {
+            val w = size.width
+            drawLine(line, Offset(0f, 0f), Offset(w, w), w * 0.13f, StrokeCap.Round)
+            drawLine(line, Offset(w, 0f), Offset(0f, w), w * 0.13f, StrokeCap.Round)
+        }
+    }
+}
+
+/** Where the message came from, in words. */
+private fun sourceLabel(source: String): Int = when (source) {
+    "sms" -> R.string.source_sms
+    "checker" -> R.string.source_checker
+    "inbox" -> R.string.source_inbox
+    "demo" -> R.string.source_demo
+    else -> R.string.source_sms
+}
+
+/** One piece of plain advice per kind of scam (English and Kiswahili in strings.xml). */
+private fun adviceFor(category: String): Int = when (category) {
+    "fake_mpesa" -> R.string.advice_fake_mpesa
+    "sent_by_mistake" -> R.string.advice_sent_by_mistake
+    "prize" -> R.string.advice_prize
+    "fuliza_upgrade" -> R.string.advice_fuliza_upgrade
+    "kra_refund" -> R.string.advice_kra_refund
+    "job_fee" -> R.string.advice_job_fee
+    "loan_fee" -> R.string.advice_loan_fee
+    "pin_request" -> R.string.advice_pin_request
+    "phishing_link" -> R.string.advice_phishing_link
+    else -> R.string.advice_other
 }

@@ -26,6 +26,8 @@ If it ever conflicts with CLAUDE.md, CLAUDE.md wins and this file is updated.
 >   Home keeps the ring and one status line, with two rows under it; the Network card (7.10) is retired; Settings becomes a
 >   grouped list (7.13), and "What Linda learns" gets its own screen. Recovery shows the steps before any form (7.6), and the
 >   first run becomes three short pages (7.14).
+> - Card redesign (2026-10-27, Lester's reference screenshots): section cards (7.15), three tabs with Settings on Home's
+>   gear, and new Home, Alerts and Alert details layouts (7.16). The verdict card (7.3) stays for the Check tab.
 
 ---
 
@@ -273,6 +275,28 @@ a green tick for "on" (read out as "On"; a word was too wide in Kiswahili), a gr
 Three short pages, one decision each, with three small dots at the top: 1. Welcome and "Allow permissions" ("Next" when already
 allowed), 2. "Keep Linda awake" with only this phone brand's steps, 3. Help protect others (the consent card, in English and
 Swahili). Answering page 3 finishes. Next slides in from the right, Back returns the way it came (fade only with "remove animations").
+
+### 7.15 Section card (card redesign, 2026-10-27)
+Screens are built from white `surface` cards on the pale `background`: Large radius (24dp), 20dp padding, a very soft green
+shadow (none in dark mode), 16dp between cards. Each card answers **one** question and has a short title in Heading
+(optionally a 24dp mark before it, or a pill after it). Inside, the one thing the card is about sits in a **tint box**
+(Medium radius, 16dp padding): `surfaceRaised` for the message itself, the risk tint for reasons, mint (`green50`) for advice.
+Inspired by a clean card layout Lester liked; Linda keeps its own green, wording and privacy promise.
+
+### 7.16 Alerts and alert details
+- **Bottom bar:** three tabs, Home · Alerts · Check (a bell for Alerts). Settings is the gear on Home's header.
+- **Home:** a white header with rounded bottom corners (logo, "Good evening", the "Protection active" pill, the gear); the
+  Protection center card (overall state in a tint box, then chips for SMS protection, Call protection and Reports, then
+  this month's count); today's scam tip; Recent alerts (rows with a 5dp coloured left edge and "CATEGORY · 2 hr ago");
+  the two rows Scan my inbox and I have been scammed.
+- **Alerts:** a white header (title, "N this week" pill, a "Protection active · N today" strip), then one card per alert:
+  category in Heading and the risk pill, a two-line quoted preview, "0700 000 777 · 2 hr ago" and a status pill
+  (Warned, Reported, Marked safe).
+- **Alert details:** a top bar with a close "x" and the title; cards for Overview (type, from, came in by, received, risk
+  pill), The message, Why Linda warned you, What to do (one piece of advice per scam type, and "I already sent money →"),
+  and How Linda decided (the Layer Trace, folded). A fixed bottom bar holds the privacy line ("A report sends only the
+  number and the type of scam…") and two buttons: Mark as safe (outline) and Report this number (filled green). The tabs
+  are hidden on this screen. Scam red stays reserved for verdicts, so the Report button is green.
 
 ---
 

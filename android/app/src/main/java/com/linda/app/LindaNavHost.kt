@@ -51,10 +51,13 @@ private enum class Destination(
     @DrawableRes val icon: Int, // line icons drawn for Linda in res/drawable (no emoji, no icon library)
 ) {
     Home("home", R.string.nav_home, R.drawable.ic_nav_home),
+    History("history", R.string.nav_history, R.drawable.ic_nav_alerts), // shown as "Alerts"
     Checker("checker", R.string.nav_check, R.drawable.ic_nav_check),
-    History("history", R.string.nav_history, R.drawable.ic_nav_history),
-    Settings("settings", R.string.nav_settings, R.drawable.ic_nav_settings),
+    Settings("settings", R.string.nav_settings, R.drawable.ic_nav_settings), // opened from the gear on Home, not the bar
 }
+
+/** Three tabs, like a phone's own apps: Home, Alerts, Check. Settings is one tap away on Home's gear. */
+private val BAR = listOf(Destination.Home, Destination.History, Destination.Checker)
 
 /**
  * [openDetectionId]: set when the user tapped a warning notification, to jump to that message.
@@ -78,8 +81,9 @@ fun LindaNavHost(openDetectionId: Long? = null, openWhat: String? = null, shared
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                Destination.entries.forEach { destination ->
+            // The alert details have their own action bar at the bottom, so the tabs step aside there.
+            if (currentRoute?.startsWith("detail") != true) NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+                BAR.forEach { destination ->
                     NavigationBarItem(
                         selected = currentRoute == destination.route,
                         onClick = {
@@ -114,7 +118,21 @@ fun LindaNavHost(openDetectionId: Long? = null, openWhat: String? = null, shared
             startDestination = Destination.Home.route,
             modifier = Modifier,
         ) {
-            composable(Destination.Home.route) { HomeScreen(onOpenInbox = { navController.navigate("inbox") }, onOpenRecovery = { navController.navigate("recovery/-1") }) }
+            composable(Destination.Home.route) {
+                HomeScreen(
+                    onOpenInbox = { navController.navigate("inbox") },
+                    onOpenRecovery = { navController.navigate("recovery/-1") },
+                    onOpenSettings = { navController.navigate(Destination.Settings.route) },
+                    onOpenAlerts = {
+                        navController.navigate(Destination.History.route) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onOpenAlert = { navController.navigate("detail/$it") },
+                )
+            }
             composable(Destination.Checker.route) { CheckerScreen(sharedText) }
             composable(Destination.History.route) { HistoryScreen(onOpen = { navController.navigate("detail/$it") }) }
             composable(Destination.Settings.route) {

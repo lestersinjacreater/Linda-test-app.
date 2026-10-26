@@ -1,77 +1,99 @@
 package com.linda.app.features.history
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.linda.app.R
-import com.linda.app.core.ui.components.LevelChip
-import com.linda.app.core.util.formatDateTime
-import com.linda.app.core.ui.components.LindaCard
-import com.linda.app.core.ui.components.LindaTextField
+import com.linda.app.core.ui.components.LindaLogo
+import com.linda.app.core.ui.components.Pill
+import com.linda.app.core.ui.theme.LindaTheme
+import com.linda.app.core.ui.theme.MediumShape
+import com.linda.app.core.ui.theme.Spacing
 
-/** Searchable list of flagged messages with a level filter (F9). Tapping one opens its detail screen. */
+/**
+ * Alerts (was History, F9; docs/design-system.md 7.16): a header with this week's and today's counts, then one card
+ * per warned message, newest first. Tapping a card opens its details.
+ */
 @Composable
 fun HistoryScreen(onOpen: (Long) -> Unit, viewModel: HistoryViewModel = viewModel()) {
-    val items by viewModel.items.collectAsStateWithLifecycle()
-    val level by viewModel.levelFilter.collectAsStateWithLifecycle()
-    val query by viewModel.query.collectAsStateWithLifecycle()
+    val all by viewModel.items.collectAsStateWithLifecycle()
+    val alerts = remember(all) { all.filter { it.level != "SAFE" } }
+    val now = System.currentTimeMillis()
+    val week = alerts.count { now - it.receivedAt < 7 * DAY_MS }
+    val today = alerts.count { now - it.receivedAt < DAY_MS }
+    val colors = LindaTheme.colors
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(stringResource(R.string.history_title), style = MaterialTheme.typography.titleLarge)
-        LindaTextField(
-            value = query,
-            onValueChange = { viewModel.query.value = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.history_search)) },
-            singleLine = true,
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(selected = level == "ALL", onClick = { viewModel.levelFilter.value = "ALL" }, label = { Text(stringResource(R.string.filter_all)) })
-            FilterChip(selected = level == "SCAM", onClick = { viewModel.levelFilter.value = "SCAM" }, label = { Text(stringResource(R.string.level_scam)) })
-            FilterChip(selected = level == "CAUTION", onClick = { viewModel.levelFilter.value = "CAUTION" }, label = { Text(stringResource(R.string.level_caution)) })
-        }
-        if (items.isEmpty()) {
-            Text(
-                stringResource(R.string.history_empty),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(items, key = { it.id }) { d ->
-                    LindaCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpen(d.id) }, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                LevelChip(d.level)
-                                Text(
-                                    text = d.sender ?: stringResource(R.string.sender_pasted),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                )
-                            }
-                            Text(d.body, maxLines = 2, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text(formatDateTime(d.receivedAt), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = Spacing.xl),
+        verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+    ) {
+        item {
+            // The header sits on white with rounded bottom corners, so the cards below read as a list under it.
+            Column(
+                modifier = Modifier.fillMaxWidth()
+                    .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
+                    .background(colors.surface)
+                    .padding(Spacing.lg),
+                verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                    Box(Modifier.clip(MediumShape).background(colors.surfaceRaised).padding(Spacing.sm)) { LindaLogo(size = 36.dp) }
+                    Column(Modifier.weight(1f)) {
+                        Text(stringResource(R.string.alerts_title), style = MaterialTheme.typography.titleLarge, color = colors.textPrimary)
+                        Text(stringResource(R.string.alerts_subtitle), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+                    }
+                    Pill(pluralStringResource(R.plurals.alerts_this_week, week, week), colors.safe.tint, colors.safe.text)
                 }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+                    modifier = Modifier.fillMaxWidth().clip(MediumShape).background(colors.background).padding(horizontal = Spacing.lg, vertical = Spacing.md),
+                ) {
+                    Box(Modifier.size(8.dp).clip(CircleShape).background(colors.safe.accent))
+                    Text(stringResource(R.string.protection_active), style = MaterialTheme.typography.labelLarge, color = colors.safe.text, modifier = Modifier.weight(1f))
+                    Text(pluralStringResource(R.plurals.alerts_today, today, today), style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
+                }
+            }
+        }
+        if (alerts.isEmpty()) {
+            item {
+                Text(
+                    stringResource(R.string.history_empty),
+                    style = MaterialTheme.typography.bodyLarge, color = colors.textSecondary,
+                    modifier = Modifier.padding(horizontal = Spacing.lg),
+                )
+            }
+        } else {
+            items(alerts, key = { it.id }) { d ->
+                AlertListCard(d, onClick = { onOpen(d.id) }, modifier = Modifier.padding(horizontal = Spacing.lg))
             }
         }
     }
 }
+
+private const val DAY_MS = 24 * 60 * 60 * 1000L

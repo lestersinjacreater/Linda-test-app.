@@ -83,7 +83,7 @@ class Tour(Phone):
 
     def recovery(self) -> None:
         """Home's "I have been scammed" row: the steps come first, the optional form is folded away."""
-        opened = self.tap_text("I have been scammed", scrolls=2)
+        opened = self.tap_text("I have been scammed", scrolls=4)
         steps = opened and self.wait_for(lambda: self.find("What to do now", scrolls=3) is not None, 6)
         self.check("Recovery shows what to do now (form folded away)", bool(steps), f"opened: {opened}")
         self.shell("input keyevent 4")  # Back to Home
@@ -116,7 +116,7 @@ class Tour(Phone):
         takeover = self.wait_for(lambda: "Stop. This looks like a scam." in self.screen_text(), 10)
         self.check("Tapping the warning opens the full-screen stop", takeover)
         self.tap_text("OK, show me why")
-        detail = self.wait_for(lambda: "Why LINDA flagged this" in self.screen_text() or self.find("Why LINDA flagged this") is not None, 8)
+        detail = self.wait_for(lambda: "Why Linda warned you" in self.screen_text() or self.find("Why Linda warned you") is not None, 8)
         self.check("Detail screen explains the warning", detail)
         # Rotating rebuilds the screen. It must stay on the detail, not replay the old warning (bug found 24 Oct).
         self.shell("settings put system accelerometer_rotation 0")
@@ -185,7 +185,7 @@ class Tour(Phone):
         """History, the landlord's warning, Mark as safe; a second text from the same number is then not warned."""
         self.shell(f"am force-stop {PKG}")
         self.open_app()
-        self.tap_exact("History", scrolls=0)
+        self.tap_exact("Alerts", scrolls=0)
         time.sleep(1)
         entry = self.find_any(("0700 000 783", "0700000783", "254700000783"))
         if entry:
@@ -227,7 +227,7 @@ class Tour(Phone):
 
     def tabs(self) -> None:
         self.open_app()
-        self.tap_text("History", scrolls=0)
+        self.tap_exact("Alerts", scrolls=0)
         time.sleep(1.5)
         # Newest first, so after the other test texts the fake M-Pesa one may be further down the list.
         hist = self.find_any(("0700000777", "0700 000 777", "254700000777")) is not None
@@ -244,7 +244,10 @@ class Tour(Phone):
         clicked = self.tap_text("Check this message")
         verdict = self.wait_for(lambda: "Likely scam" in self.screen_text(), 8)  # the SCAM verdict label
         self.check("Check tab: a pasted prize scam gets a verdict", bool(field) and clicked and verdict)
-        self.tap_text("Settings", scrolls=0)
+        # Settings is the gear on Home (three tabs: Home, Alerts, Check).
+        self.tap_exact("Home", scrolls=0)
+        time.sleep(1)
+        self.tap_exact("Settings", scrolls=0)
         version = self.find("Linda version 0.1.")
         self.check("Settings shows the build number", version is not None, version["text"] if version else "")
         # The update row answers one way or another (the tour's build number is not the release's, so either is fine).
