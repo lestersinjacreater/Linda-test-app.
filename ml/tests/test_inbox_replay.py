@@ -8,7 +8,7 @@ NOW = datetime(2026, 10, 1)
 
 
 def bonus(mb, link="https://safaricom.com/offers"):
-    return f"Hongera! Umepata bonus ya {mb}MB kutoka Safaricom. Bonyeza {link} kuidai leo"
+    return f"Hongera! Umeshinda bonus ya {mb}MB kutoka Safaricom. Bonyeza {link} kudai zawadi yako leo"
 
 
 def story_with(n=6):

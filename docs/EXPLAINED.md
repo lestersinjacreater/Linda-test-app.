@@ -1061,3 +1061,34 @@ sees it).
 **Honest scope.** Lowest priority in the project, and there is no payment screen in the app: it is shown with `curl`,
 or left out of the demo. Tested against a fake Daraja (the password, the timestamp in Kenyan time, the sandbox host); the
 first real sandbox call needs the team's sandbox key.
+
+## A second donated inbox (model 2026.10.26-1, 26 Oct)
+
+**What it is.** A second team member donated their inbox (11,965 real SMS). It goes through exactly the same private
+pipeline as the first one (`ml/src/features/dataset/team_inbox.py`): labelled by template by hand, scrubbed,
+never committed, Safaricom staff and very sensitive messages never used. The script now reads every donation it finds
+(`team_inbox.csv`, `team_inbox_2.csv`, ...), and the donors' family names come from a private, git-ignored list
+instead of the code.
+
+**Two honest checks.**
+1. *Before training on it,* the old model was replayed on the whole new inbox, with the app's rules and the inbox
+   story, as a phone would see it. Genuine texts wrongly warned: 1.3% for the model alone in the app, 0.47% with the
+   inbox story (about 1 in 210); 73 of 94 scam texts warned. This is the best evidence that Linda works on an inbox
+   it has never seen: the story's thresholds were set on the first inbox, not this one.
+2. *After training,* 30% of its message groups are kept out for testing, as before. On that test part the model alone
+   catches 16 of 16 scams with 5.0% false alarms (was 15 of 16 and 6.6%). The first inbox's test part is unchanged
+   (all scams caught, 3.8%).
+
+**What changed elsewhere (model alone, real test data it never saw):**
+- Kenyan public set: false alarms 21.2% -> **9.1%**, scams caught 76.5% -> 74.5% (one fewer of 51).
+- Mendeley (international English): 91.2% -> 89.7% of scams caught, still no false alarms.
+- Held-out scam campaigns: 70.8% -> 68.7% on average. Verified senders: still 0 warned.
+- We accept the small drop in recall for a large drop in false alarms: the app adds a push for unknown senders,
+  the inbox story and M-Pesa memory, and people uninstall an app that cries wolf.
+
+**One fix that came with it.** The second inbox has a lot of betting adverts from a few senders; we cap them at 15
+per sender so a handful of betting companies cannot teach the model that betting words are normal.
+
+**What the missed scams look like** (in the replay, before training): short "send it to this number" texts that
+sat just below the warning line, a "calculator for mum" lure, job and romance openers and an investment pitch.
+Vague openers like these are why Linda also uses the "stranger asking for money" and "new number" rules.

@@ -22,6 +22,9 @@ Raw and processed real data are git-ignored. To rebuild them:
    `ml/data/labels/private/team_inbox_labels.csv` (both git-ignored; the donor keeps the labels file and hands it
    over only to whoever retrains). `make data` scrubs and builds `processed/team_collected.csv` with
    `ml/src/features/dataset/team_inbox.py`. Without the two private files this step is skipped.
+   More donations go next to it as `team_inbox_2.csv`, `team_inbox_3.csv`, ... (all read together; their labels go in
+   the same labels file). Donors' family names go one per line in `ml/data/labels/private/donor_names.txt`
+   (git-ignored) so the scrubber replaces them; without that file only the generic scrubbing runs.
 
 Kenyan team messages go in `processed/team_collected.csv` with the schema below (`source` = `team_collected`).
 The trainer picks the file up automatically; put whole scam campaigns in `test` so the score shows how

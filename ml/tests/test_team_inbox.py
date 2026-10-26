@@ -21,8 +21,18 @@ def test_brand_words_survive():
 
 
 def test_the_donors_family_names_never_survive():
-    for name in ("Lester", "LESTER", "Sinja", "Watosia", "Wesley"):
-        assert name.lower() not in T.scrub(f"Dear {name}, your bundle is ready. Hi {name}!").lower()
+    # Made-up names: the real ones live in the private, git-ignored donor_names.txt, never in the code or the tests.
+    family = T.names_pattern(["Amani", "Wekesa", "Nafula"])
+    for name in ("Amani", "AMANI", "Wekesa", "Nafula"):
+        assert name.lower() not in T.scrub(f"Dear {name}, your bundle is ready. Hi {name}!", family).lower()
+    assert "wekesa" not in T.scrub("You have received KES 50 into your AMANI WEKESA - 305097 Till", family).lower()
+
+
+def test_every_donation_is_read(tmp_path, monkeypatch):
+    for name in ("team_inbox.csv", "team_inbox_2.csv", "other.csv"):
+        (tmp_path / name).write_text("x", encoding="utf-8")
+    monkeypatch.setattr(T, "RAW_DIR", tmp_path)
+    assert [p.name for p in T.donations()] == ["team_inbox.csv", "team_inbox_2.csv"]
 
 
 def test_numbers_codes_markers_and_emails_are_replaced():
@@ -73,6 +83,7 @@ def test_without_the_private_files_the_pipeline_still_runs(tmp_path):
 
 
 def test_private_files_are_git_ignored():
-    for p in ("ml/data/raw/team_inbox.csv", "ml/data/labels/private/team_inbox_labels.csv",
+    for p in ("ml/data/raw/team_inbox.csv", "ml/data/raw/team_inbox_2.csv", "ml/data/labels/private/team_inbox_labels.csv",
+              "ml/data/labels/private/donor_names.txt",
               "ml/data/processed/team_collected.csv"):
         assert subprocess.run(["git", "check-ignore", "-q", p], cwd=T.ROOT).returncode == 0, p

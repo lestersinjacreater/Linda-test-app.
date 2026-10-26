@@ -3,65 +3,65 @@
     "warn": 0.55,
     "scam": 0.8
   },
-  "model_version": "2026.10.25-1",
-  "real_test_rows": 1683,
+  "model_version": "2026.10.26-1",
+  "real_test_rows": 2127,
   "validation": {
     "tp": 350,
-    "fp": 7,
-    "fn": 28,
-    "tn": 876,
-    "precision": 0.9803921568627451,
-    "recall": 0.9259259259259259,
-    "f1": 0.9523809523809523,
-    "hard_negative_false_alarm_rate": 0.015209125475285171,
+    "fp": 10,
+    "fn": 35,
+    "tn": 1038,
+    "precision": 0.9722222222222222,
+    "recall": 0.9090909090909091,
+    "f1": 0.9395973154362416,
+    "hard_negative_false_alarm_rate": 0.01834862385321101,
     "verified_sender_false_alarm_rate": 0.0,
-    "hard_negatives": 263,
-    "verified_sender_messages": 188
+    "hard_negatives": 327,
+    "verified_sender_messages": 235
   },
   "per_category_recall": {
-    "bongoscam": 0.8981481481481481,
+    "bongoscam": 0.8888888888888888,
     "fake_mpesa": 1.0,
     "fuliza_upgrade": 1.0,
-    "job_fee": 1.0,
+    "job_fee": 0.9545454545454546,
     "kra_refund": 1.0,
-    "loan_fee": 1.0,
-    "mendeley_smishing": 0.8333333333333334,
-    "other": 0.5882352941176471,
+    "loan_fee": 0.9523809523809523,
+    "mendeley_smishing": 0.75,
+    "other": 0.6818181818181818,
     "phishing_link": 0.9130434782608695,
     "pin_request": 1.0,
     "prize": 1.0,
     "reversal": 1.0
   },
   "held_out_campaign_detection": {
-    "bongoscam": 0.43859649122807015,
-    "fake_mpesa": 0.21875,
-    "fuliza_upgrade": 1.0,
-    "job_fee": 0.875,
+    "bongoscam": 0.3684210526315789,
+    "fake_mpesa": 0.23170731707317074,
+    "fuliza_upgrade": 0.9875,
+    "job_fee": 0.8272727272727273,
     "kra_refund": 1.0,
-    "loan_fee": 0.7468354430379747,
-    "mendeley_smishing": 0.4537987679671458,
-    "other": 0.21808510638297873,
-    "phishing_link": 0.7142857142857143,
-    "pin_request": 1.0,
+    "loan_fee": 0.7727272727272727,
+    "mendeley_smishing": 0.35523613963039014,
+    "other": 0.2544642857142857,
+    "phishing_link": 0.6846153846153846,
+    "pin_request": 0.9885057471264368,
     "prize": 0.9903846153846154,
-    "reversal": 0.545,
-    "sent_by_mistake": 1.0
+    "reversal": 0.555,
+    "sent_by_mistake": 0.9166666666666666
   },
-  "held_out_campaign_average": 0.7077489337143461,
+  "held_out_campaign_average": 0.6871154776032715,
   "obfuscation": {
-    "original_detection": 0.9259259259259259,
-    "disguised_detection": 0.9232804232804233
+    "original_detection": 0.9090909090909091,
+    "disguised_detection": 0.9012987012987013
   },
   "by_language": {
     "en": {
-      "scam_recall": 0.9135802469135802,
-      "false_alarm_rate": 0.006954102920723227,
-      "n": 881
+      "scam_recall": 0.8841463414634146,
+      "false_alarm_rate": 0.00936768149882904,
+      "n": 1018
     },
     "mixed": {
       "scam_recall": 1.0,
-      "false_alarm_rate": 0.05555555555555555,
-      "n": 23
+      "false_alarm_rate": 0.03125,
+      "n": 40
     },
     "sheng": {
       "scam_recall": null,
@@ -69,9 +69,9 @@
       "n": 60
     },
     "sw": {
-      "scam_recall": 0.933649289099526,
-      "false_alarm_rate": 0.011627906976744186,
-      "n": 297
+      "scam_recall": 0.9248826291079812,
+      "false_alarm_rate": 0.00980392156862745,
+      "n": 315
     }
   },
   "shared_vectors": {
@@ -83,11 +83,11 @@
     "missed_scam_ids": [],
     "caution_total": 5,
     "caution_in_band": 0,
-    "level_agreement": 0.8888888888888888
+    "level_agreement": 0.9206349206349206
   },
   "size_and_speed": {
     "model_json_kb": 86,
-    "ms_per_message_python_dev_machine": 0.5,
+    "ms_per_message_python_dev_machine": 0.45,
     "buckets": 32768,
     "phone_latency": "NOT MEASURED (needs the cheapest team phone)"
   },
@@ -104,52 +104,52 @@
       "n": 109
     },
     "kenya_sms": {
-      "tp": 39,
-      "fp": 14,
-      "fn": 12,
-      "tn": 52,
-      "precision": 0.7358490566037735,
-      "recall": 0.7647058823529411,
-      "f1": 0.7499999999999999,
-      "false_alarm_rate": 0.21212121212121213,
+      "tp": 38,
+      "fp": 6,
+      "fn": 13,
+      "tn": 60,
+      "precision": 0.8636363636363636,
+      "recall": 0.7450980392156863,
+      "f1": 0.8,
+      "false_alarm_rate": 0.09090909090909091,
       "n": 117
     },
     "mendeley_smishing": {
-      "tp": 62,
-      "fp": 2,
-      "fn": 6,
-      "tn": 1035,
-      "precision": 0.96875,
-      "recall": 0.9117647058823529,
-      "f1": 0.9393939393939394,
-      "false_alarm_rate": 0.0019286403085824494,
+      "tp": 61,
+      "fp": 0,
+      "fn": 7,
+      "tn": 1037,
+      "precision": 1.0,
+      "recall": 0.8970588235294118,
+      "f1": 0.9457364341085273,
+      "false_alarm_rate": 0.0,
       "n": 1105
     },
     "team_collected": {
-      "tp": 7,
-      "fp": 13,
+      "tp": 24,
+      "fp": 33,
       "fn": 0,
-      "tn": 332,
-      "precision": 0.35,
+      "tn": 739,
+      "precision": 0.42105263157894735,
       "recall": 1.0,
-      "f1": 0.5185185185185185,
-      "false_alarm_rate": 0.03768115942028986,
-      "n": 352
+      "f1": 0.5925925925925926,
+      "false_alarm_rate": 0.042746113989637305,
+      "n": 796
     },
     "all": {
-      "tp": 125,
-      "fp": 29,
-      "fn": 18,
-      "tn": 1511,
-      "precision": 0.8116883116883117,
-      "recall": 0.8741258741258742,
-      "f1": 0.8417508417508417,
-      "false_alarm_rate": 0.01883116883116883,
-      "n": 1683
+      "tp": 140,
+      "fp": 39,
+      "fn": 20,
+      "tn": 1928,
+      "precision": 0.7821229050279329,
+      "recall": 0.875,
+      "f1": 0.8259587020648969,
+      "false_alarm_rate": 0.019827147941026944,
+      "n": 2127
     }
   },
   "betting_ads_test": {
-    "n": 25,
-    "warned": 8
+    "n": 45,
+    "warned": 15
   }
 }

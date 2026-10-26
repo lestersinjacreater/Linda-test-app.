@@ -1,9 +1,11 @@
 """Turns a team member's donated inbox into scrubbed training rows (ml/data/processed/team_collected.csv).
 
-PRIVATE DATA. The raw file, the labels and the output are all git-ignored and stay on the machine that trains:
-  - ml/data/raw/team_inbox.csv                    the donation export: donor_id, sender_id, sender_type, text, received_at
+PRIVATE DATA. The raw files, the labels and the output are all git-ignored and stay on the machine that trains:
+  - ml/data/raw/team_inbox*.csv                   the donation exports (one per donor; team_inbox.csv, team_inbox_2.csv):
+                                                  donor_id, sender_id, sender_type, text, received_at
                                                   (personal senders already hashed as P_<hex> by the donation tool)
   - ml/data/labels/private/team_inbox_labels.csv  raw_id (16 hex characters of the SHA-256 of the raw text), label
+  - ml/data/labels/private/donor_names.txt        the donors' and close family's names, scrubbed from every text
   - ml/data/processed/team_collected.csv          scrubbed rows for the trainer
 Only the trained model (hashed letter-piece weights) and aggregate metrics leave the machine.
 
@@ -36,17 +38,35 @@ from src.features.dataset.public import clean, group_keys  # noqa: E402
 from src.features.dataset.synthetic import COLUMNS, write_csv  # noqa: E402
 from src.features.scoring.categories import categorise  # noqa: E402
 
-RAW = ROOT / "ml" / "data" / "raw" / "team_inbox.csv"
+RAW = ROOT / "ml" / "data" / "raw" / "team_inbox.csv"   # the first donation; more are team_inbox_2.csv, team_inbox_3.csv ...
+RAW_DIR = ROOT / "ml" / "data" / "raw"
 LABELS = ROOT / "ml" / "data" / "labels" / "private" / "team_inbox_labels.csv"
 OUT = ROOT / "ml" / "data" / "processed" / "team_collected.csv"
 VERIFIED_PATH = ROOT / "shared" / "verified_senders.json"
 SOURCE = "team_collected"
 NEVER_USE = {"STAFFUPDATE", "SAFARICOMHR"}
 MAX_PER_GROUP = 1
+# One betting company can send hundreds of different adverts ("WIN 50,000! Download the app"). Trained as genuine, that
+# many would teach the model that "win money" wording is harmless, which is exactly what prize scams use. So each
+# sender keeps at most this many betting adverts.
+MAX_BETTING_PER_SENDER = 15
 PERSONAL_SENDER = "254700000999"  # personal senders arrive hashed; the model only needs "this is a phone number"
 
-# The donor's and close family's names (the donor asked for their inbox to be used; these must still never appear).
-FAMILY = re.compile(r"\b(?:lester|sinja|watosia|wesley|wesly|judith|beryl|berylwatosia|kapchanga|lusike)\b", re.IGNORECASE)
+# The donors' own and close family's names: they must never appear in training text, even where no rule catches them
+# ("into your KELVIN ... Till"). Kept in a private, git-ignored file (one name per line), never in the code.
+NAMES_FILE = ROOT / "ml" / "data" / "labels" / "private" / "donor_names.txt"
+
+
+def names_pattern(words: list[str]):
+    words = [w.strip() for w in words if w.strip()]
+    return re.compile(r"\b(?:" + "|".join(map(re.escape, words)) + r")\b", re.IGNORECASE) if words else None
+
+
+def load_names(path: Path = NAMES_FILE) -> list[str]:
+    return path.read_text(encoding="utf-8").split() if path.exists() else []
+
+
+FAMILY = names_pattern(load_names())
 _MARKER = re.compile(r"<(PHONE|CARD)_?[0-9a-f]*>")
 _OTP = re.compile(r"<OTP>")
 _EMAIL = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]+\b")
@@ -107,7 +127,9 @@ def fake_code(code: str) -> str:
     return "".join(letters[:6] + digits[:1] + letters[6:8] + digits[1:2])
 
 
-def scrub(text: str) -> str:
+def scrub(text: str, family=None) -> str:
+    """`family`: a names pattern (names_pattern); by default the donors' names from the private file."""
+    family = FAMILY if family is None else family
     t = text.replace("\r", " ").replace("\n", " ")
     t = _MARKER.sub("0700000000", t)
     t = _OTP.sub("482913", t)
@@ -116,7 +138,8 @@ def scrub(text: str) -> str:
     t = _mask_names(t)
     t = _NAME_BEFORE_SENT.sub("JOHN DOE", t)
     t = _GREETING_NAME.sub(lambda m: m.group(0) if m.group(2).split()[0] in _KEEP_AFTER_GREETING else m.group(1) + "JOHN", t)
-    t = FAMILY.sub("JOHN", t)
+    if family is not None:
+        t = family.sub("JOHN", t)
     return clean(t)  # phone and account numbers (9+ digits), "jina ..." names, spacing
 
 
@@ -134,16 +157,26 @@ def split_for(key: str) -> str:
 _MONEY_OR_SECURITY = re.compile(r"ksh|kes|confirmed|m-?pesa|pin|otp|loan|fuliza|paybill|till|bonus|win|reversal", re.I)
 
 
-def build(raw: Path = RAW, labels_path: Path = LABELS) -> tuple[list[dict], dict]:
-    """Returns (rows, stats). Without the private files there are no rows, and the pipeline still runs."""
+def donations() -> list[Path]:
+    """Every donated inbox on this machine: team_inbox.csv, team_inbox_2.csv, ..."""
+    return sorted(RAW_DIR.glob("team_inbox*.csv"))
+
+
+def build(raw=None, labels_path: Path = LABELS) -> tuple[list[dict], dict]:
+    """Returns (rows, stats). `raw`: one donated inbox or a list of them (default: all of them). Without the private
+    files there are no rows, and the pipeline still runs."""
     stats = {"read": 0, "staff": 0, "unlabelled": 0, "unsure": 0, "excluded": 0, "duplicates": 0, "capped": 0, "kept": 0}
-    if not raw.exists() or not labels_path.exists():
+    raws = donations() if raw is None else ([raw] if isinstance(raw, Path) else list(raw))
+    raws = [r for r in raws if r.exists()]
+    if not raws or not labels_path.exists():
         return [], stats
     import json
     verified = {s.upper() for s in json.loads(VERIFIED_PATH.read_text(encoding="utf-8"))["sender_ids"]}
     labels = load_labels(labels_path)
-    with open(raw, newline="", encoding="utf-8-sig", errors="replace") as f:
-        found = list(csv.DictReader(f))
+    found = []
+    for path in raws:
+        with open(path, newline="", encoding="utf-8-sig", errors="replace") as f:
+            found += list(csv.DictReader(f))
     stats["read"] = len(found)
     candidates, seen = [], set()
     for r in found:
@@ -192,6 +225,17 @@ def build(raw: Path = RAW, labels_path: Path = LABELS) -> tuple[list[dict], dict
                     "is_hard_negative": "true" if (not is_scam and (c["label"] == "betting_ad" or _MONEY_OR_SECURITY.search(c["text"]))) else "false",
                     "language": language(c["text"]), "split": split,
                 })
+    # Cap betting adverts per sender (see MAX_BETTING_PER_SENDER), keeping a stable choice.
+    kept_ads: dict[str, int] = {}
+    capped_rows = []
+    for r in sorted(rows, key=lambda r: hashlib.sha256(r["text"].encode()).hexdigest()):
+        if r["campaign"] == "betting_ad":
+            kept_ads[r["sender"]] = kept_ads.get(r["sender"], 0) + 1
+            if kept_ads[r["sender"]] > MAX_BETTING_PER_SENDER:
+                stats["capped"] += 1
+                continue
+        capped_rows.append(r)
+    rows = sorted(capped_rows, key=lambda r: r["id"])
     stats["kept"] = len(rows)
     return [{k: r[k] for k in COLUMNS} for r in rows], stats
 
@@ -199,7 +243,7 @@ def build(raw: Path = RAW, labels_path: Path = LABELS) -> tuple[list[dict], dict
 def main() -> None:
     rows, stats = build()
     if not rows:
-        print(f"no private inbox files ({RAW.name} and {LABELS.name}); see ml/data/README.md")
+        print(f"no private inbox files (team_inbox*.csv and {LABELS.name}); see ml/data/README.md")
         return
     write_csv(OUT, rows)
     counts: dict[tuple, int] = {}
