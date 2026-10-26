@@ -35,7 +35,7 @@ fun LearningSettings() {
     val remembered by countFlow.collectAsState(initial = 0)
     val taps by remember { LearningStore.observeTaps(context) }.collectAsState()
 
-    Text(stringResource(R.string.learning_title), style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.learning_title), style = MaterialTheme.typography.titleLarge)
     Text(stringResource(R.string.learning_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Text(stringResource(R.string.learning_senders_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     Row(verticalAlignment = Alignment.CenterVertically) {

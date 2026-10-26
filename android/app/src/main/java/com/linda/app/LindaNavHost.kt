@@ -36,6 +36,7 @@ import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.demo.DemoOverlayPanel
 import com.linda.app.features.demo.DemoScreen
 import com.linda.app.features.detail.DetailScreen
+import com.linda.app.features.learning.LearningScreen
 import com.linda.app.features.guardian.GuardianScreen
 import com.linda.app.features.history.HistoryScreen
 import com.linda.app.features.home.HomeScreen
@@ -116,7 +117,14 @@ fun LindaNavHost(openDetectionId: Long? = null, openWhat: String? = null, shared
             composable(Destination.Home.route) { HomeScreen(onOpenInbox = { navController.navigate("inbox") }, onOpenRecovery = { navController.navigate("recovery/-1") }) }
             composable(Destination.Checker.route) { CheckerScreen(sharedText) }
             composable(Destination.History.route) { HistoryScreen(onOpen = { navController.navigate("detail/$it") }) }
-            composable(Destination.Settings.route) { SettingsScreen(onOpenDemo = { navController.navigate("demo") }, onOpenGuardian = { navController.navigate("guardian") }) }
+            composable(Destination.Settings.route) {
+                SettingsScreen(
+                    onOpenDemo = { navController.navigate("demo") },
+                    onOpenGuardian = { navController.navigate("guardian") },
+                    onOpenLearning = { navController.navigate("learning") },
+                )
+            }
+            composable("learning") { LearningScreen(onBack = { navController.popBackStack() }) }
             composable("inbox") { InboxScreen(onOpenDetail = { navController.navigate("detail/$it") }, onBack = { navController.popBackStack() }) }
             composable("guardian") { GuardianScreen(onBack = { navController.popBackStack() }) }
             composable("demo") { DemoScreen(onBack = { navController.popBackStack() }) }

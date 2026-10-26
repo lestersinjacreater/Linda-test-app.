@@ -23,6 +23,8 @@ If it ever conflicts with CLAUDE.md, CLAUDE.md wins and this file is updated.
 >   "How Linda decided" disclosure on verdict cards (open from the start in demo mode, so judges still watch the layers work);
 >   one primary button with quiet text buttons under it; at most three reasons, never the model's letter pieces; "Mark as safe"
 >   gets Undo instead of a dialog; the report sheet shows the number and scam type, with the codes one tap away (7.3, 7.9, 7.11, 7.12).
+>   Home keeps the ring and one status line, with two rows under it; the Network card (7.10) is retired; Settings becomes a
+>   grouped list (7.13), and "What Linda learns" gets its own screen.
 
 ---
 
@@ -196,7 +198,9 @@ A horizontal row of five rounded segments (Small radius, 8dp gaps), each showing
 A large circle (200dp) made of **five arcs**, one per layer, in the layer tints.
 - All five filled: "LINDA is protecting you" / "LINDA inakulinda".
 - A missing permission dims the relevant arc and shows a fix button (e.g. N dims if contacts access is off).
-- Centre: shield wordmark. Below: "**12** scams stopped this month" in tabular figures.
+- Centre: shield wordmark. Below: "**12** scams stopped this month" in tabular figures, only once the count is above 0;
+  before that, one line: "No scams yet. LINDA is watching."
+- Under the ring card, one grouped list (7.13) with two rows: "Scan my inbox" and "I have been scammed. What now?".
 - Idle animation: one slow "breath" every 6 seconds (scale 1.00 → 1.02). Respect reduce-motion.
 
 ### 7.3 Verdict Card
@@ -238,8 +242,9 @@ Hidden toggle (tap the logo 7 times). Shows a translucent panel at the bottom of
 
 ---
 
-### 7.10 Network card (Home)
-Shown only to people who agreed to send reports (only they help warn others). Mint (`green50`; `surfaceRaised` in dark), Medium radius,
+### 7.10 Network card (Home): retired 2026-10-26
+Removed in the simplicity pass: it explained the pitch rather than asking anything of the person. The network story lives
+in the pitch and on the "Help protect others" switch in Settings. It was: shown only to people who agreed to send reports (only they help warn others). Mint (`green50`; `surfaceRaised` in dark), Medium radius,
 16dp padding, a small three-phones mark in `primary`, title "You help protect others too" / "Unasaidia kulinda wengine pia" in Heading
 `primary`, body in Body `textPrimary`: "When Linda phones catch the same scammer, Safaricom can warn everyone who got it, even on basic
 phones." No number on it: never a figure we cannot prove.
@@ -253,6 +258,12 @@ sheet's technical details. The common path stays on screen; the detail is one ta
 After a reversible action ("Mark as safe"), a bar floats at the bottom of the screen for 8 seconds: `surfaceRaised`, Medium
 radius, a soft shadow, the result in Body Large ("Marked as safe" / "Imewekwa kuwa salama") and an "Undo" / "Tendua" text button.
 Undo instead of "Are you sure?": quick to do, easy to take back.
+
+### 7.13 Grouped list
+For settings and short menus, like a phone's own Settings. A small Label heading in `textSecondary` above a `surface` card
+(Medium radius, card shadow); rows at least 56dp tall with 16dp padding and a thin `border` line between rows (indented
+16dp). Each row: a title in Body Large, at most one short line under it in Body `textSecondary`, and on the right a switch,
+a green tick for "on" (read out as "On"; a word was too wide in Kiswahili), a green "Turn on", or a chevron for "opens another screen". The whole row is the tap target.
 
 ---
 

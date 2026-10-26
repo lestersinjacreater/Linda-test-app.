@@ -35,7 +35,7 @@ class WarningRouteTest {
 
     @Test fun newWordingExistsInEnglishAndSwahili() {
         val en = strings("values"); val sw = strings("values-sw")
-        for (k in listOf("notif_action_why", "home_network_title", "home_network_body")) {
+        for (k in listOf("notif_action_why", "action_undo", "detail_how_decided", "settings_section_protection", "learning_row")) {
             assertTrue(k, en.getValue(k).isNotBlank() && sw.getValue(k).isNotBlank() && en[k] != sw[k])
         }
         for (s in listOf(en, sw)) for (k in listOf("consent_body", "report_dialog_intro")) assertFalse(k, s.getValue(k).contains("rada"))

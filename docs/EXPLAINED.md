@@ -1117,3 +1117,18 @@ first, the rest one level deeper. Nothing that protects people was removed.
 
 **How it is checked.** `WarningReasonsTest` (Kotlin), and the phone tour now taps Undo after "Mark as safe", checks the
 button comes back, and marks it again.
+
+## Simpler Home and Settings (26 Oct)
+
+**Home** keeps the shield ring and one status line. The count ("3 scams stopped this month") shows only once Linda has
+stopped something; before that, one calm line: "No scams yet. LINDA is watching." Under it, one list with two rows:
+"Scan my inbox" and "I have been scammed. What now?". The "You help protect others too" card is gone: it explained the
+pitch instead of helping the person do something, and the same idea is the description of the reports switch.
+
+**Settings** is a grouped list like a phone's own Settings (`core/ui/components/ListRows.kt`): Language; Protection
+(scam caller warnings with "On" or "Turn on", read warnings aloud, help protect others); Family and privacy (Family
+Guardian and "What Linda learns", each on its own screen). Every row has at most one short line, and the whole row is
+the tap target (a bigger target than the small switch). The Kiswahili-voice line only appears when that voice is missing,
+and then one tap installs it. "Test the voice" and the number of reports waiting moved to the hidden developer section
+(tap the version 7 times), because only the team needs them. The call-warnings row now notices when you come back from
+Android's dialog, so it says "On" straight away.
