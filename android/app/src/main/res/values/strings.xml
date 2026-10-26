@@ -20,6 +20,17 @@
     <string name="history_empty">No suspicious messages yet. Linda will list them here.</string>
 
     <string name="settings_title">Settings</string>
+    <string name="update_title">Updates</string>
+    <string name="update_checking">Checking for a newer Linda…</string>
+    <string name="update_none">Linda is up to date.</string>
+    <string name="update_check_failed">Could not check for updates. Tap to try again.</string>
+    <string name="update_available_title">Update to build %1$d</string>
+    <string name="update_available_body">About %1$s MB. Your settings and history stay.</string>
+    <string name="update_downloading">Downloading… %1$d%%</string>
+    <string name="update_download_failed">The download did not finish. Tap to try again.</string>
+    <string name="update_allow">Allow Linda to install updates, then tap here again.</string>
+    <string name="update_ready">Tap Update on Android\'s screen. If you closed it, tap here.</string>
+    <string name="update_action">Update</string>
     <string name="settings_section_protection">Protection</string>
     <string name="settings_section_family">Family and privacy</string>
     <string name="settings_on">On</string>

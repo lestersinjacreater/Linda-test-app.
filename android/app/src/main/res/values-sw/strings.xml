@@ -20,6 +20,17 @@
     <string name="history_empty">Hakuna ujumbe wenye shaka bado. Linda ataorodhesha hapa.</string>
 
     <string name="settings_title">Mipangilio</string>
+    <string name="update_title">Masasisho</string>
+    <string name="update_checking">Inatafuta Linda mpya zaidi…</string>
+    <string name="update_none">Linda ni toleo jipya zaidi.</string>
+    <string name="update_check_failed">Imeshindwa kutafuta masasisho. Gusa ujaribu tena.</string>
+    <string name="update_available_title">Sasisha hadi toleo %1$d</string>
+    <string name="update_available_body">Takriban MB %1$s. Mipangilio na historia yako vitabaki.</string>
+    <string name="update_downloading">Inapakua… %1$d%%</string>
+    <string name="update_download_failed">Upakuaji haukukamilika. Gusa ujaribu tena.</string>
+    <string name="update_allow">Ruhusu Linda isakinishe masasisho, kisha gusa hapa tena.</string>
+    <string name="update_ready">Gusa Sasisha kwenye skrini ya Android. Ukiifunga, gusa hapa.</string>
+    <string name="update_action">Sasisha</string>
     <string name="settings_section_protection">Ulinzi</string>
     <string name="settings_section_family">Familia na faragha</string>
     <string name="settings_on">Imewashwa</string>

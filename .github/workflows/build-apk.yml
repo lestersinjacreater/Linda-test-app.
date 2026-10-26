@@ -44,7 +44,17 @@ jobs:
 
       - name: Unit tests, debug APK and shrunk APK
         working-directory: android
-        run: ./gradlew testDebugUnitTest assembleDebug assembleRelease --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew testDebugUnitTest assembleDebug assembleRelease --stacktrace 2>&1 | tee gradle.log
+
+      # Turns compile, test and lint errors into annotations on the check, so they can be read without the full log.
+      - name: Show the errors on failure
+        if: failure()
+        working-directory: android
+        run: |
+          grep -E "^e: |FAILED|error:|Error:|Exception|expected:<" gradle.log | grep -v "^\s*at " | head -25 |
+            while IFS= read -r line; do echo "::error::${line:0:900}"; done
 
       - name: Check APK sizes (debug under 15 MB; shrunk build budget 5 MB, root CLAUDE.md 7.1)
         run: |
