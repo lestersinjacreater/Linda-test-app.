@@ -33,7 +33,8 @@ object Updater {
      */
     suspend fun check(force: Boolean = false): AvailableUpdate? = withContext(Dispatchers.IO) {
         val now = System.currentTimeMillis()
-        lastAnswer?.let { (at, answer) -> if (!force && now - at < RECHECK_MS) return@withContext answer }
+        val cached = lastAnswer
+        if (!force && cached != null && now - cached.first < RECHECK_MS) return@withContext cached.second
         val response = Http.get(UpdateCheck.RELEASE_API, headers = mapOf("Accept" to "application/vnd.github+json"))
             ?: throw java.io.IOException("unreachable")
         if (response.code != 200) throw java.io.IOException("HTTP ${response.code}")
