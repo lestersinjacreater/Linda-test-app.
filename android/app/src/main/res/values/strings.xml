@@ -20,6 +20,14 @@
     <string name="history_empty">No suspicious messages yet. Linda will list them here.</string>
 
     <string name="settings_title">Settings</string>
+    <string name="settings_section_protection">Protection</string>
+    <string name="settings_section_family">Family and privacy</string>
+    <string name="settings_on">On</string>
+    <string name="settings_turn_on">Turn on</string>
+    <string name="settings_calls_row">Labels known scam numbers while they ring. Never blocks a call.</string>
+    <string name="voice_row">Only when Linda is sure. Quiet on silent or during a call.</string>
+    <string name="voice_sw_missing_short">No Kiswahili voice on this phone. Tap to install one.</string>
+    <string name="learning_row">See what Linda learns on this phone, or make it forget.</string>
     <string name="settings_language_label">Language</string>
     <string name="settings_language_value">Follows your phone language (English or Kiswahili).</string>
 
@@ -69,6 +77,7 @@
     <string name="onboarding_battery_title">2. Keep Linda awake</string>
     <string name="onboarding_open_battery">Open battery settings</string>
     <string name="onboarding_done">I am ready</string>
+    <string name="onboarding_next">Next</string>
     <string name="battery_generic">Open Settings, find Linda in Battery, and choose "Unrestricted" or "Don\'t optimise". Without this your phone may stop Linda when the screen is off.</string>
     <string name="battery_tecno">Tecno: Settings > Apps > Linda > Battery > "No restrictions". Then open Phone Master or Phone Manager > Autostart and switch Linda on. Also lock Linda in the recent-apps list.</string>
     <string name="battery_infinix">Infinix: Settings > Apps > Linda > Battery > "No restrictions". Then open XOS Phone Master > Autostart and switch Linda on. Also lock Linda in the recent-apps list.</string>
@@ -125,6 +134,8 @@
     <string name="recovery_intro_urgent">Act fast. The first minutes matter most. Do these steps in order.</string>
     <string name="recovery_intro_late">Some time has passed, but you can still report this and protect other people.</string>
     <string name="recovery_form_title">Tell Linda what happened (optional)</string>
+    <string name="recovery_details_title">Add details for a more exact report (optional)</string>
+    <string name="recovery_other_language">The same report in Kiswahili</string>
     <string name="recovery_form_help">This only makes the steps and the report text more exact. It stays on your phone.</string>
     <string name="recovery_amount">How much did you send? (Ksh)</string>
     <string name="recovery_when_title">When did you send it?</string>
@@ -255,8 +266,6 @@
 
     <string name="action_report">Report this number</string>
     <string name="notif_action_why">See why</string>
-    <string name="home_network_title">You help protect others too</string>
-    <string name="home_network_body">When Linda phones catch the same scammer, Safaricom can warn everyone who got it, even on basic phones.</string>
     <string name="report_done">Reported. Thank you for helping protect others.</string>
     <string name="report_dialog_title">Report this number?</string>
     <string name="report_dialog_intro">This is exactly what goes to Safaricom\'s fraud team, so other people can be warned:</string>

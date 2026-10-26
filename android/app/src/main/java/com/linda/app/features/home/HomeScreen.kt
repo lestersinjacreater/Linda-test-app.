@@ -11,17 +11,14 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -35,13 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -51,15 +43,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.linda.app.R
 import com.linda.app.core.ui.components.LindaButton
-import com.linda.app.core.ui.components.LindaCard
+import com.linda.app.core.ui.components.ListGroup
+import com.linda.app.core.ui.components.ListRow
 import com.linda.app.core.ui.theme.LindaText
 import com.linda.app.core.ui.theme.LindaTheme
-import com.linda.app.core.ui.theme.MediumShape
 import com.linda.app.core.ui.theme.ShieldNotchShape
 import com.linda.app.core.ui.theme.Spacing
-import com.linda.app.core.ui.theme.green50
 import com.linda.app.core.ui.theme.green900
-import com.linda.app.core.util.Prefs
 import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.demo.TapCounter
 import com.linda.app.features.permissions.SmsAccessHelp
@@ -169,30 +159,30 @@ fun HomeScreen(onOpenInbox: () -> Unit, onOpenRecovery: () -> Unit, viewModel: H
                 }
             }
             Spacer(Modifier.height(Spacing.xl))
-            Text(caught.toString(), style = LindaText.bigNumber, color = colors.primary)
-            Text(
-                stringResource(R.string.home_caught_this_month),
-                style = MaterialTheme.typography.bodyLarge,
-                color = colors.textSecondary,
-                textAlign = TextAlign.Center,
-            )
-            if (caught == 0) {
-                Spacer(Modifier.height(Spacing.xs))
-                Text(stringResource(R.string.home_empty), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary, textAlign = TextAlign.Center)
+            // One line, not two: a count once Linda has stopped something, otherwise the calm "watching" line.
+            if (caught > 0) {
+                Text(caught.toString(), style = LindaText.bigNumber, color = colors.primary)
+                Text(
+                    stringResource(R.string.home_caught_this_month),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = colors.textSecondary,
+                    textAlign = TextAlign.Center,
+                )
+            } else {
+                Text(stringResource(R.string.home_empty), style = MaterialTheme.typography.bodyLarge, color = colors.textSecondary, textAlign = TextAlign.Center)
             }
         }
 
-        // The network story: only people who agreed to send reports help warn others, so only they see it.
-        if (Prefs.reportingConsent(context)) NetworkCard()
-
-        LindaCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenInbox) {
-            Text(stringResource(R.string.home_inbox_title), style = MaterialTheme.typography.titleMedium, color = colors.primary)
-            Text(stringResource(R.string.home_inbox_body), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
-        }
-        // Always one tap away: someone who just lost money should not have to hunt for help.
-        LindaCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenRecovery) {
-            Text(stringResource(R.string.home_recovery_title), style = MaterialTheme.typography.titleMedium, color = colors.primary)
-            Text(stringResource(R.string.home_recovery_body), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
+        // Two rows, not cards: scan the old messages, and (always one tap away) help for someone who just lost money.
+        ListGroup {
+            ListRow(
+                stringResource(R.string.home_inbox_title), subtitle = stringResource(R.string.home_inbox_body),
+                onClick = onOpenInbox, chevron = true,
+            )
+            ListRow(
+                stringResource(R.string.home_recovery_title), subtitle = stringResource(R.string.home_recovery_body),
+                onClick = onOpenRecovery, chevron = true, divider = true,
+            )
         }
     }
 }
@@ -207,43 +197,4 @@ private fun openAppSettings(context: Context, problem: Problem) {
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
     }
     context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-}
-
-/**
- * "You help protect others too": every Linda phone is a sensor, and when a few catch the same scammer Safaricom can
- * warn everyone who got it, even on basic phones (root CLAUDE.md 1). No number here: we never show a figure we cannot prove.
- */
-@Composable
-private fun NetworkCard() {
-    val colors = LindaTheme.colors
-    val tint = if (colors.isDark) colors.surfaceRaised else green50
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
-        modifier = Modifier.fillMaxWidth().background(tint, MediumShape).padding(Spacing.lg),
-    ) {
-        NetworkMark(line = colors.primary, fill = tint)
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            Text(stringResource(R.string.home_network_title), style = MaterialTheme.typography.titleMedium, color = colors.primary)
-            Text(stringResource(R.string.home_network_body), style = MaterialTheme.typography.bodyMedium, color = colors.textPrimary)
-        }
-    }
-}
-
-/** Three phones joined together: a small drawing, hidden from screen readers because the title next to it says it all. */
-@Composable
-private fun NetworkMark(line: Color, fill: Color) {
-    Canvas(Modifier.size(32.dp).clearAndSetSemantics { }) {
-        val s = size.width / 24f
-        val stroke = 1.8f * s
-        val top = Offset(12 * s, 5 * s)
-        val left = Offset(5 * s, 18 * s)
-        val right = Offset(19 * s, 18 * s)
-        drawLine(line, top, left, strokeWidth = stroke, cap = StrokeCap.Round)
-        drawLine(line, top, right, strokeWidth = stroke, cap = StrokeCap.Round)
-        drawLine(line, left, right, strokeWidth = stroke, cap = StrokeCap.Round)
-        for (p in listOf(top, left, right)) {
-            drawCircle(fill, radius = 2.5f * s, center = p)
-            drawCircle(line, radius = 2.5f * s, center = p, style = Stroke(width = stroke))
-        }
-    }
 }

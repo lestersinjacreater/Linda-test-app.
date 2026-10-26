@@ -23,6 +23,9 @@ If it ever conflicts with CLAUDE.md, CLAUDE.md wins and this file is updated.
 >   "How Linda decided" disclosure on verdict cards (open from the start in demo mode, so judges still watch the layers work);
 >   one primary button with quiet text buttons under it; at most three reasons, never the model's letter pieces; "Mark as safe"
 >   gets Undo instead of a dialog; the report sheet shows the number and scam type, with the codes one tap away (7.3, 7.9, 7.11, 7.12).
+>   Home keeps the ring and one status line, with two rows under it; the Network card (7.10) is retired; Settings becomes a
+>   grouped list (7.13), and "What Linda learns" gets its own screen. Recovery shows the steps before any form (7.6), and the
+>   first run becomes three short pages (7.14).
 
 ---
 
@@ -196,7 +199,9 @@ A horizontal row of five rounded segments (Small radius, 8dp gaps), each showing
 A large circle (200dp) made of **five arcs**, one per layer, in the layer tints.
 - All five filled: "LINDA is protecting you" / "LINDA inakulinda".
 - A missing permission dims the relevant arc and shows a fix button (e.g. N dims if contacts access is off).
-- Centre: shield wordmark. Below: "**12** scams stopped this month" in tabular figures.
+- Centre: shield wordmark. Below: "**12** scams stopped this month" in tabular figures, only once the count is above 0;
+  before that, one line: "No scams yet. LINDA is watching."
+- Under the ring card, one grouped list (7.13) with two rows: "Scan my inbox" and "I have been scammed. What now?".
 - Idle animation: one slow "breath" every 6 seconds (scale 1.00 → 1.02). Respect reduce-motion.
 
 ### 7.3 Verdict Card
@@ -221,6 +226,9 @@ Shown on the guardian's phone: avatar of the protected person, Caution style, "M
 
 ### 7.6 Recovery Timeline
 A vertical stepper in Safaricom greens: Act fast → Request reversal → Report to 333 → Contact your bank → Report to police. The current step pulses gently; done steps get a check. A countdown chip at the top: "Reversals work best within minutes."
+Order on the screen: the two answers that change the steps ("When did you send it?" and "I paid from a bank account or card", as a
+grouped list), then the steps, then the ready-to-send report in the person's language. The optional details (amount, number, code)
+fold under a disclosure next to the report they improve; the report in the other language is one tap away.
 
 ### 7.7 Fake M-PESA Badge
 When a message imitates an M-PESA confirmation from a non-M-PESA sender, show a crossed-out M-PESA-style receipt icon with: "Not from M-PESA. You have not received any money."
@@ -238,8 +246,9 @@ Hidden toggle (tap the logo 7 times). Shows a translucent panel at the bottom of
 
 ---
 
-### 7.10 Network card (Home)
-Shown only to people who agreed to send reports (only they help warn others). Mint (`green50`; `surfaceRaised` in dark), Medium radius,
+### 7.10 Network card (Home): retired 2026-10-26
+Removed in the simplicity pass: it explained the pitch rather than asking anything of the person. The network story lives
+in the pitch and on the "Help protect others" switch in Settings. It was: shown only to people who agreed to send reports (only they help warn others). Mint (`green50`; `surfaceRaised` in dark), Medium radius,
 16dp padding, a small three-phones mark in `primary`, title "You help protect others too" / "Unasaidia kulinda wengine pia" in Heading
 `primary`, body in Body `textPrimary`: "When Linda phones catch the same scammer, Safaricom can warn everyone who got it, even on basic
 phones." No number on it: never a figure we cannot prove.
@@ -253,6 +262,17 @@ sheet's technical details. The common path stays on screen; the detail is one ta
 After a reversible action ("Mark as safe"), a bar floats at the bottom of the screen for 8 seconds: `surfaceRaised`, Medium
 radius, a soft shadow, the result in Body Large ("Marked as safe" / "Imewekwa kuwa salama") and an "Undo" / "Tendua" text button.
 Undo instead of "Are you sure?": quick to do, easy to take back.
+
+### 7.13 Grouped list
+For settings and short menus, like a phone's own Settings. A small Label heading in `textSecondary` above a `surface` card
+(Medium radius, card shadow); rows at least 56dp tall with 16dp padding and a thin `border` line between rows (indented
+16dp). Each row: a title in Body Large, at most one short line under it in Body `textSecondary`, and on the right a switch,
+a green tick for "on" (read out as "On"; a word was too wide in Kiswahili), a green "Turn on", or a chevron for "opens another screen". The whole row is the tap target.
+
+### 7.14 First run
+Three short pages, one decision each, with three small dots at the top: 1. Welcome and "Allow permissions" ("Next" when already
+allowed), 2. "Keep Linda awake" with only this phone brand's steps, 3. Help protect others (the consent card, in English and
+Swahili). Answering page 3 finishes. Next slides in from the right, Back returns the way it came (fade only with "remove animations").
 
 ---
 

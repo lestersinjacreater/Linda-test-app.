@@ -20,6 +20,14 @@
     <string name="history_empty">Hakuna ujumbe wenye shaka bado. Linda ataorodhesha hapa.</string>
 
     <string name="settings_title">Mipangilio</string>
+    <string name="settings_section_protection">Ulinzi</string>
+    <string name="settings_section_family">Familia na faragha</string>
+    <string name="settings_on">Imewashwa</string>
+    <string name="settings_turn_on">Washa</string>
+    <string name="settings_calls_row">Huonyesha nambari za ulaghai zinazojulikana zikipiga. Haizuii simu kamwe.</string>
+    <string name="voice_row">Linda ikiwa na uhakika tu. Kimya simu ikiwa kimya au ukiwa kwenye simu.</string>
+    <string name="voice_sw_missing_short">Hakuna sauti ya Kiswahili kwenye simu hii. Gusa kusakinisha.</string>
+    <string name="learning_row">Ona Linda inachojifunza kwenye simu hii, au iambie isahau.</string>
     <string name="settings_language_label">Lugha</string>
     <string name="settings_language_value">Inafuata lugha ya simu yako (Kiingereza au Kiswahili).</string>
 
@@ -69,6 +77,7 @@
     <string name="onboarding_battery_title">2. Weka Linda ikiwa macho</string>
     <string name="onboarding_open_battery">Fungua mipangilio ya betri</string>
     <string name="onboarding_done">Niko tayari</string>
+    <string name="onboarding_next">Endelea</string>
     <string name="battery_generic">Fungua Mipangilio, tafuta Linda kwenye Betri, kisha chagua "Bila vikwazo" au "Usiboreshe". Bila hili simu yako inaweza kuzima Linda skrini ikiwa imezimwa.</string>
     <string name="battery_tecno">Tecno: Mipangilio > Programu > Linda > Betri > "Bila vikwazo". Kisha fungua Phone Master au Phone Manager > Autostart na uwashe Linda. Pia funga Linda kwenye orodha ya programu za hivi karibuni.</string>
     <string name="battery_infinix">Infinix: Mipangilio > Programu > Linda > Betri > "Bila vikwazo". Kisha fungua XOS Phone Master > Autostart na uwashe Linda. Pia funga Linda kwenye orodha ya programu za hivi karibuni.</string>
@@ -125,6 +134,8 @@
     <string name="recovery_intro_urgent">Chukua hatua haraka. Dakika za kwanza ndizo muhimu zaidi. Fanya hatua hizi kwa mpangilio.</string>
     <string name="recovery_intro_late">Muda umepita, lakini bado unaweza kuripoti hili na kuwalinda watu wengine.</string>
     <string name="recovery_form_title">Mwambie Linda kilichotokea (si lazima)</string>
+    <string name="recovery_details_title">Ongeza maelezo kwa ripoti kamili zaidi (si lazima)</string>
+    <string name="recovery_other_language">Ripoti hiyo hiyo kwa Kiingereza</string>
     <string name="recovery_form_help">Hii hufanya hatua na maandishi ya ripoti kuwa sahihi zaidi. Inabaki kwenye simu yako.</string>
     <string name="recovery_amount">Ulituma kiasi gani? (Ksh)</string>
     <string name="recovery_when_title">Ulituma lini?</string>
@@ -255,8 +266,6 @@
 
     <string name="action_report">Ripoti nambari hii</string>
     <string name="notif_action_why">Nionyeshe kwa nini</string>
-    <string name="home_network_title">Unasaidia kulinda wengine pia</string>
-    <string name="home_network_body">Simu za Linda zikimgundua tapeli yuleyule, Safaricom inaweza kuwaonya wote waliopokea ujumbe wake, hata kwenye simu za kawaida.</string>
     <string name="report_done">Imeripotiwa. Asante kwa kusaidia kulinda wengine.</string>
     <string name="report_dialog_title">Ripoti nambari hii?</string>
     <string name="report_dialog_intro">Hiki ndicho hasa kitakachotumwa kwa kitengo cha Safaricom cha kupambana na ulaghai ili watu wengine waonywe:</string>
