@@ -33,6 +33,13 @@ Every moment has a fallback, so the demo never stops when the network does.
 | 10 | A judge taps **Report** on a warning on the demo phone; open `/fraud/v1/intel/reports` | The report in the mock fraud team's inbox: number, category, fingerprint, never the text | "One tap, and Safaricom's fraud team knows. No message text ever leaves the phone." |
 | 11 | Point at the metrics panel | Time to first detection, time to confirmation, % warned before reading | "Seconds to detect, under a minute to confirm, nearly everyone warned before reading." |
 
+**Optional, USSD on the basic phone:** dial the Africa's Talking sandbox code in their web simulator (or a real code, if
+the organisers allow one), choose 1 and enter the scammer's number: "WARNING: ... is a confirmed scam number". No app, no
+data bundle needed.
+
+**Optional, payment precheck:** `curl -d '{"recipient":"254700000777","amount":1500}' -H 'content-type: application/json'
+https://DOMAIN/radar/v1/payments/precheck` answers `allow: false` with the reason.
+
 **Optional, if there is time:** on the demo phone, Home, **Scan my inbox**. On a phone with real history it shows what
 Linda would have caught, and that it now stays quiet on SAF_Balance, Airtel and bank texts (the inbox story).
 
