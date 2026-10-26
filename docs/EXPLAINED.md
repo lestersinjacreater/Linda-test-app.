@@ -1008,6 +1008,7 @@ inbox it fired only on genuine bank texts (which often arrive first) and never o
   checks them on real SMS, with the M-Pesa memory and Mark as safe.
 - **Bottom-bar labels stay on one line.** In Kiswahili, "Mipangilio" and "Nyumbani" wrapped mid-word on narrow phones
   and with large text. The label now shrinks a little until it fits (to 70% at most) instead of wrapping (`NavLabel`).
+
 ## Dashboard: adoption levels, calls and the fraud team's numbers (`dashboard/src/lib/scenarios.ts`)
 
 - **New presenter buttons** (with hotkeys): **0.5% / 1% / 2% adoption** (keys 1, 2, 3: the same 500-person blast in a
