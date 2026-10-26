@@ -27,6 +27,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.linda.app.core.ui.theme.LindaTheme
 import com.linda.app.core.ui.theme.MediumShape
@@ -101,6 +103,21 @@ fun ListChoiceRow(title: String, selected: Boolean, onSelect: () -> Unit, modifi
 @Composable
 fun ListRowValue(text: String) {
     Text(text, style = MaterialTheme.typography.bodyLarge, color = LindaTheme.colors.textSecondary, modifier = Modifier.padding(start = Spacing.md))
+}
+
+/**
+ * A green tick on the right for "this is on". A tick, not a word: "Imewashwa" is long, and a word squeezed the row's
+ * own line into a narrow column in Kiswahili. [description] is read out instead ("On" / "Imewashwa").
+ */
+@Composable
+fun ListRowOn(description: String) {
+    val line = LindaTheme.colors.primary
+    Canvas(Modifier.padding(start = Spacing.md).size(20.dp).semantics { contentDescription = description }) {
+        val w = size.width
+        val stroke = w * 0.12f
+        drawLine(line, Offset(w * 0.15f, w * 0.55f), Offset(w * 0.4f, w * 0.8f), stroke, StrokeCap.Round)
+        drawLine(line, Offset(w * 0.4f, w * 0.8f), Offset(w * 0.88f, w * 0.22f), stroke, StrokeCap.Round)
+    }
 }
 
 @Composable

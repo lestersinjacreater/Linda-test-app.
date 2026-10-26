@@ -263,7 +263,7 @@ Undo instead of "Are you sure?": quick to do, easy to take back.
 For settings and short menus, like a phone's own Settings. A small Label heading in `textSecondary` above a `surface` card
 (Medium radius, card shadow); rows at least 56dp tall with 16dp padding and a thin `border` line between rows (indented
 16dp). Each row: a title in Body Large, at most one short line under it in Body `textSecondary`, and on the right a switch,
-a short status word ("On"), a green "Turn on", or a chevron for "opens another screen". The whole row is the tap target.
+a green tick for "on" (read out as "On"; a word was too wide in Kiswahili), a green "Turn on", or a chevron for "opens another screen". The whole row is the tap target.
 
 ---
 

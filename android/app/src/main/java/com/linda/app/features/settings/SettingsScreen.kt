@@ -43,7 +43,7 @@ import com.linda.app.core.ui.components.LindaTextField
 import com.linda.app.core.ui.components.ListChoiceRow
 import com.linda.app.core.ui.components.ListGroup
 import com.linda.app.core.ui.components.ListRow
-import com.linda.app.core.ui.components.ListRowValue
+import com.linda.app.core.ui.components.ListRowOn
 import com.linda.app.core.ui.components.ListSwitchRow
 import com.linda.app.core.ui.theme.LindaTheme
 import com.linda.app.core.ui.theme.Spacing
@@ -108,7 +108,7 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit, onOpenLea
                 !screeningAvailable -> ListRow(stringResource(R.string.settings_calls_title), subtitle = stringResource(R.string.settings_calls_unavailable))
                 screeningOn -> ListRow(
                     stringResource(R.string.settings_calls_title), subtitle = stringResource(R.string.settings_calls_row),
-                    trailing = { ListRowValue(stringResource(R.string.settings_on)) },
+                    trailing = { ListRowOn(stringResource(R.string.settings_on)) },
                 )
                 else -> ListRow(
                     stringResource(R.string.settings_calls_title), subtitle = stringResource(R.string.settings_calls_row),
