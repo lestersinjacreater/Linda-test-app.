@@ -111,10 +111,14 @@ Settings), otherwise the phone sends no reports. A phone only reports real SMS f
 | Restart one service | `docker compose -f docker-compose.prod.yml --env-file .env.production restart telco` |
 | Update to new code | `git pull && make prod-up` |
 | Stop everything | `make prod-down` (data is kept) |
+| Fresh demo before the show (gateway reports, fraud team, telco) | `make prod-demo-reset` |
 | Wipe all radar data (fresh start) | `make prod-down && docker volume rm linda_pgdata` |
 | Change `PUBLIC_URL` or the domain | edit `.env.production`, then `make prod-up` (the dashboard is rebuilt with the new address) |
 
-Repeating the demo needs no wipe: each run uses fresh scammer numbers and fresh device ids, so earlier runs cannot change the result.
+Repeating the demo needs no wipe: each run uses fresh scammer numbers and fresh device ids, also after the telco restarts
+(each start picks a new block of numbers), so earlier runs cannot change the result. `make prod-demo-reset` is for a clean
+dashboard, metrics and fraud-team inbox before the show. The gateway pulls the fraud team's list every `INTEL_SYNC_S`
+seconds (5 for the demo), so a number flagged live reaches phones within seconds.
 
 ## No domain (IP address only)
 

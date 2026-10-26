@@ -27,7 +27,13 @@ FRIEND = "0700000026"
 FAKE_MPESA = ("QK7RT2XY9P Confirmed. You have received Ksh2,500.00 from JOHN KAMAU on 12/10/26 at 4:12 PM. "
               "New M-PESA balance is Ksh3,140.00.")
 CHAT = "Hey, are we still meeting at 6?"
+# What Linda learns on the phone (features/learning). Fake placeholder numbers, as in DemoSamples.
+REVERSAL_FROM, REVERSAL = "0700000778", "Nimekutumia 2,500 kimakosa, tafadhali nirudishie haraka"
+NEW_NUMBER_FROM, NEW_NUMBER = "0700000782", "Hi mum, this is my new number. Please send me Ksh 3,000 for fare, I will explain later."
+LANDLORD_FROM = "0700000783"
+PAYMENT_CHANGED = "Hello tenant, kindly note our new Paybill for rent is 400200, account 12B."
 SCAM_TITLE = "Linda warning: this is likely a scam"
+CAUTION_TITLE = "Linda: be careful"
 CALL_TITLE = "Likely scam caller"
 VERIFIED_TITLE = "Verified: Safaricom Customer Care"
 
@@ -122,6 +128,71 @@ class Tour(Phone):
         after = self.count(SCAM_TITLE) + self.count("Linda: be careful")
         self.check("Real SMS: an ordinary chat is not warned", after == before, f"Linda warnings before {before}, after {after}")
 
+    def find_any(self, variants: tuple[str, ...], scrolls: int = 3) -> dict | None:
+        """The first element showing any of these texts, scrolling down a little at a time."""
+        for i in range(scrolls + 1):
+            for n in self.screen_nodes():
+                if any(v in n["text"] for v in variants):
+                    return n
+            if i < scrolls:
+                self.swipe_up()
+        return None
+
+    def warnings(self) -> int:
+        return self.count(SCAM_TITLE) + self.count(CAUTION_TITLE)
+
+    def learned_sms(self, name: str, sender: str, text: str, reason: str) -> None:
+        """A real SMS that Linda judges with what it learned on the phone; the warning must lead with that reason."""
+        self.go_home()
+        self.shell("cmd statusbar collapse")
+        before = self.warnings()
+        self.adb("emu", "sms", "send", sender, text)
+        warned = self.wait_for(lambda: self.warnings() > before, 25)
+        explained = reason in self.notifications()
+        self.shell("cmd statusbar expand-notifications")
+        time.sleep(2)
+        shot = self.screenshot(re.sub(r"[^a-z0-9]+", "-", name.lower())[:40])
+        self.check(name, warned and explained, f"warned: {warned}; reason '{reason}': {explained}", shot)
+        self.shell("cmd statusbar collapse")
+
+    def memory_scam(self) -> None:
+        # No Ksh 2,500 ever came from the real M-Pesa sender on this emulator (the fake confirmation came from a number).
+        self.learned_sms("M-Pesa memory: 'sent you 2,500 by mistake' is checked against real M-Pesa messages",
+                         REVERSAL_FROM, REVERSAL, "Nobody sent you this money")
+
+    def new_number_trick(self) -> None:
+        self.learned_sms("Know your senders: a stranger's 'this is my new number, send me money'",
+                         NEW_NUMBER_FROM, NEW_NUMBER, "this is their new number")
+
+    def payment_changed(self) -> None:
+        self.learned_sms("Inbox story: 'our new Paybill' from a stranger is a caution",
+                         LANDLORD_FROM, PAYMENT_CHANGED, "the way to pay has changed")
+
+    def mark_as_safe(self) -> None:
+        """History, the landlord's warning, Mark as safe; a second text from the same number is then not warned."""
+        self.shell(f"am force-stop {PKG}")
+        self.open_app()
+        self.tap_exact("History", scrolls=0)
+        time.sleep(1)
+        entry = self.find_any(("0700 000 783", "0700000783", "254700000783"))
+        if entry:
+            self.shell(f"input tap {entry['x']} {entry['y']}")
+            time.sleep(2)
+        opened = entry is not None
+        if opened and "Stop. This looks like a scam." in self.screen_text():
+            self.tap_text("OK, show me why")  # a SCAM opens on the stop screen first
+        marked = opened and self.tap_text("Mark as safe")
+        said = self.wait_for(lambda: "You marked this sender as safe" in self.screen_text() or
+                             self.find("You marked this sender as safe", scrolls=2) is not None, 6)
+        self.check("Mark as safe on a warning (History, detail)", bool(opened and marked and said),
+                   f"opened: {opened}; tapped: {marked}; confirmed: {said}")
+        self.go_home()
+        before = self.warnings()
+        self.adb("emu", "sms", "send", LANDLORD_FROM, PAYMENT_CHANGED.replace("12B", "14C"))
+        time.sleep(10)
+        self.check("A sender marked as safe is not warned again", self.warnings() == before,
+                   f"Linda warnings before {before}, after {self.warnings()}")
+
     def scam_call(self) -> None:
         self.go_home()
         before = self.count(CALL_TITLE)
@@ -136,7 +207,9 @@ class Tour(Phone):
     def tabs(self) -> None:
         self.open_app()
         self.tap_text("History", scrolls=0)
-        hist = self.wait_for(lambda: any(s in self.screen_text() for s in ("0700000777", "0700 000 777", "254700000777")), 6)
+        time.sleep(1.5)
+        # Newest first, so after the other test texts the fake M-Pesa one may be further down the list.
+        hist = self.find_any(("0700000777", "0700 000 777", "254700000777")) is not None
         self.check("History lists the warned message", hist)
         self.tap_text("Check", scrolls=0)
         field = self.find("Paste the message here", scrolls=0)
@@ -220,9 +293,13 @@ def main() -> int:
     t.step("Scam SMS", t.scam_sms)
     t.step("Stop screen, detail and report", t.takeover_detail_report)
     t.step("Safe SMS", t.safe_sms)
+    t.step("M-Pesa memory", t.memory_scam)
+    t.step("New-number trick", t.new_number_trick)
+    t.step("Payment changed", t.payment_changed)
     t.step("Scam call", t.scam_call)
     t.step("Tabs", t.tabs)
     t.step("Verified caller", t.verified_caller_demo)
+    t.step("Mark as safe", t.mark_as_safe)
     t.step("Kiswahili", t.swahili)
     return t.report(args.apk)
 

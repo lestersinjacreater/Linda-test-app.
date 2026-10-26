@@ -6,7 +6,9 @@ download the app to check a change.
 **What it checks** (`tour.py`): install with permissions and the call-screening role; welcome screen; Home says
 "LINDA is protecting you"; a **real SMS** (the emulator receives it) of the fake M-Pesa text from 0700 000 777 is
 warned with its reason and buttons, without showing the message; tapping it opens the stop screen, the detail and the
-report sheet; an ordinary chat is not warned; a **real call** from the same number is labelled "Likely scam caller"
+report sheet; an ordinary chat is not warned; what Linda learns on the phone (a "sent you 2,500 by mistake" text
+checked against the real M-Pesa messages, a stranger's "this is my new number, send me money", "our new Paybill"
+from a stranger, and Mark as safe stopping the next warning from that sender); a **real call** from the same number is labelled "Likely scam caller"
 while ringing; History, Check and Settings (build number); the verified badge for 0722 000 000; Kiswahili.
 
 **Run it:** GitHub, Actions tab, "Virtual phone", "Run workflow". It also runs on every pull request that changes the

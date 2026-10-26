@@ -103,6 +103,8 @@
     <string name="demo_prize">Prize scam (Kiswahili)</string>
     <string name="demo_fuliza">Fuliza upgrade link</string>
     <string name="demo_pin">PIN request (Kiswahili)</string>
+    <string name="demo_new_number">Stranger says \"new number\", asks for money</string>
+    <string name="demo_payment_changed">\"Our Paybill has changed\" (rent)</string>
     <string name="demo_real_mpesa">REAL M-Pesa message (from MPESA)</string>
     <string name="demo_chat">Ordinary chat message</string>
     <string name="demo_call">Simulate a call from the fake M-Pesa number</string>

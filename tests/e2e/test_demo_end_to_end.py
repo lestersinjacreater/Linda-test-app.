@@ -131,3 +131,39 @@ def test_sms_then_calls_on_the_real_gateway(stack):
     _, telco = stack
     calls = run(telco, "call")["metrics"]["calls"]
     assert calls["protected_pct"] > 80
+
+
+def test_a_restarted_telco_still_confirms_on_the_same_gateway(tmp_path):
+    """The gateway keeps what it learned. A telco that restarts (a deploy, a crash) must not reuse an already
+    confirmed scammer number, or the network is never told again and the blast never ends (found 25 Oct)."""
+    radar_port, telco_port = free_port(), free_port()
+    env = {**os.environ, "PYTHONPATH": "", "NO_PROXY": "127.0.0.1,localhost", "no_proxy": "127.0.0.1,localhost"}
+    serve = [sys.executable, "-m", "uvicorn", "--factory", "src.main:create_app", "--log-level", "warning"]
+
+    def start_telco():
+        p = subprocess.Popen(serve + ["--port", str(telco_port)], cwd=ROOT / "simulator", stdin=subprocess.DEVNULL,
+                             env={**env, "RADAR_URL": f"http://127.0.0.1:{radar_port}", "SIM_SPEED": "0", "SIM_SEED": "42"})
+        wait_healthy(f"http://127.0.0.1:{telco_port}", p)
+        return p
+
+    radar = subprocess.Popen(
+        serve + ["--port", str(radar_port)], cwd=ROOT / "backend", stdin=subprocess.DEVNULL,
+        env={**env, "DATABASE_URL": f"sqlite:///{tmp_path / 'radar.db'}", "TELCO_URL": f"http://127.0.0.1:{telco_port}",
+             "RADAR_DEMO_TRUSTED_PREFIX": "5111", "RADAR_DEMO_TRUSTED_TRUST": "0.85"})
+    telco = start_telco()
+    try:
+        wait_healthy(f"http://127.0.0.1:{radar_port}", radar)
+        first = run(f"http://127.0.0.1:{telco_port}", "blast")
+        telco.terminate()
+        telco.wait(timeout=10)
+        telco = start_telco()
+        second = run(f"http://127.0.0.1:{telco_port}", "blast")
+        assert second["senders"][0] != first["senders"][0]
+        assert second["metrics"]["confirmed_after_s"] == first["metrics"]["confirmed_after_s"] is not None
+    finally:
+        for p in (radar, telco):
+            p.terminate()
+            try:
+                p.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                p.kill()
