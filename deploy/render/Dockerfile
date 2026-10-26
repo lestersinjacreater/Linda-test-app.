@@ -20,7 +20,11 @@ FROM caddy:2.8-alpine AS caddy
 FROM python:3.11-slim
 WORKDIR /app
 COPY --from=dashboard /usr/local/bin/node /usr/local/bin/node
-COPY --from=caddy /usr/bin/caddy /usr/local/bin/caddy
+COPY --from=caddy /usr/bin/caddy /tmp/caddy-with-caps
+# The official Caddy image gives its program a special Linux permission (to listen on ports below 1024). Render runs
+# apps without such permissions, so starting it fails with "Operation not permitted". We listen on Render's port
+# (10000), which needs no permission, so copy the program's bytes into a plain new file that carries none.
+RUN cat /tmp/caddy-with-caps > /usr/local/bin/caddy && chmod 0755 /usr/local/bin/caddy && rm /tmp/caddy-with-caps
 
 # The three services pin the same versions, so one environment serves all of them.
 COPY backend/requirements.txt /tmp/req-backend.txt
