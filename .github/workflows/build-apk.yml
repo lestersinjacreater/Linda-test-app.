@@ -44,6 +44,9 @@ jobs:
 
       - name: Unit tests, debug APK and shrunk APK
         working-directory: android
+        env:
+          # The server new APKs connect to (docs/DEPLOY.md). Empty until the team sets the repository variable.
+          LINDA_SERVER_URL: ${{ vars.LINDA_SERVER_URL }}
         run: |
           set -o pipefail
           ./gradlew testDebugUnitTest assembleDebug assembleRelease --stacktrace 2>&1 | tee gradle.log

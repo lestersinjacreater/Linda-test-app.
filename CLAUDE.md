@@ -263,7 +263,8 @@ A verified number is never confirmed as a scammer, and a scam signal on a number
 CI: one workflow per folder with `paths:` filters, plus `shared-contracts.yml` that runs the test
 vectors against Python and Kotlin whenever `shared/`, normalizer or model code changes.
 Deployment for hack day: gateway + telco + dashboard on one small cloud server (primary), the same
-`docker-compose` on a laptop (backup). The app has a hidden settings screen to switch server URL.
+`docker-compose` on a laptop (backup). Zero budget: the same server as one free Render service (`render.yaml`,
+`deploy/render/`, docs/DEPLOY.md "Free on Render"); phones get its address from the GitHub variable `LINDA_SERVER_URL`. The app has a hidden settings screen to switch server URL.
 The repo's default branch is `very/optimistic-shannon-rzw9xm`; open pull requests against it.
 
 ### 7.1 Lightweight budgets (measure and report them)

@@ -1,12 +1,13 @@
 name: deploy config
 
-# The production files cannot be run in CI (they need a server), but they can be checked for mistakes:
-# the compose file must resolve, and Caddy must accept the Caddyfile.
+# The production files are checked for mistakes (the compose file must resolve, Caddy must accept the Caddyfile), and the
+# Docker images are really built. The free Render box (deploy/render) is also started and smoke-tested end to end, so a
+# broken image shows up here, not on the server.
 on:
   push:
-    paths: ["docker-compose.prod.yml", "deploy/**", ".env.production.example", "scripts/smoke_prod.py", ".github/workflows/deploy-config.yml"]
+    paths: ["docker-compose.prod.yml", "deploy/**", "render.yaml", ".env.production.example", "scripts/smoke_prod.py", ".github/workflows/deploy-config.yml", "backend/**", "simulator/**", "fraudintel/**", "dashboard/**"]
   pull_request:
-    paths: ["docker-compose.prod.yml", "deploy/**", ".env.production.example", "scripts/smoke_prod.py", ".github/workflows/deploy-config.yml"]
+    paths: ["docker-compose.prod.yml", "deploy/**", "render.yaml", ".env.production.example", "scripts/smoke_prod.py", ".github/workflows/deploy-config.yml", "backend/**", "simulator/**", "fraudintel/**", "dashboard/**"]
   workflow_dispatch:
 
 jobs:
@@ -31,3 +32,27 @@ jobs:
             caddy:2.8-alpine caddy validate --config /etc/caddy/Caddyfile
       - name: Smoke-test script compiles
         run: python3 -m py_compile scripts/smoke_prod.py
+
+  images:
+    # The VPS images and the Render box, built for real, then the Render box started and checked from outside.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the VPS images (docker-compose.prod.yml)
+        run: |
+          cp .env.production.example .env.production
+          docker compose -f docker-compose.prod.yml --env-file .env.production build
+      - name: Build the Render box (deploy/render/Dockerfile)
+        run: docker build -f deploy/render/Dockerfile -t linda-render .
+      - name: Start it the way Render does (one port, a presenter password, no database = SQLite inside)
+        run: |
+          docker run -d --name linda -p 10000:10000 -e PORT=10000 -e PRESENTER_PASSWORD=ci-password linda-render
+          for i in $(seq 1 60); do
+            curl -sf http://127.0.0.1:10000/radar/health >/dev/null && break
+            sleep 2
+          done
+      - name: Smoke test, like make prod-check (plays one blast)
+        run: python3 scripts/smoke_prod.py http://127.0.0.1:10000 presenter ci-password
+      - name: Show the box's log if anything failed
+        if: failure()
+        run: docker logs linda 2>&1 | tail -80

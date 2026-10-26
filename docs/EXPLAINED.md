@@ -1174,3 +1174,26 @@ about the person: it is one plain request for a public web page, and no message 
 **Why you never need to uninstall.** Every build is signed with the same committed key and gets a higher build number,
 so opening a newer `linda.apk` by hand also offers "Update". Only builds from before 7 Oct (a random key) need one last
 uninstall.
+
+## Running the server for free on Render (`render.yaml`, `deploy/render/`, 26 Oct)
+
+**Why.** The team has no budget for a server, and the demo should not depend on a laptop. Render's free plan needs no
+credit card. Its catch: free services cannot talk to each other privately, and each is small (512 MB, a tenth of a CPU).
+
+**How.** Everything the VPS runs as separate containers runs in **one box** instead (`deploy/render/Dockerfile`): the
+gateway, the mock telco, the mock fraud team, the dashboard and Caddy. They talk over `127.0.0.1` inside the box, and
+only Caddy is reachable from outside, so the private paths stay private and the presenter's password works exactly as
+on the VPS (the same `deploy/Caddyfile`, which now reads where each service lives from settings). `start.sh` starts
+the five parts and, if any one stops, stops the whole box so Render restarts it: a restart is better than a demo that
+looks alive but is half broken. The presenter's password is typed once into Render and turned into Caddy's bcrypt
+hash at start; it is never stored in git. Measured here: the box uses about 320 MB, and a full blast passes the same
+smoke test as the VPS (`scripts/smoke_prod.py`), which CI now also runs on every server change.
+
+**The dashboard** builds with the address `/telco`, meaning "the server this page came from", so it does not need to
+know the Render address in advance (`dashboard/src/lib/config.ts`, unit tested).
+
+**The phones** get the server address from the GitHub setting `LINDA_SERVER_URL`, built into each APK
+(`BuildConfig.DEFAULT_SERVER_URL`), so nobody needs the hidden developer screen.
+
+**Free means sleepy.** A free service sleeps after 15 minutes without visitors; a free UptimeRobot check every 5
+minutes keeps it awake. Auto-deploy is off so a merge on hack day cannot restart the demo.

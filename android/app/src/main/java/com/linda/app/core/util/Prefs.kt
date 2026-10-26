@@ -1,6 +1,7 @@
 package com.linda.app.core.util
 
 import android.content.Context
+import com.linda.app.BuildConfig
 import android.content.res.Configuration
 import java.util.Locale
 
@@ -26,8 +27,11 @@ object Prefs {
     fun reportingConsent(ctx: Context) = p(ctx).getBoolean("reporting_consent", false)
     fun setReportingConsent(ctx: Context, value: Boolean) = p(ctx).edit().putBoolean("reporting_consent", value).apply()
 
-    /** Where the radar lives. Empty until set in the hidden developer screen (or a default is shipped). */
-    fun serverUrl(ctx: Context): String = p(ctx).getString("server_url", "") ?: ""
+    /**
+     * Where the radar lives. The build's default (the GitHub setting LINDA_SERVER_URL, see app/build.gradle.kts) until
+     * someone types another address in the hidden developer screen. Empty = no server: Linda works fully on the phone.
+     */
+    fun serverUrl(ctx: Context): String = p(ctx).getString("server_url", BuildConfig.DEFAULT_SERVER_URL) ?: ""
     fun setServerUrl(ctx: Context, value: String) = p(ctx).edit().putString("server_url", value.trim().trimEnd('/')).apply()
 
     /** Family Guardian: OFF until the protected person turns it on. The guardian's number never leaves this phone except as an SMS recipient. */

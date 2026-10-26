@@ -10,6 +10,11 @@ plugins {
 // A build on a laptop has no run number and says "0.1.0 (local)".
 val ciRunNumber: Int? = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull()
 val ciCommit: String = System.getenv("GITHUB_SHA")?.take(7) ?: "local"
+// The server the app talks to unless someone changes it in the hidden developer screen. Set by the GitHub setting
+// LINDA_SERVER_URL (Settings > Secrets and variables > Actions > Variables), e.g. https://linda-xxxx.onrender.com/radar.
+// Empty = no server: detection still works fully on the phone. Only letters, digits and URL punctuation are kept.
+val defaultServerUrl: String = (System.getenv("LINDA_SERVER_URL") ?: "").trim().trimEnd('/')
+    .filter { it.isLetterOrDigit() || it in ":/.-_~%?=&" }
 
 android {
     namespace = "com.linda.app"
@@ -21,6 +26,7 @@ android {
         targetSdk = 35
         versionCode = ciRunNumber ?: 1
         versionName = if (ciRunNumber != null) "0.1.$ciRunNumber ($ciCommit)" else "0.1.0 (local)"
+        buildConfigField("String", "DEFAULT_SERVER_URL", "\"$defaultServerUrl\"")
     }
 
     // A fixed debug key that is committed on purpose. It protects nothing (it is

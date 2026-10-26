@@ -6,6 +6,7 @@
 #   /telco/scenarios/*, /telco/reset   start/stop the demo: protected by the presenter's password
 #   /fraud/*         the mock fraud team (inbox of reports, flag a number live): presenter's password
 # Everything else of the simulator (/network/confirm, /deliveries, /history) stays on the private docker network.
+# Upstreams: the docker service names by default; the all-in-one Render box sets *_UPSTREAM=127.0.0.1:port (deploy/render).
 
 {$SITE_ADDRESS} {
 	encode gzip
@@ -13,7 +14,7 @@
 	@telco_public path /telco/events /telco/metrics /telco/population /telco/health
 	handle @telco_public {
 		uri strip_prefix /telco
-		reverse_proxy telco:8000
+		reverse_proxy {$TELCO_UPSTREAM:telco:8000}
 	}
 
 	@telco_control path /telco/scenarios/* /telco/reset
@@ -22,7 +23,7 @@
 			{$PRESENTER_USER} {$PRESENTER_HASH}
 		}
 		uri strip_prefix /telco
-		reverse_proxy telco:8000
+		reverse_proxy {$TELCO_UPSTREAM:telco:8000}
 	}
 
 	handle /telco/* {
@@ -34,16 +35,16 @@
 			{$PRESENTER_USER} {$PRESENTER_HASH}
 		}
 		uri strip_prefix /fraud
-		reverse_proxy fraudintel:8002
+		reverse_proxy {$FRAUD_UPSTREAM:fraudintel:8002}
 	}
 
 	handle /radar/* {
 		uri strip_prefix /radar
-		reverse_proxy radar:8001
+		reverse_proxy {$RADAR_UPSTREAM:radar:8001}
 	}
 
 	handle {
-		reverse_proxy dashboard:3000
+		reverse_proxy {$DASHBOARD_UPSTREAM:dashboard:3000}
 	}
 
 	header {
