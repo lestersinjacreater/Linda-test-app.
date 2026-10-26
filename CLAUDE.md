@@ -305,7 +305,8 @@ warnings from numbers the person really talks to; warns on the "new number" tric
    Talking account (the sandbox only reaches its web simulator) and the organisers' OK.
 7. USSD checker (5.6). Stretch.
 8. Payment precheck (5.7). Drop if short of time.
-9. Dashboard updates for fraud-intel hits, verified callers and adoption levels.
+9. ~~Dashboard updates for fraud-intel hits, verified callers and adoption levels.~~ Done: adoption, call and
+   fraud-team buttons, run notes, KNOWN numbers. Verified callers show on the phone (the simulator has no verified calls).
 
 **P3 Polish (alongside the last build days, and after the freeze).** Bug fixes only after 27 Oct. Technical brief
 (2 pages), pitch deck (8 slides), recorded backup demo video, three full rehearsals, one real-phone check of the APK.

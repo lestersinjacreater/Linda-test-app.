@@ -126,3 +126,32 @@ describe("replay timing and wording", () => {
     expect(say(ev("call_attempt", { sender: "254700900010", kind: "smart", known: true }))).toContain("already confirmed");
   });
 });
+
+describe("presenter buttons and run notes", () => {
+  it("sends the adoption level or the fraud team's number with the scenario", async () => {
+    const { PRESETS, presetPath, FRAUD_TEAM_NUMBER } = await import("./scenarios");
+    const path = (label: string) => presetPath(PRESETS.find((p) => p.label === label)!);
+    expect(path("Reset")).toBe("/reset");
+    expect(path("Start blast")).toBe("/scenarios/blast");
+    expect(path("1% adoption")).toBe("/scenarios/blast?adoption=1");
+    expect(path("Fraud-team number calls")).toBe(`/scenarios/call?caller=${FRAUD_TEAM_NUMBER}`);
+    expect(new Set(PRESETS.map((p) => p.key)).size).toBe(PRESETS.length); // no hotkey twice
+  });
+
+  it("explains a call from a number the gateway already knows", () => {
+    expect(say(ev("blast_started", { sender: "254700000801", scenario: "call", known: "confirmed" }))).toContain("already knows");
+    expect(say(ev("sender_confirmed", { sender: "254700000801", by: "gateway", confirmed_after_s: 0 }))).toContain("first ring");
+    const s = reduce(initialState(phones), ev("sender_confirmed", { sender: "254700000801", by: "gateway", confirmed_after_s: 0 }));
+    expect(s.campaigns["254700000801"].known).toBe(true);
+  });
+
+  it("adds a line for adoption runs and call runs, none otherwise", async () => {
+    const { runNotes } = await import("./state");
+    const base = data.metrics;
+    expect(runNotes({ ...base, adoption_pct: null, calls: null })).toEqual([]);
+    expect(runNotes({ ...base, adoption_pct: 1, linda_recipients: 5, delivered: 500 })[0]).toContain("5 of the 500");
+    const calls = { placed: 40, to_linda_phones: 4, labelled_before_answer: 4, to_other_phones: 36, already_warned_by_sms: 30,
+      warned_after_call: 6, unprotected: 0, protected_pct: 100 };
+    expect(runNotes({ ...base, adoption_pct: null, calls }).at(-1)).toContain("4 labelled before answering");
+  });
+});

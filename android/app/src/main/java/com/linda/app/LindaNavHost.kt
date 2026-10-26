@@ -14,27 +14,30 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.linda.app.features.demo.DemoOverlay
-import com.linda.app.features.demo.DemoOverlayPanel
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import androidx.navigation.navArgument
-import com.linda.app.features.alerts.WarningRoute
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.linda.app.features.alerts.WarningRoute
 import com.linda.app.features.checker.CheckerScreen
+import com.linda.app.features.demo.DemoOverlay
+import com.linda.app.features.demo.DemoOverlayPanel
 import com.linda.app.features.demo.DemoScreen
 import com.linda.app.features.detail.DetailScreen
-import com.linda.app.features.history.HistoryScreen
 import com.linda.app.features.guardian.GuardianScreen
+import com.linda.app.features.history.HistoryScreen
 import com.linda.app.features.home.HomeScreen
 import com.linda.app.features.inbox.InboxScreen
 import com.linda.app.features.recovery.RecoveryScreen
@@ -88,7 +91,7 @@ fun LindaNavHost(openDetectionId: Long? = null, openWhat: String? = null, shared
                         },
                         // No description: the label under the icon already says what it is.
                         icon = { Icon(painterResource(destination.icon), contentDescription = null) },
-                        label = { Text(text = stringResource(destination.label), style = MaterialTheme.typography.labelMedium) },
+                        label = { NavLabel(stringResource(destination.label)) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedTextColor = MaterialTheme.colorScheme.primary,
                             unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -143,4 +146,21 @@ fun LindaNavHost(openDetectionId: Long? = null, openWhat: String? = null, shared
         }
         }
     }
+}
+
+/**
+ * A bottom-bar label on one line. Long Kiswahili words ("Mipangilio", "Nyumbani") wrapped mid-word on narrow phones
+ * and with large text, so the label shrinks a little until it fits instead (to 70% at most).
+ */
+@Composable
+private fun NavLabel(text: String) {
+    val base = MaterialTheme.typography.labelMedium
+    var scale by remember(text) { mutableFloatStateOf(1f) }
+    Text(
+        text = text,
+        style = base.copy(fontSize = base.fontSize * scale),
+        maxLines = 1,
+        softWrap = false,
+        onTextLayout = { if (it.hasVisualOverflow && scale > 0.7f) scale -= 0.1f },
+    )
 }

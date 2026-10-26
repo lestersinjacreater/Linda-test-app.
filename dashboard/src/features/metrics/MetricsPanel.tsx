@@ -1,4 +1,5 @@
 "use client";
+import { runNotes } from "@/lib/state";
 import type { Metrics } from "@/lib/types";
 
 const pct = (v: number | null) => (v === null ? "–" : `${v.toFixed(v % 1 === 0 ? 0 : 1)}%`);
@@ -16,12 +17,16 @@ function Tile({ label, value, accent, note }: { label: string; value: string; ac
 
 /** The headline numbers, big enough to read from the back of the room. */
 export function MetricsPanel({ metrics }: { metrics: Metrics }) {
+  const notes = runNotes(metrics);
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <Tile label="Warned before reading" value={pct(metrics.warned_before_read_pct)} accent="#35F2A0" note={`${metrics.warned} of ${metrics.delivered} recipients`} />
-      <Tile label="Basic phones warned first" value={pct(metrics.feature_phones_warned_before_read_pct)} accent="#35F2A0" note={`${metrics.feature_phones_delivered} basic phones, no app needed`} />
-      <Tile label="First phone caught it" value={secs(metrics.first_detection_after_s)} accent="#FF2E88" note="after the blast began" />
-      <Tile label="Radar confirmed" value={secs(metrics.confirmed_after_s)} accent="#00E5FF" note="3+ independent phones agreed" />
+    <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-2 gap-3">
+        <Tile label="Warned before reading" value={pct(metrics.warned_before_read_pct)} accent="#35F2A0" note={`${metrics.warned} of ${metrics.delivered} recipients`} />
+        <Tile label="Basic phones warned first" value={pct(metrics.feature_phones_warned_before_read_pct)} accent="#35F2A0" note={`${metrics.feature_phones_delivered} basic phones, no app needed`} />
+        <Tile label="First phone caught it" value={secs(metrics.first_detection_after_s)} accent="#FF2E88" note="after the blast began" />
+        <Tile label="Radar confirmed" value={secs(metrics.confirmed_after_s)} accent="#00E5FF" note={metrics.delivered === 0 && metrics.confirmed_after_s === 0 ? "already known before the first call" : "3+ independent phones agreed"} />
+      </div>
+      {notes.map((n) => <div key={n} className="rounded-xl bg-card px-4 py-2 text-lg text-white">{n}</div>)}
     </div>
   );
 }

@@ -1006,3 +1006,16 @@ inbox it fired only on genuine bank texts (which often arrive first) and never o
 - **`docs/demo-script.md`**: the moments, what judges see, what to say, and what to do when something breaks.
 - **Demo mode** has two more messages, the "new number" trick and "our Paybill has changed", and the virtual phone tour
   checks them on real SMS, with the M-Pesa memory and Mark as safe.
+- **Bottom-bar labels stay on one line.** In Kiswahili, "Mipangilio" and "Nyumbani" wrapped mid-word on narrow phones
+  and with large text. The label now shrinks a little until it fits (to 70% at most) instead of wrapping (`NavLabel`).
+
+## Dashboard: adoption levels, calls and the fraud team's numbers (`dashboard/src/lib/scenarios.ts`)
+
+- **New presenter buttons** (with hotkeys): **0.5% / 1% / 2% adoption** (keys 1, 2, 3: the same 500-person blast in a
+  2,000-phone country), **Scam calls** (C: the scammer texts, then phones people) and **Fraud-team number calls** (F:
+  calls from 254700000801, a number the mock fraud team has already blocked).
+- **A line under the headline numbers** says what the run shows: "Linda on 1% of phones: 6 of the 500 people who got
+  the scam had it", or "160 scam calls: 15 labelled before answering, 145 warned by SMS, 0 unprotected".
+- **Numbers the gateway already knew** (from the fraud team's list or earlier reports) show as **KNOWN**, "already known
+  before the first call", instead of "confirmed after 3 phones agreed", which would not be true for them.
+- The buttons are one pure list (`PRESETS`), so a test checks the exact request each one sends.

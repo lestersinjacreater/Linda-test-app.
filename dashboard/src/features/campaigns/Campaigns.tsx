@@ -17,11 +17,11 @@ export function Campaigns({ state }: { state: DashboardState }) {
         {list.map((c) => (
           <div key={c.sender} className="flex items-center gap-3 py-1 text-lg">
             <span className="rounded-full px-3 py-0.5 text-base font-bold text-bg" style={{ background: c.confirmedAfterS === null ? "#FFC940" : "#FF2E88" }}>
-              {c.confirmedAfterS === null ? "SUSPECTED" : "CONFIRMED"}
+              {c.confirmedAfterS === null ? "SUSPECTED" : c.known ? "KNOWN" : "CONFIRMED"}
             </span>
             <span className="tabular-nums">{c.sender}</span>
-            <span className="text-muted">{NAMES[c.category] ?? c.category}</span>
-            <span className="ml-auto text-muted">{c.reports} reports</span>
+            {!c.known && <span className="text-muted">{NAMES[c.category] ?? c.category}</span>}
+            <span className="ml-auto text-muted">{c.known ? "already known before the first call" : `${c.reports} reports`}</span>
           </div>
         ))}
       </div>
