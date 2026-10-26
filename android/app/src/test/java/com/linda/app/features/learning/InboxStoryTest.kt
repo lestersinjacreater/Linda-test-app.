@@ -18,7 +18,7 @@ class InboxStoryTest {
     private val business = "SAF_Info" // an invented sender name, not on the verified list
 
     private fun bonus(mb: Int, link: String = "https://safaricom.com/offers") =
-        "Hongera! Umepata bonus ya ${mb}MB kutoka Safaricom. Bonyeza $link kuidai leo"
+        "Hongera! Umeshinda bonus ya ${mb}MB kutoka Safaricom. Bonyeza $link kudai zawadi yako leo"
 
     /** A story of [n] texts from [business], one a day, ending yesterday. */
     private fun bookWith(n: Int = 6, text: (Int) -> String = { bonus(100 * (it + 1)) }): StoryBook {
@@ -50,7 +50,7 @@ class InboxStoryTest {
     }
 
     @Test fun aPinRequestFromAKnownSenderStillWarns() {
-        val text = "Hongera! Umepata bonus ya 500MB kutoka Safaricom. Weka PIN yako kwa https://safaricom.com/offers kuidai leo"
+        val text = "Hongera! Umeshinda bonus ya 500MB kutoka Safaricom. Weka PIN yako kwa https://safaricom.com/offers kudai zawadi yako leo"
         assertNotEquals(RiskLevel.SAFE, analyse(text, bookWith()).level)
     }
 

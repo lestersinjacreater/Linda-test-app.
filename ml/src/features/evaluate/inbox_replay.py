@@ -153,10 +153,10 @@ def decide(scorer, story, text, sender, key, kind, at, start, use_story):
     return level, why
 
 
-def replay(model_path, use_story):
+def replay(model_path, use_story, raw=RAW):
     scorer = Scorer.from_file(model_path)
     labels = {r["raw_id"]: r["label"] for r in csv.DictReader(open(LABELS, encoding="utf-8"))}
-    rows = list(csv.DictReader(open(RAW, newline="", encoding="utf-8-sig", errors="replace")))
+    rows = list(csv.DictReader(open(raw, newline="", encoding="utf-8-sig", errors="replace")))
     rows.sort(key=lambda r: r["received_at"])
     when = lambda r: datetime.fromisoformat(r["received_at"].replace("Z", "+00:00"))
     start = when(rows[0])
@@ -192,12 +192,14 @@ def replay(model_path, use_story):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--model", default=str(ROOT / "android" / "app" / "src" / "main" / "assets" / "model.json"))
+    ap.add_argument("--raw", default=str(RAW), help="which donated inbox to replay (ml/data/raw/team_inbox*.csv)")
     args = ap.parse_args()
-    if not RAW.exists() or not LABELS.exists():
+    raw = Path(args.raw)
+    if not raw.exists() or not LABELS.exists():
         print("no private inbox files; nothing to replay")
         return
     for use_story in (False, True):
-        o = replay(args.model, use_story)
+        o = replay(args.model, use_story, raw)
         name = "with the inbox story" if use_story else "app today (no story)"
         print(f"{name:24}: genuine warned {o['genuine_warned']} of {o['genuine']} "
               f"({100 * o['genuine_warned'] / o['genuine']:.2f}%), scams warned {o['scam_warned']} of {o['scam']}")

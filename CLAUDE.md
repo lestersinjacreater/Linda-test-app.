@@ -286,7 +286,9 @@ scenarios (blast, rotating, poison, call) and metrics, dashboard, deployment con
 Model `2026.10.19-1` trained on synthetic + real public data (Bongoscam, Mendeley); replaced by the lightweight `2026.10.20-1` (same real-test results, 87 KB), then by `2026.10.21-1`, which adds a
 public Kenyan SMS set re-labelled by Claude (82% of Kenyan test scams caught, up from 61%; see `ml/reports/metrics.md`), then by
 `2026.10.25-1`, which adds a team member's donated real inbox (private, never committed; false alarms on that real inbox's
-test part 20% -> 3.8% with all its test scams still caught; Kenyan public set 76.5% caught, false alarms 31.8% -> 21.2%).
+test part 20% -> 3.8% with all its test scams still caught; Kenyan public set 76.5% caught, false alarms 31.8% -> 21.2%). Now
+`2026.10.26-1`, which adds a second donated inbox (private; on that inbox's test part 16 of 16 scams caught, false alarms
+6.6% -> 5.0%; Kenyan public set 74.5% caught, false alarms 21.2% -> 9.1%; all real Kenyan test scams in both inboxes caught).
 
 **Dates (extended):** building continues until the end of **27 Oct**, then FEATURE FREEZE. Hack day is 28–29 Oct.
 
@@ -297,7 +299,7 @@ warnings from numbers the person really talks to; warns on the "new number" tric
 **learn from your taps** (a capped personal layer trained by "Mark as safe" and "Report").
 
 **Remaining, in priority order (until the freeze at the end of 27 Oct):**
-1. Kenyan data: public Kenyan set (`kenya_sms`) and a donated team inbox (`team_collected`, model `2026.10.25-1`) added.
+1. Kenyan data: public Kenyan set (`kenya_sms`) and two donated team inboxes (`team_collected`, model `2026.10.26-1`) added.
    Still to do: team spot-check of the public-set labels.
 2. ~~`fraudintel/` mock service (5.12) and the gateway merging it.~~ Done.
 3. ~~Verified-caller badges in the gateway and the app.~~ Done (5.13). In production the list comes from 5.12.
