@@ -257,7 +257,8 @@ A verified number is never confirmed as a scammer, and a scam signal on a number
 - `make test` run all Python tests + shared test vectors (Kotlin tests run in CI)
 - `make up` `docker compose up --build` (gateway, telco, dashboard, postgres)
 - `make demo` reset the simulator and start the scripted scam blast
-- Android: GitHub Actions builds the APK on the default branch → Releases.
+- Android: GitHub Actions builds the APK on the default branch → Releases. Installed phones update in place from
+  Settings → Updates (`features/update/`, hackathon only; same signing key, higher build number, Android confirms).
 
 CI: one workflow per folder with `paths:` filters, plus `shared-contracts.yml` that runs the test
 vectors against Python and Kotlin whenever `shared/`, normalizer or model code changes.

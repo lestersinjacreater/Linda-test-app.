@@ -52,6 +52,7 @@ import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.alerts.VoiceWarnings
 import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.sync.BlocklistSyncWorker
+import com.linda.app.features.update.UpdateGroup
 import kotlinx.coroutines.launch
 
 /**
@@ -152,6 +153,8 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit, onOpenLea
                 onClick = onOpenLearning, chevron = true, divider = true,
             )
         }
+
+        UpdateGroup() // hackathon builds only: get the newest build from the team's release
 
         // Tap the version 7 times to open or close the developer section.
         Text(

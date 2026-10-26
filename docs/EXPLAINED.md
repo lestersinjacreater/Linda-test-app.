@@ -1148,3 +1148,29 @@ reports question (still in English and Swahili, still off until "Agree"). Answer
 from the right and Back returns the way it came, the way a phone's own setup does.
 
 The phone tour now walks the three pages and checks that Recovery opens on "What to do now".
+
+## Updating Linda from inside the app (`features/update/`, 26 Oct)
+
+**Why.** Installing each new build by hand was slow, and judges will install Linda too. Settings now has an
+**Updates** group: one tap gets the newest build.
+
+**How it works.**
+1. When Settings opens, `Updater.check()` asks GitHub for our public `latest-build` release (the one GitHub Actions
+   publishes on every merge). The release is called "Latest build #182 (abc1234)"; 182 is also the app's
+   `versionCode`, so `UpdateCheck.newer()` simply compares the two numbers. The answer is reused for 30 minutes, because
+   GitHub allows only 60 requests an hour per network and many phones share the venue Wi-Fi.
+2. If the release is newer, the row says "Update to build 182 · About 2.2 MB". A tap downloads `linda.apk` into the
+   app's own cache, with a percentage, and refuses a file that is shorter than GitHub says it should be.
+3. Linda hands the file to **Android's own installer** (through a `FileProvider`, so only the installer can read it).
+   Android shows "Do you want to update this app?" and the person taps Update. No app can update itself silently.
+   The first time, Android asks to allow "Install unknown apps" for Linda; after that, one more tap installs.
+
+**Why it is safe.** Android only lets an APK replace Linda if it is signed with the same key, so nobody else's file can
+take its place. The settings, history and everything Linda learned stay, as with any update. The check sends nothing
+about the person: it is one plain request for a public web page, and no message text ever.
+
+**Hackathon only.** In production, updates come from the Play Store or My OneApp, and this feature is removed.
+
+**Why you never need to uninstall.** Every build is signed with the same committed key and gets a higher build number,
+so opening a newer `linda.apk` by hand also offers "Update". Only builds from before 7 Oct (a random key) need one last
+uninstall.

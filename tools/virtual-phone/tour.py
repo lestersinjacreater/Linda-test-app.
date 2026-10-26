@@ -247,6 +247,10 @@ class Tour(Phone):
         self.tap_text("Settings", scrolls=0)
         version = self.find("Linda version 0.1.")
         self.check("Settings shows the build number", version is not None, version["text"] if version else "")
+        # The update row answers one way or another (the tour's build number is not the release's, so either is fine).
+        time.sleep(3)
+        row = self.find_any(("Linda is up to date", "Update to build", "Could not check for updates"))
+        self.check("Settings has the update row", row is not None, row["text"] if row else "")
 
     def verified_caller_demo(self) -> None:
         v = self.find("Linda version 0.1.")
