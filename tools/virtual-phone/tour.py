@@ -70,11 +70,24 @@ class Tour(Phone):
         # The first launch can take a while to draw on a slow runner: wait for it instead of looking once.
         welcome = self.wait_for(lambda: "Welcome to Linda" in self.screen_text(), 15)
         self.check("Welcome screen on first launch", welcome)
-        tapped = self.tap_text("I am ready")
-        time.sleep(1.5)
+        # Three short pages: Next (permissions already granted at install), Next (battery), then answer the
+        # reports question. "No thanks" keeps reports off, as before.
+        steps = []
+        for words in ("Next", "Next", "No thanks"):
+            steps.append(self.tap_exact(words, scrolls=2))
+            time.sleep(1)
+        tapped = all(steps)
         home = self.wait_for(lambda: "LINDA is protecting you." in self.screen_text(), 10)
         self.check("Home says LINDA is protecting you", tapped and home,
-                   "all permissions granted, so every layer should be on")
+                   f"all permissions granted, so every layer should be on; pages tapped: {steps}")
+
+    def recovery(self) -> None:
+        """Home's "I have been scammed" row: the steps come first, the optional form is folded away."""
+        opened = self.tap_text("I have been scammed", scrolls=2)
+        steps = opened and self.wait_for(lambda: self.find("What to do now", scrolls=3) is not None, 6)
+        self.check("Recovery shows what to do now (form folded away)", bool(steps), f"opened: {opened}")
+        self.shell("input keyevent 4")  # Back to Home
+        time.sleep(1)
 
     def scam_sms(self) -> None:
         self.go_home()
@@ -298,6 +311,7 @@ def main() -> int:
     t.prepare()
     t.step("Install", lambda: t.install(args.apk))
     t.step("Welcome and Home", t.welcome_and_home)
+    t.step("Recovery", t.recovery)
     t.step("Scam SMS", t.scam_sms)
     t.step("Stop screen, detail and report", t.takeover_detail_report)
     t.step("Safe SMS", t.safe_sms)

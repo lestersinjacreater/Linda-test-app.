@@ -77,6 +77,7 @@
     <string name="onboarding_battery_title">2. Weka Linda ikiwa macho</string>
     <string name="onboarding_open_battery">Fungua mipangilio ya betri</string>
     <string name="onboarding_done">Niko tayari</string>
+    <string name="onboarding_next">Endelea</string>
     <string name="battery_generic">Fungua Mipangilio, tafuta Linda kwenye Betri, kisha chagua "Bila vikwazo" au "Usiboreshe". Bila hili simu yako inaweza kuzima Linda skrini ikiwa imezimwa.</string>
     <string name="battery_tecno">Tecno: Mipangilio > Programu > Linda > Betri > "Bila vikwazo". Kisha fungua Phone Master au Phone Manager > Autostart na uwashe Linda. Pia funga Linda kwenye orodha ya programu za hivi karibuni.</string>
     <string name="battery_infinix">Infinix: Mipangilio > Programu > Linda > Betri > "Bila vikwazo". Kisha fungua XOS Phone Master > Autostart na uwashe Linda. Pia funga Linda kwenye orodha ya programu za hivi karibuni.</string>
@@ -133,6 +134,8 @@
     <string name="recovery_intro_urgent">Chukua hatua haraka. Dakika za kwanza ndizo muhimu zaidi. Fanya hatua hizi kwa mpangilio.</string>
     <string name="recovery_intro_late">Muda umepita, lakini bado unaweza kuripoti hili na kuwalinda watu wengine.</string>
     <string name="recovery_form_title">Mwambie Linda kilichotokea (si lazima)</string>
+    <string name="recovery_details_title">Ongeza maelezo kwa ripoti kamili zaidi (si lazima)</string>
+    <string name="recovery_other_language">Ripoti hiyo hiyo kwa Kiingereza</string>
     <string name="recovery_form_help">Hii hufanya hatua na maandishi ya ripoti kuwa sahihi zaidi. Inabaki kwenye simu yako.</string>
     <string name="recovery_amount">Ulituma kiasi gani? (Ksh)</string>
     <string name="recovery_when_title">Ulituma lini?</string>

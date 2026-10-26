@@ -1132,3 +1132,19 @@ the tap target (a bigger target than the small switch). The Kiswahili-voice line
 and then one tap installs it. "Test the voice" and the number of reports waiting moved to the hidden developer section
 (tap the version 7 times), because only the team needs them. The call-warnings row now notices when you come back from
 Android's dialog, so it says "On" straight away.
+
+## Recovery steps first, and a three-page first run (26 Oct)
+
+**Recovery** (`features/recovery/RecoveryScreen.kt`). Someone who just lost money used to meet a five-field form before
+the steps. Now the screen asks only the two things that change the steps (when they sent it, and whether a bank or card
+was involved), then shows "What to do now". The amount, the number and the M-Pesa code only make the report text more
+exact, so they fold under "Add details for a more exact report (optional)" next to that report. The report shows in the
+person's language, with the other language one tap away. The steps and the report text are worked out exactly as before
+(`RecoveryPlan`, `ReportText`).
+
+**First run** (`features/onboarding/OnboardingScreen.kt`). One long page became three short ones, one decision each:
+allow the permissions ("Next" if they are already allowed), keep Linda awake (only this phone brand's steps), and the
+reports question (still in English and Swahili, still off until "Agree"). Answering the last page finishes. Next slides in
+from the right and Back returns the way it came, the way a phone's own setup does.
+
+The phone tour now walks the three pages and checks that Recovery opens on "What to do now".

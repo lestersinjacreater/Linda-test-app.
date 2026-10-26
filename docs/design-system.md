@@ -24,7 +24,8 @@ If it ever conflicts with CLAUDE.md, CLAUDE.md wins and this file is updated.
 >   one primary button with quiet text buttons under it; at most three reasons, never the model's letter pieces; "Mark as safe"
 >   gets Undo instead of a dialog; the report sheet shows the number and scam type, with the codes one tap away (7.3, 7.9, 7.11, 7.12).
 >   Home keeps the ring and one status line, with two rows under it; the Network card (7.10) is retired; Settings becomes a
->   grouped list (7.13), and "What Linda learns" gets its own screen.
+>   grouped list (7.13), and "What Linda learns" gets its own screen. Recovery shows the steps before any form (7.6), and the
+>   first run becomes three short pages (7.14).
 
 ---
 
@@ -225,6 +226,9 @@ Shown on the guardian's phone: avatar of the protected person, Caution style, "M
 
 ### 7.6 Recovery Timeline
 A vertical stepper in Safaricom greens: Act fast → Request reversal → Report to 333 → Contact your bank → Report to police. The current step pulses gently; done steps get a check. A countdown chip at the top: "Reversals work best within minutes."
+Order on the screen: the two answers that change the steps ("When did you send it?" and "I paid from a bank account or card", as a
+grouped list), then the steps, then the ready-to-send report in the person's language. The optional details (amount, number, code)
+fold under a disclosure next to the report they improve; the report in the other language is one tap away.
 
 ### 7.7 Fake M-PESA Badge
 When a message imitates an M-PESA confirmation from a non-M-PESA sender, show a crossed-out M-PESA-style receipt icon with: "Not from M-PESA. You have not received any money."
@@ -264,6 +268,11 @@ For settings and short menus, like a phone's own Settings. A small Label heading
 (Medium radius, card shadow); rows at least 56dp tall with 16dp padding and a thin `border` line between rows (indented
 16dp). Each row: a title in Body Large, at most one short line under it in Body `textSecondary`, and on the right a switch,
 a green tick for "on" (read out as "On"; a word was too wide in Kiswahili), a green "Turn on", or a chevron for "opens another screen". The whole row is the tap target.
+
+### 7.14 First run
+Three short pages, one decision each, with three small dots at the top: 1. Welcome and "Allow permissions" ("Next" when already
+allowed), 2. "Keep Linda awake" with only this phone brand's steps, 3. Help protect others (the consent card, in English and
+Swahili). Answering page 3 finishes. Next slides in from the right, Back returns the way it came (fade only with "remove animations").
 
 ---
 
