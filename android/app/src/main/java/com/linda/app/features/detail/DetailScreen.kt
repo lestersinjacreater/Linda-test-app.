@@ -42,6 +42,7 @@ import com.linda.app.features.guardian.GuardianPolicy
 import com.linda.app.features.trace.LayerTraceBuilder
 import com.linda.app.features.trace.TraceInput
 import com.linda.app.core.ui.components.categoryLabel
+import com.linda.app.core.ui.components.categoryTitle
 import com.linda.app.features.reporting.CannotReport
 import com.linda.app.features.reporting.ManualReport
 import com.linda.app.features.reporting.ReportableDetection
@@ -170,7 +171,7 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
             ) {
                 // 1. Overview: what kind of scam, how risky, from whom, when.
                 SectionCard(stringResource(R.string.detail_overview), trailing = { RiskPill(d.level) }) {
-                    OverviewRow(stringResource(R.string.detail_type), categoryLabel(d.category))
+                    OverviewRow(stringResource(R.string.detail_type), categoryTitle(d.category))
                     OverviewRow(stringResource(R.string.detail_from), senderLabel(d))
                     OverviewRow(stringResource(R.string.detail_source), stringResource(sourceLabel(d.source)))
                     OverviewRow(stringResource(R.string.detail_received), relativeTime(d.receivedAt) + " \u00B7 " + formatDateTime(d.receivedAt))

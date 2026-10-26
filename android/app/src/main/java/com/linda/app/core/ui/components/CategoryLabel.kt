@@ -20,4 +20,8 @@ fun categoryLabel(category: String): String = stringResource(
         "phishing_link" -> R.string.cat_phishing_link
         else -> R.string.cat_other
     },
-).replaceFirstChar { it.uppercaseChar() } // a card title or a table cell starts with a capital ("Sent by mistake")
+)
+
+/** The same words starting with a capital, for card titles and table cells ("Sent by mistake"). */
+@Composable
+fun categoryTitle(category: String): String = categoryLabel(category).replaceFirstChar { it.uppercaseChar() }

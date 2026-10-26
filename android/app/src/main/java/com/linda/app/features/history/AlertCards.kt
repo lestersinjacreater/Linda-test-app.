@@ -27,6 +27,7 @@ import com.linda.app.core.data.DetectionEntity
 import com.linda.app.core.ui.components.Pill
 import com.linda.app.core.ui.components.RiskPill
 import com.linda.app.core.ui.components.categoryLabel
+import com.linda.app.core.ui.components.categoryTitle
 import com.linda.app.core.ui.components.relativeTime
 import com.linda.app.core.ui.theme.LargeShape
 import com.linda.app.core.ui.theme.LindaTheme
@@ -50,7 +51,7 @@ fun AlertListCard(d: DetectionEntity, onClick: () -> Unit, modifier: Modifier = 
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-            Text(categoryLabel(d.category), style = MaterialTheme.typography.titleMedium, color = colors.textPrimary, modifier = Modifier.weight(1f))
+            Text(categoryTitle(d.category), style = MaterialTheme.typography.titleMedium, color = colors.textPrimary, modifier = Modifier.weight(1f))
             RiskPill(d.level)
         }
         Text(
