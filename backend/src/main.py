@@ -4,6 +4,7 @@ import contextlib
 import time
 from typing import Callable, Optional
 
+import httpx
 from fastapi import FastAPI
 
 from src.core.config import Settings
@@ -13,6 +14,7 @@ from src.features.confirmation.service import load_verified_senders
 from src.features.intel.client import HttpIntelClient, IntelClient
 from src.features.intel.sync import sync_intel
 from src.features.lookups.router import router as lookups_router
+from src.features.payments.router import router as payments_router
 from src.features.private.ratelimit import RateLimiter
 from src.features.private.router import router as private_router
 from src.features.reports.router import router as reports_router
@@ -26,8 +28,9 @@ def create_app(
     notifier: Optional[Notifier] = None,
     clock: Callable[[], float] = time.time,
     intel_client: Optional[IntelClient] = None,
+    daraja_client: Optional[httpx.Client] = None,
 ) -> FastAPI:
-    """`notifier`, `clock` and `intel_client` can be swapped in tests (no network, controllable time)."""
+    """`notifier`, `clock`, `intel_client` and `daraja_client` can be swapped in tests (no network, controllable time)."""
     settings = settings or Settings.from_env()
     if intel_client is None and settings.fraudintel_url:
         intel_client = HttpIntelClient(settings.fraudintel_url)
@@ -48,6 +51,7 @@ def create_app(
     app.state.notifier = notifier or make_telco_notifier(settings)
     app.state.clock = clock
     app.state.intel_client = intel_client
+    app.state.daraja_client = daraja_client or httpx.Client(timeout=15)
     app.state.lookup_limiter = RateLimiter(settings.lookup_rate_per_hour, clock)
     app.state.intel_cursor = None  # "as_of" of the last fraud-intel sync
     app.state.intel_last = {"enabled": intel_client is not None}
@@ -56,6 +60,7 @@ def create_app(
     app.include_router(verified_router)
     app.include_router(private_router)
     app.include_router(ussd_router)
+    app.include_router(payments_router)
 
     @app.get("/health")
     def health() -> dict:

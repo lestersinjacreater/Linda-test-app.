@@ -49,6 +49,16 @@ class Settings:
     lookup_rate_per_hour: int = 120  # per device; a phone needs a handful a day, a sweep needs millions
     sync_recent_days: int = 30       # the offline list only holds numbers confirmed this recently
 
+    # Daraja SANDBOX (root principle 10: never live credentials). Empty key = STK Push switched off.
+    daraja_consumer_key: str = ""
+    daraja_consumer_secret: str = ""
+    daraja_shortcode: str = "174379"   # Safaricom's public sandbox test shortcode
+    daraja_passkey: str = ""
+    daraja_callback_url: str = ""
+    # Only these phones (the team's, 2547XXXXXXXX, comma separated) may receive a demo payment prompt, so nobody
+    # can use the public gateway to send payment prompts to strangers. Empty = nobody.
+    daraja_allowed_payers: tuple = ()
+
     # Telling the network a sender is confirmed
     notify_retries: int = 3
     notify_backoff_s: float = 1.0
@@ -72,4 +82,10 @@ class Settings:
             no_token_trust_cap=float(e.get("RADAR_NO_TOKEN_TRUST_CAP", d.no_token_trust_cap)),
             demo_trusted_prefix=e.get("RADAR_DEMO_TRUSTED_PREFIX", d.demo_trusted_prefix),
             demo_trusted_trust=float(e.get("RADAR_DEMO_TRUSTED_TRUST", d.demo_trusted_trust)),
+            daraja_consumer_key=e.get("DARAJA_CONSUMER_KEY", ""),
+            daraja_consumer_secret=e.get("DARAJA_CONSUMER_SECRET", ""),
+            daraja_shortcode=e.get("DARAJA_SHORTCODE", d.daraja_shortcode) or d.daraja_shortcode,
+            daraja_passkey=e.get("DARAJA_PASSKEY", ""),
+            daraja_callback_url=e.get("DARAJA_CALLBACK_URL", ""),
+            daraja_allowed_payers=tuple(p.strip() for p in e.get("DARAJA_ALLOWED_PAYERS", "").split(",") if p.strip()),
         )
