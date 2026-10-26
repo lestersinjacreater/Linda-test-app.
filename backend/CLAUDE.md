@@ -2,7 +2,7 @@
 
 Replaces `radar_stub/` from the simulator starter. Implements root sections 5.1–5.3, 5.6, 5.7.
 Built: fraud-intel merge (5.12, `features/intel/`), verified callers (5.13), private lookups (5.10) and hashed
-sync (5.11) in `features/private/`. The gateway must never depend on `fraudintel/` code, only on its HTTP contract, and must
+sync (5.11) in `features/private/`, and the USSD checker (5.6) in `features/ussd/`. The gateway must never depend on `fraudintel/` code, only on its HTTP contract, and must
 never send phones a full list of numbers or the fraud team's evidence (root principle 6).
 
 ## Structure

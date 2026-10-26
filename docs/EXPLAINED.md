@@ -1019,3 +1019,24 @@ inbox it fired only on genuine bank texts (which often arrive first) and never o
 - **Numbers the gateway already knew** (from the fraud team's list or earlier reports) show as **KNOWN**, "already known
   before the first call", instead of "confirmed after 3 phones agreed", which would not be true for them.
 - The buttons are one pure list (`PRESETS`), so a test checks the exact request each one sends.
+
+## The USSD checker (`backend/src/features/ussd/router.py`)
+
+**What it does.** Anyone, on any phone (a basic phone too), dials a USSD code and checks a number before paying:
+1 Check a number, 2 How to stay safe, 3 Kiswahili. A confirmed number gets "WARNING: 0700 000 050 is a confirmed scam
+number (fake M-PESA messages). Do not send money or share your PIN. Forward scam SMS to 333." A number the fraud team
+or a few phones reported gets a caution; 0722 000 000 gets "Verified: Safaricom Customer Care".
+
+**How.** Africa's Talking calls `POST /ussd` with form fields; `text` holds every answer so far joined by `*` (`""`, then
+`1`, then `1*0712345678`). The reply is plain text starting `CON` (menu stays open) or `END`. The answer comes from the same
+place as the server-side risk lookup (5.2), so the app, the network and USSD always agree.
+
+**Why this way.**
+- It never says "safe": no reports is not proof, so it says "No reports yet" and gives the next safe step.
+- Each phone can check 120 numbers an hour (the same limit as the app's lookups), so nobody can sweep the list of
+  flagged numbers by dialling.
+- Every reply fits one USSD screen (182 characters); a test checks it, in both languages.
+- The form is read with Python's own `urllib`, so no new library.
+
+**To try it:** in the Africa's Talking sandbox, create a USSD channel with callback `https://DOMAIN/radar/ussd`, then use
+their web phone simulator. Locally: `curl -d "phoneNumber=+254711000001&text=1*0722000000" localhost:8001/ussd`.

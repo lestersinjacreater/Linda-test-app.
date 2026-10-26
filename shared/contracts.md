@@ -69,3 +69,15 @@ Text shorter than 3 characters is one piece; empty text gives `0000000000000000`
 - Real phones (`REAL_PHONES`): basic phones in Nairobi, always among the blast's recipients (a quarter of the way in),
   never called. Only the WARNING is sent, as a real SMS through Africa's Talking (`AT_USERNAME`, `AT_API_KEY`,
   `AT_SENDER_ID`), starting "[Linda demo]"; never the scam text. No key: status `skipped`. Their numbers never appear in events.
+
+## USSD checker (5.6, implemented in backend/src/features/ussd/router.py)
+
+- `POST /ussd`, form fields `sessionId, serviceCode, phoneNumber, networkCode, text`; reply `text/plain`.
+- `text` = every answer so far joined by `*`. `""` → the menu (`CON`). `1` → asks for the number (`CON`).
+  `1*<number>` → the answer (`END`). `2` → how to stay safe (`END`). `3` → the same menu in Kiswahili; `3*1`, `3*1*<number>`,
+  `3*2` as above. Anything else → the menu again.
+- The number is typed as `07XX XXX XXX`, `01…`, `+254…`, `254…` or `7XX…`; anything else → `END` asking to dial again.
+- The answer uses the risk lookup (5.2): `confirmed` → a warning naming the scam type; `suspected` (a few phones, or the
+  fraud team's "reported") → a caution with the report count; `verified` → the caller's name; `unknown` → "no reports yet",
+  never "safe". Every reply fits 182 characters.
+- Rate limit: `LOOKUP_RATE_PER_HOUR` number checks per `phoneNumber`, then `END` "too many checks".
