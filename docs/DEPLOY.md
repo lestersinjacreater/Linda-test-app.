@@ -1,3 +1,46 @@
+# Deploying Linda
+
+Two ways, the same server software:
+
+- **Free on Render** (no credit card, below): one free web service runs everything. Small and a little slower, and it
+  sleeps after 15 minutes with no visitors unless something keeps it awake. The choice when the budget is zero.
+- **A VPS** (about 6 to 12 USD a month, the rest of this page): faster, never sleeps.
+
+## Free on Render (no credit card)
+
+What you get: `https://linda-XXXX.onrender.com` with the dashboard at `/`, the gateway at `/radar`, the presenter's
+controls behind a password, and Render's free Postgres. `render.yaml` describes it all; `deploy/render/` is the box.
+
+1. **Sign up** at [render.com](https://render.com) with your GitHub account (no card).
+2. **Deploy:** open
+   `https://render.com/deploy?repo=https://github.com/lestersinjacreater/Linda-test-app.`
+   Render reads `render.yaml`, shows one web service (`linda`) and one database (`linda-db`), and asks for
+   `PRESENTER_PASSWORD`: type a long password and write it down for the presenters. Click **Deploy Blueprint**.
+3. **Wait** for the service to say **Live** (the first build takes about 10 minutes). Its address is at the top of the
+   service's page, like `https://linda-ab12.onrender.com`.
+4. **Check it** from your laptop (plays one scam blast, so never during the show):
+   `python3 scripts/smoke_prod.py https://linda-ab12.onrender.com presenter 'your-password'` → `ALL CHECKS PASSED`.
+   Then open the address in a browser: the dashboard's badge should say **LIVE**.
+5. **Keep it awake:** a free [UptimeRobot](https://uptimerobot.com) account (no card), "New monitor", type HTTP(s),
+   URL `https://linda-ab12.onrender.com/radar/health`, every 5 minutes. A free Render service sleeps after 15 minutes
+   without visitors and takes about a minute to wake; the monitor visits every 5. Open the dashboard 5 minutes before the
+   demo anyway.
+6. **Connect the phones:** on GitHub, Settings > Secrets and variables > Actions > **Variables** > New repository
+   variable `LINDA_SERVER_URL` = `https://linda-ab12.onrender.com/radar`. Then Actions > "Build APK" > Run workflow (or
+   merge anything). Every new APK connects by itself; installed phones get it from **Settings > Updates**. A phone where
+   someone typed an address in the hidden developer screen keeps that address.
+
+Good to know:
+- **Updating the server:** auto-deploy is off on purpose, so a merge on hack day cannot restart the demo. To deploy new
+  code: the service's page > **Manual Deploy** > Deploy latest commit (2 to 5 minutes of downtime).
+- **Fresh demo before the show:** on the dashboard use Reset, or `curl -u presenter:'your-password' -X POST
+  https://linda-ab12.onrender.com/telco/reset`. (`make prod-demo-reset` is for the VPS.)
+- **Limits:** 512 MB and a tenth of a CPU. Linda uses about 320 MB; a 500-phone blast may play a little slower than on a
+  laptop, but its numbers (time to catch, time to confirm, % warned) are simulated time and do not change. The free
+  database is deleted 30 days after it is created; Render gives 750 free hours a month, enough for one service all month.
+- **If something is wrong:** the service's **Logs** tab. If one part stops, the box restarts itself on purpose
+  (`deploy/render/start.sh`), so a crash shows up as a restart, not a half-working demo.
+
 # Deploying Linda on a VPS
 
 One small server runs everything: the radar, the mock telco, the dashboard and the database. A web server called
@@ -53,7 +96,7 @@ Log out, log back in as `linda` (`ssh linda@SERVER_IP`), then get the code:
 
 ```bash
 git clone https://github.com/lestersinjacreater/Linda-test-app..git linda    # use your real repo address
-cd linda && git checkout claude/zealous-shannon-gz3o6g                       # or main, once merged
+cd linda && git checkout very/optimistic-shannon-rzw9xm                      # the default branch
 ```
 
 ## 3. Point the domain at the server
@@ -137,7 +180,7 @@ still shows its recorded replay and the Android app's demo mode needs no network
 - **Protected:** starting or resetting demos (presenter password). The database and the radar's confirm callback are not reachable from outside.
 - **Demo-only shortcut:** `RADAR_DEMO_TRUSTED_PREFIX=5111` makes devices whose id starts with `5111` start with high trust, which the simulated phones need to get a first confirmation. Real phones have random ids, so this almost never matches, but someone who knows the prefix could abuse it. Set it to empty after the hackathon, and tell judges plainly what it is.
 - **No secrets in git.** `.env.production` stays on the server. Rotate the database and presenter passwords after the event, or delete the server.
-- **No Daraja or Africa's Talking keys are configured.** Those features are not built yet; when they are, their sandbox keys go in `.env.production` only.
+- **Daraja and Africa's Talking keys are optional and sandbox only.** They go in `.env.production` (or Render's Environment tab) only, never in git; empty means those demos are off.
 - The server holds sender phone numbers (fake placeholders in the simulation, real numbers if real phones report). Never message text. Delete the server and volumes when the event is over.
 
 ## When something is wrong

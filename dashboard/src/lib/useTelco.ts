@@ -3,7 +3,7 @@
 // that takes over when the connection has been down for 5 seconds.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getMetrics, getPopulation } from "./api";
-import { TELCO_WS } from "./config";
+import { telcoWs } from "./config";
 import fallbackJson from "./fallback/demo-events.json";
 import { FALLBACK_AFTER_MS, REPLAY_PAUSE_BETWEEN_LOOPS_MS, REPLAY_SPEED, replayDelayMs } from "./replay";
 import { initialState, metricsFromState, reduce, withPopulation, type DashboardState } from "./state";
@@ -36,7 +36,7 @@ export function useTelco() {
     const connect = () => {
       if (closed) return;
       armFallback();
-      try { socket = new WebSocket(TELCO_WS); } catch { retry = setTimeout(connect, 1000); return; }
+      try { socket = new WebSocket(telcoWs()); } catch { retry = setTimeout(connect, 1000); return; }
       socket.onopen = () => {
         disarmFallback();
         setBoth("live");

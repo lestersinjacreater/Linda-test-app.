@@ -1,0 +1,34 @@
+# One-click FREE deploy on Render (docs/DEPLOY.md, "Free on Render"). No credit card.
+# One web service runs the whole server (deploy/render/Dockerfile: gateway, mock telco, mock fraud team, dashboard,
+# Caddy in front) plus Render's free Postgres. The paid VPS setup (docker-compose.prod.yml) is unchanged.
+services:
+  - type: web
+    name: linda
+    runtime: docker
+    plan: free                      # 512 MB, 0.1 CPU; sleeps after 15 min without visitors (keep it awake: DEPLOY.md)
+    region: frankfurt               # the closest Render region to Nairobi
+    dockerfilePath: ./deploy/render/Dockerfile
+    dockerContext: .
+    healthCheckPath: /radar/health
+    autoDeployTrigger: 'off'        # deploy on purpose ("Manual Deploy"), so a merge on hack day cannot restart the demo
+    envVars:
+      - key: PRESENTER_PASSWORD     # asked once when the Blueprint is created; protects Start blast, Reset, the fraud inbox
+        sync: false
+      - key: PRESENTER_USER
+        value: presenter
+      - key: DATABASE_URL
+        fromDatabase:
+          name: linda-db
+          property: connectionString
+      - key: INTEL_SYNC_S           # how often the gateway pulls the fraud team's list (15 s: easy on the small CPU)
+        value: "15"
+      - key: SIM_SPEED
+        value: "20"
+
+databases:
+  - name: linda-db
+    plan: free                      # deleted by Render 30 days after creation: fine for the hackathon
+    region: frankfurt
+    databaseName: linda
+    user: linda
+    ipAllowList: []                 # only the Linda service can reach it (private network)
