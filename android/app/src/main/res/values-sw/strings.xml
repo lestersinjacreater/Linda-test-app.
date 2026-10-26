@@ -41,6 +41,13 @@
     <string name="detail_why">Kwa nini LINDA imeonya</string>
     <string name="detail_marked_safe">Umemweka mtumaji huyu kuwa salama. Linda itaacha kukagua jumbe zake.</string>
     <string name="action_mark_safe">Weka kuwa salama</string>
+    <string name="detail_how_decided">Jinsi Linda ilivyoamua</string>
+    <string name="marked_safe_bar">Imewekwa kuwa salama</string>
+    <string name="action_undo">Tendua</string>
+    <string name="report_details_show">Onyesha maelezo ya kiufundi</string>
+    <string name="report_details_hide">Ficha maelezo ya kiufundi</string>
+    <string name="disclosure_shown">Inaonyeshwa</string>
+    <string name="disclosure_hidden">Imefichwa</string>
     <string name="action_back">Rudi</string>
 
     <string name="checker_help">Bandika ujumbe, au tuma ujumbe kutoka WhatsApp au programu yoyote kwenda Linda. Haiondoki kwenye simu yako.</string>

@@ -19,6 +19,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import com.linda.app.core.ui.components.Disclosure
+import com.linda.app.features.demo.DemoOverlay
+import com.linda.app.features.trace.HapticPlan
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +50,7 @@ import com.linda.app.features.trace.LayerTraceView
 
 /**
  * The Verdict Card (docs/design-system.md 7.3): the risk icon and label, a three-line preview of the message, the
- * Layer Trace, the reasons, and the actions. Risk-tinted background with a 4dp bar in the risk colour on the left.
+ * reasons, the actions, and the Layer Trace folded under "How Linda decided". Risk-tinted background with a 4dp bar in the risk colour on the left.
  * Only a Scam card gets the soft red glow.
  */
 @Composable
@@ -58,10 +65,16 @@ fun VerdictCard(
     modifier: Modifier = Modifier,
     onTraceLanded: () -> Unit = {},
     riseKey: Any? = null,
+    traceOpenAtStart: Boolean = DemoOverlay.isOn(),
     actions: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = LindaTheme.colors
     val risk = colors.risk(level)
+    var traceOpen by rememberSaveable(riseKey?.hashCode()) { mutableStateOf(traceOpenAtStart) }
+    // With the trace closed, the Caution or Scam buzz still comes, once, when the verdict appears.
+    LaunchedEffect(riseKey, trace) {
+        if (!traceOpenAtStart && trace != null && HapticPlan.fireAtMs(trace, level) != null) onTraceLanded()
+    }
     // The card rises 16dp and fades in (docs/design-system.md section 8). With "remove animations" on it only fades, no movement.
     val reduceMotion = rememberReduceMotion()
     val arrival = remember { Animatable(0f) }
@@ -100,7 +113,6 @@ fun VerdictCard(
                 Text("$sender · $time", style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
             }
             if (fakeMpesa) FakeMpesaBadge()
-            trace?.let { LayerTraceView(it, level, onLanded = onTraceLanded) }
             if (reasons.isNotEmpty()) {
                 Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
                     // A SAFE verdict can carry a reason too (a pasted message that matches a real M-Pesa message), so the
@@ -110,7 +122,14 @@ fun VerdictCard(
                     reasons.forEach { Text(it, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary) }
                 }
             }
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.md), content = actions)
+            Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm), content = actions)
+            // The five layers, one tap away: open from the start in demo mode, so judges see them work.
+            trace?.let {
+                Disclosure(stringResource(R.string.detail_how_decided), open = traceOpen, onToggle = { traceOpen = !traceOpen }) {
+                    // Opened by the person later: no second buzz, the verdict already buzzed once.
+                    LayerTraceView(it, level, onLanded = if (traceOpenAtStart) onTraceLanded else ({}))
+                }
+            }
         }
     }
 }

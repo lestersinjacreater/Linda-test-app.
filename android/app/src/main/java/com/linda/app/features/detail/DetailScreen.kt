@@ -1,6 +1,5 @@
 package com.linda.app.features.detail
 
-import com.linda.app.features.learning.LearningStore
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.linda.app.LindaApp
 import com.linda.app.R
-import com.linda.app.core.data.AllowedSenderEntity
 import com.linda.app.core.data.DetectionEntity
 import com.linda.app.core.ui.components.LindaButton
 import com.linda.app.core.ui.theme.LindaTheme
@@ -42,13 +40,24 @@ import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.detection.ReasonsJson
 import com.linda.app.features.guardian.GuardianPolicy
 import com.linda.app.features.trace.LayerTraceBuilder
-import com.linda.app.features.trace.LayerTraceView
 import com.linda.app.features.trace.TraceInput
 import com.linda.app.core.ui.components.categoryLabel
 import com.linda.app.features.reporting.CannotReport
 import com.linda.app.features.reporting.ManualReport
 import com.linda.app.features.reporting.ReportableDetection
 import com.linda.app.features.reporting.ReportingService
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.shadow
+import com.linda.app.core.ui.components.Disclosure
+import com.linda.app.core.ui.components.LindaTextButton
+import com.linda.app.core.ui.theme.MediumShape
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /** What opens when the user taps a warning: the message, the verdict, every reason, and what to do next (F6). */
@@ -96,6 +105,7 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
     // Opened from the notification's "Report this number": the sheet is already up, still showing what will be sent.
     var showReportDialog by rememberSaveable(detectionId) { mutableStateOf(openReport && cannotReport == null && !d.markedSafe) }
     var reportNote by remember { mutableStateOf<String?>(null) }
+    var showCodes by rememberSaveable(detectionId) { mutableStateOf(false) }
 
     if (showTakeover && d.level == "SCAM" && !d.markedSafe) {
         ScamTakeover(
@@ -107,49 +117,74 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
         return
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Spacing.screenPadding),
-        verticalArrangement = Arrangement.spacedBy(Spacing.lg),
-    ) {
-        VerdictCard(
-            level = d.level,
-            sender = d.sender ?: stringResource(R.string.sender_pasted),
-            time = formatDateTime(d.receivedAt),
-            body = d.body,
-            fakeMpesa = d.category == "fake_mpesa",
-            trace = trace,
-            reasons = reasons.map { ReasonsJson.text(it, language) },
+    // Undo for "Mark as safe": a short bar at the bottom, instead of an "Are you sure?" dialog.
+    var undo by remember { mutableStateOf<SafeMark?>(null) }
+    LaunchedEffect(undo) {
+        if (undo != null) {
+            delay(UNDO_MS)
+            undo = null
+        }
+    }
+    val fakeMpesa = d.category == "fake_mpesa"
+
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Spacing.screenPadding),
+            verticalArrangement = Arrangement.spacedBy(Spacing.lg),
         ) {
-            // One primary action: the answer to "what do I do now?". Everything else is secondary.
-            LindaButton(
-                stringResource(if (d.level == "SCAM") R.string.verdict_primary_scam else R.string.verdict_primary_caution),
-                onClick = onBack, modifier = Modifier.fillMaxWidth(),
-            )
-            LindaButton(stringResource(R.string.action_i_sent_money), onClick = { onOpenRecovery(d.id) }, secondary = true, modifier = Modifier.fillMaxWidth())
-            if (d.markedSafe) {
-                Text(stringResource(R.string.detail_marked_safe), style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary)
-            } else {
+            VerdictCard(
+                level = d.level,
+                sender = d.sender ?: stringResource(R.string.sender_pasted),
+                time = formatDateTime(d.receivedAt),
+                body = d.body,
+                fakeMpesa = fakeMpesa,
+                trace = trace,
+                reasons = WarningReasons.shown(reasons, fakeMpesa).map { ReasonsJson.text(it, language) },
+            ) {
+                // One primary action: the answer to "what do I do now?". The rest are quiet text buttons under it.
                 LindaButton(
-                    stringResource(R.string.action_mark_safe),
-                    onClick = {
-                        scope.launch {
-                            app.database.detectionDao().markSafe(d.id)
-                            d.sender?.let { app.database.senderDao().allow(AllowedSenderEntity(it)) } // stop scoring this sender
-                            // Learn from your taps: messages that look like this one, from other senders, worry Linda less.
-                            LearningStore.learnFromTap(context, d.body, d.sender, isScam = false)
-                            refresh++
-                        }
-                    },
-                    secondary = true, modifier = Modifier.fillMaxWidth(),
+                    stringResource(if (d.level == "SCAM") R.string.verdict_primary_scam else R.string.verdict_primary_caution),
+                    onClick = onBack, modifier = Modifier.fillMaxWidth(),
                 )
+                LindaTextButton(stringResource(R.string.action_i_sent_money), onClick = { onOpenRecovery(d.id) }, modifier = Modifier.fillMaxWidth())
+                // Report (F6): the person reports this number so others can be warned. Needs their confirmation each time.
+                if (cannotReport == null && !d.markedSafe) {
+                    LindaTextButton(stringResource(R.string.action_report), onClick = { showReportDialog = true }, modifier = Modifier.fillMaxWidth())
+                } else if (cannotReport == CannotReport.ALREADY_REPORTED) {
+                    Text(stringResource(R.string.report_done), style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary)
+                }
+                reportNote?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary) }
+                if (d.markedSafe) {
+                    Text(stringResource(R.string.detail_marked_safe), style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary)
+                } else {
+                    LindaTextButton(
+                        stringResource(R.string.action_mark_safe),
+                        onClick = {
+                            scope.launch {
+                                undo = MarkAsSafe.apply(context, d)
+                                refresh++
+                            }
+                        },
+                        quiet = true, modifier = Modifier.fillMaxWidth(),
+                    )
+                }
             }
-            // Report (F6): the person reports this number to the radar so others can be warned. Needs their confirmation each time.
-            if (cannotReport == null && !d.markedSafe) {
-                LindaButton(stringResource(R.string.action_report), onClick = { showReportDialog = true }, secondary = true, modifier = Modifier.fillMaxWidth())
-            } else if (cannotReport == CannotReport.ALREADY_REPORTED) {
-                Text(stringResource(R.string.report_done), style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary)
-            }
-            reportNote?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = LindaTheme.colors.primary) }
+            // Room for the Undo bar, so it never covers the last line.
+            if (undo != null) Spacer(Modifier.height(72.dp))
+        }
+
+        undo?.let { mark ->
+            UndoBar(
+                text = stringResource(R.string.marked_safe_bar),
+                onUndo = {
+                    undo = null
+                    scope.launch {
+                        MarkAsSafe.undo(context, mark)
+                        refresh++
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomCenter).padding(Spacing.screenPadding),
+            )
         }
     }
 
@@ -166,10 +201,16 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
                         Text(stringResource(R.string.report_dialog_intro), style = MaterialTheme.typography.bodyMedium)
                         Text(stringResource(R.string.report_field_number, payload.sender), style = MaterialTheme.typography.bodyLarge)
                         Text(stringResource(R.string.report_field_type, categoryLabel(payload.category)), style = MaterialTheme.typography.bodyLarge)
-                        Text(stringResource(R.string.report_field_sure, (payload.confidence * 100).toInt()), style = MaterialTheme.typography.bodyLarge)
-                        Text(stringResource(R.string.report_field_fingerprint, payload.fingerprint), style = MaterialTheme.typography.bodyLarge)
-                        Text(stringResource(R.string.report_field_device, payload.deviceId), style = MaterialTheme.typography.bodyLarge)
                         Text(stringResource(R.string.report_never), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+                        // Still everything that is sent, but the codes are one tap away: they mean nothing to most people.
+                        Disclosure(
+                            stringResource(if (showCodes) R.string.report_details_hide else R.string.report_details_show),
+                            open = showCodes, onToggle = { showCodes = !showCodes },
+                        ) {
+                            Text(stringResource(R.string.report_field_sure, (payload.confidence * 100).toInt()), style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.report_field_fingerprint, payload.fingerprint), style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(R.string.report_field_device, payload.deviceId), style = MaterialTheme.typography.bodyMedium)
+                        }
                         if (Prefs.serverUrl(context).isBlank()) {
                             Text(stringResource(R.string.report_no_server), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -188,5 +229,24 @@ fun DetailScreen(detectionId: Long, takeover: Boolean = false, openReport: Boole
                 dismissButton = { OutlinedButton(onClick = { showReportDialog = false }) { Text(stringResource(R.string.report_cancel)) } },
             )
         }
+    }
+}
+
+private const val UNDO_MS = 8_000L
+
+/** A short bar that floats at the bottom with one Undo button (docs/design-system.md 7.12). */
+@Composable
+private fun UndoBar(text: String, onUndo: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = LindaTheme.colors
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(8.dp, MediumShape)
+            .background(colors.surfaceRaised, MediumShape)
+            .padding(start = Spacing.lg, end = Spacing.sm),
+    ) {
+        Text(text, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary, modifier = Modifier.weight(1f))
+        LindaTextButton(stringResource(R.string.action_undo), onClick = onUndo)
     }
 }

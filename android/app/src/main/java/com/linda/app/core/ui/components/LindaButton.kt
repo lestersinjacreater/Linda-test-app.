@@ -10,6 +10,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -61,4 +62,29 @@ fun LindaButton(
             colors = ButtonDefaults.buttonColors(containerColor = container, contentColor = colors.onPrimary),
         ) { Text(text, style = MaterialTheme.typography.labelLarge) }
     }
+}
+
+/**
+ * A text-only button (docs/design-system.md 7.9) for the actions under a screen's one primary button: 48dp tall,
+ * green text, no outline, so it never competes with the primary. [quiet] uses the grey text colour for an action
+ * that should be findable but not suggested, like "Mark as safe" on a warning.
+ */
+@Composable
+fun LindaTextButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    quiet: Boolean = false,
+) {
+    val colors = LindaTheme.colors
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
+    val scale by animateFloatAsState(if (pressed) 0.97f else 1f, Motion.calmSpring(), label = "press")
+    TextButton(
+        onClick = onClick,
+        modifier = modifier.heightIn(min = 48.dp).graphicsLayer { scaleX = scale; scaleY = scale },
+        shape = MediumShape,
+        interactionSource = interaction,
+        colors = ButtonDefaults.textButtonColors(contentColor = if (quiet) colors.textSecondary else colors.primary),
+    ) { Text(text, style = MaterialTheme.typography.labelLarge) }
 }

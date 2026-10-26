@@ -29,6 +29,7 @@ import com.linda.app.features.trace.LayerTraceBuilder
 import com.linda.app.features.trace.LayerTraceView
 import com.linda.app.features.trace.TraceInput
 import com.linda.app.features.detail.VerdictCard
+import com.linda.app.features.detail.WarningReasons
 import com.linda.app.core.ui.theme.LindaTheme
 import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.trace.rememberVerdictHaptic
@@ -88,7 +89,7 @@ fun CheckerScreen(sharedText: String?, state: CheckerViewModel = viewModel()) {
                 body = text,
                 fakeMpesa = v.category == "fake_mpesa",
                 trace = trace,
-                reasons = v.reasons.map { ReasonsJson.text(it, language) },
+                reasons = WarningReasons.shown(v.reasons, v.category == "fake_mpesa").map { ReasonsJson.text(it, language) },
                 onTraceLanded = rememberVerdictHaptic(v.level.name),
                 riseKey = r,
             ) {

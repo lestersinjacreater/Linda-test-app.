@@ -283,6 +283,23 @@ object LearningStore {
         personalCount.value = updated.examples
     }
 
+    /**
+     * The personal layer as it is saved now, or null when nothing was learned yet. "Mark as safe" keeps this so its
+     * Undo can put the layer back exactly as it was (a learning step cannot simply be subtracted again).
+     */
+    fun tapsSnapshot(ctx: Context): String? {
+        val file = File(ctx.applicationContext.filesDir, PERSONAL_FILE)
+        return if (file.exists()) file.readText() else null
+    }
+
+    /** Puts back a [tapsSnapshot]: the saved layer, or no layer at all when the snapshot was null. */
+    fun restoreTaps(ctx: Context, snapshot: String?) {
+        val file = File(ctx.applicationContext.filesDir, PERSONAL_FILE)
+        if (snapshot == null) file.delete() else file.writeText(snapshot)
+        personalCache = null // read again from the file on next use
+        personalCount.value = personalModel(ctx)?.examples ?: 0
+    }
+
     /** How many taps the personal layer has learned from (for Settings). */
     fun observeTaps(ctx: Context): StateFlow<Int> {
         if (personalCount.value < 0) personalCount.value = personalModel(ctx)?.examples ?: 0
@@ -295,6 +312,8 @@ object LearningStore {
         personalCache = null
         personalCount.value = 0
         (ctx.applicationContext as LindaApp).database.senderDao().forgetAll()
+        // Senders marked "safe" were also learned from taps, so Forget lets Linda check them again.
+        (ctx.applicationContext as LindaApp).database.senderDao().forgetAllAllowed()
         dao(ctx).forgetAllReceipts()
         dao(ctx).forgetAllStories()
         dao(ctx).forgetAllCodes()

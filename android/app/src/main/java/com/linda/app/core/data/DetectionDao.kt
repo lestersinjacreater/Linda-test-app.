@@ -27,6 +27,10 @@ interface DetectionDao {
     @Query("UPDATE detections SET markedSafe = 1 WHERE id = :id")
     suspend fun markSafe(id: Long)
 
+    /** Undo for "Mark as safe". */
+    @Query("UPDATE detections SET markedSafe = 0 WHERE id = :id")
+    suspend fun unmarkSafe(id: Long)
+
     /** Scams Linda caught LIVE since [since] (not ones found later by "Scan my inbox"), not counting ones marked safe. */
     @Query("SELECT COUNT(*) FROM detections WHERE level = 'SCAM' AND markedSafe = 0 AND source != 'inbox' AND receivedAt >= :since")
     fun countScamsSince(since: Long): Flow<Int>
@@ -46,6 +50,14 @@ interface SenderDao {
 
     @Query("SELECT COUNT(*) > 0 FROM allowed_senders WHERE sender = :sender")
     suspend fun isAllowed(sender: String): Boolean
+
+    /** Undo for "Mark as safe": Linda checks this sender again. */
+    @Query("DELETE FROM allowed_senders WHERE sender = :sender")
+    suspend fun disallow(sender: String)
+
+    /** "Forget everything Linda learned" also forgets the senders marked as safe. */
+    @Query("DELETE FROM allowed_senders")
+    suspend fun forgetAllAllowed()
 
     /** Returns -1 when the sender was already there (then use [countAgain]). */
     @Insert(onConflict = OnConflictStrategy.IGNORE)

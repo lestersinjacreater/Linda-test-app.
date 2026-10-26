@@ -1092,3 +1092,28 @@ per sender so a handful of betting companies cannot teach the model that betting
 **What the missed scams look like** (in the replay, before training): short "send it to this number" texts that
 sat just below the warning line, a "calculator for mum" lure, job and romance openers and an investment pitch.
 Vague openers like these are why Linda also uses the "stranger asking for money" and "new number" rules.
+
+## A simpler warning screen (26 Oct)
+
+**Why.** Lester asked for an app that is "simple and easy to use, like how Apple designs its apps". The warning screen
+had four buttons of equal weight, the L-I-N-D-A boxes, up to five reasons (one of them the model's letter pieces, like
+"nant", "enan") and the fake M-Pesa sentence twice. Apple's rule is simplicity, not minimalism: the most important thing
+first, the rest one level deeper. Nothing that protects people was removed.
+
+**What changed.**
+- **One big button, quiet ones under it.** "Don't send money" stays the only filled button. "I already sent money →",
+  "Report this number" and a grey "Mark as safe" are text buttons (`LindaTextButton`).
+- **At most three reasons** (`features/detail/WarningReasons.kt`), in the detector's order (strongest first). The
+  model's letter pieces are never in that list, and the fake M-Pesa reason is skipped when the Fake M-PESA badge already
+  says it. The detector still keeps every reason: the voice, demo mode and the trace use them. Unit tested.
+- **"How Linda decided"** (`core/ui/components/Disclosure.kt`) folds the Layer Trace away. In demo mode it starts open,
+  so judges still see the five layers light up. The Caution or Scam buzz still plays once when the verdict appears.
+- **Undo instead of "Are you sure?"** (`features/detail/MarkAsSafe.kt`). "Mark as safe" acts at once and shows a bar
+  with Undo for 8 seconds. Before acting, it remembers whether the sender was already safe and a copy of what Linda had
+  learned from taps, so Undo puts all three back exactly (the warning, the safe list, the learned layer).
+- **Forget everything Linda learned** now also forgets the senders marked as safe, so Linda checks them again.
+- **The report sheet** shows the number, the scam type and what is never sent. The codes (how sure, the scrambled
+  message code, the device code) are under "Show technical details": still everything that is sent, one tap away.
+
+**How it is checked.** `WarningReasonsTest` (Kotlin), and the phone tour now taps Undo after "Mark as safe", checks the
+button comes back, and marks it again.
