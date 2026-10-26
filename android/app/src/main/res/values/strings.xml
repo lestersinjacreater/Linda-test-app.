@@ -20,6 +20,14 @@
     <string name="history_empty">No suspicious messages yet. Linda will list them here.</string>
 
     <string name="settings_title">Settings</string>
+    <string name="settings_section_protection">Protection</string>
+    <string name="settings_section_family">Family and privacy</string>
+    <string name="settings_on">On</string>
+    <string name="settings_turn_on">Turn on</string>
+    <string name="settings_calls_row">Labels known scam numbers while they ring. Never blocks a call.</string>
+    <string name="voice_row">Only when Linda is sure. Quiet on silent or during a call.</string>
+    <string name="voice_sw_missing_short">No Kiswahili voice on this phone. Tap to install one.</string>
+    <string name="learning_row">See what Linda learns on this phone, or make it forget.</string>
     <string name="settings_language_label">Language</string>
     <string name="settings_language_value">Follows your phone language (English or Kiswahili).</string>
 
@@ -255,8 +263,6 @@
 
     <string name="action_report">Report this number</string>
     <string name="notif_action_why">See why</string>
-    <string name="home_network_title">You help protect others too</string>
-    <string name="home_network_body">When Linda phones catch the same scammer, Safaricom can warn everyone who got it, even on basic phones.</string>
     <string name="report_done">Reported. Thank you for helping protect others.</string>
     <string name="report_dialog_title">Report this number?</string>
     <string name="report_dialog_intro">This is exactly what goes to Safaricom\'s fraud team, so other people can be warned:</string>
