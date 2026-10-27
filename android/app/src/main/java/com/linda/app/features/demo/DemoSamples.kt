@@ -14,6 +14,8 @@ object DemoSamples {
     const val SCAMMER_NUMBER = "254700000777"
     /** Safaricom Customer Care, on the verified list (shared/verified_callers.json). */
     const val SAFARICOM_CARE_NUMBER = "254722000000"
+    /** A number nobody reported: Linda stays quiet when it calls. */
+    const val UNKNOWN_NUMBER = "254700000123"
 
     val all = listOf(
         DemoSample(

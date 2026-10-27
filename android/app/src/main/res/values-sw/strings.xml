@@ -493,4 +493,16 @@
     <string name="call_card_close">Sawa</string>
     <string name="settings_overlay_title">Maonyo juu ya simu</string>
     <string name="settings_overlay_row">Onyesha kadi ya Linda juu ya skrini ya simu inayoita</string>
+    <string name="demo_chip">Onyesho</string>
+    <string name="demo_step_sms">SMS ya ulaghai inaingia (M-Pesa bandia)</string>
+    <string name="demo_step_call_scammer">Simu kutoka namba iliyotuma ujumbe huo</string>
+    <string name="demo_step_call_care">Simu kutoka Huduma kwa Wateja ya Safaricom</string>
+    <string name="demo_step_call_unknown">Simu kutoka namba isiyojulikana</string>
+    <string name="demo_step_help">Nimetapeliwa: pata msaada</string>
+    <string name="demo_sheet_help">Gusa hatua uone Linda inachofanya kwenye simu halisi. Kila hatua inatumia kigunduzi halisi cha Linda, kwenye simu hii.</string>
+    <string name="demo_sheet_note">Ujumbe wa onyesho unaonekana kwenye Maonyo kama ujumbe halisi, na hauripotiwi kamwe kwa Safaricom.</string>
+    <string name="demo_quiet">%1$s: Linda imenyamaza, kama inavyopaswa.</string>
+    <string name="demo_call_quiet">Hakuna aliyeripoti namba hii, kwa hiyo Linda inanyamaza. Wewe ndiye unaamua kama kawaida.</string>
+    <string name="demo_call_card_note">Washa "Maonyo juu ya simu" kwenye Mipangilio uone kadi hii juu ya simu halisi zinazoingia.</string>
+    <string name="preview_hidden">Maudhui yamefichwa kwa usalama wako. Gusa uusome pamoja na sababu za Linda.</string>
 </resources>

@@ -493,4 +493,16 @@
     <string name="call_card_close">Got it</string>
     <string name="settings_overlay_title">Warnings over calls</string>
     <string name="settings_overlay_row">Show Linda\'s card on top of the ringing screen</string>
+    <string name="demo_chip">Demo</string>
+    <string name="demo_step_sms">Scam SMS arrives (fake M-Pesa)</string>
+    <string name="demo_step_call_scammer">Call from the number that just sent it</string>
+    <string name="demo_step_call_care">Call from Safaricom Customer Care</string>
+    <string name="demo_step_call_unknown">Call from an unknown number</string>
+    <string name="demo_step_help">I\'ve been scammed: get help</string>
+    <string name="demo_sheet_help">Tap a step to see what Linda does on a real phone. Every step uses Linda\'s real detector, on this phone.</string>
+    <string name="demo_sheet_note">Demo messages appear in Alerts like real ones, and are never reported to Safaricom.</string>
+    <string name="demo_quiet">%1$s: Linda stayed quiet, as it should.</string>
+    <string name="demo_call_quiet">Nobody has reported this number, so Linda stays quiet. You decide as usual.</string>
+    <string name="demo_call_card_note">Turn on "Warnings over calls" in Settings to see this card on top of real incoming calls.</string>
+    <string name="preview_hidden">Preview hidden for your safety. Tap to read it with Linda\'s reasons.</string>
 </resources>

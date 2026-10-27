@@ -39,6 +39,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,6 +78,12 @@ import com.linda.app.core.ui.theme.Spacing
 import com.linda.app.core.util.Prefs
 import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.demo.TapCounter
+import com.linda.app.features.demo.DemoCallCard
+import com.linda.app.features.demo.DemoOutcome
+import com.linda.app.features.demo.DemoRunner
+import com.linda.app.features.demo.DemoSheet
+import com.linda.app.features.demo.DemoStep
+import kotlinx.coroutines.launch
 import com.linda.app.features.history.RecentAlertRow
 import com.linda.app.features.permissions.SmsAccessHelp
 import com.linda.app.features.trace.Layer
@@ -139,6 +146,24 @@ fun HomeScreen(
         }
     }
 
+    // The demo sheet and what it produced (a short note, or the call card when "Display over other apps" is off). The
+    // steps run in this screen's scope, so they finish even though the sheet has already closed.
+    var demoOpen by remember { mutableStateOf(false) }
+    var demoCall by remember { mutableStateOf<DemoOutcome.CallCard?>(null) }
+    val demoScope = rememberCoroutineScope()
+    if (demoOpen) {
+        DemoSheet(onDismiss = { demoOpen = false }, onPick = { step ->
+            if (step is DemoStep.Help) onOpenRecovery() else demoScope.launch {
+                when (val outcome = DemoRunner.run(context, step)) {
+                    is DemoOutcome.Quiet -> Toast.makeText(context, outcome.message, Toast.LENGTH_LONG).show()
+                    is DemoOutcome.CallCard -> demoCall = outcome
+                    DemoOutcome.Shown -> Unit
+                }
+            }
+        })
+    }
+    demoCall?.let { DemoCallCard(it.msisdn, it.label) { demoCall = null } }
+
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(Spacing.lg),
@@ -154,21 +179,31 @@ fun HomeScreen(
         ) {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.size(56.dp).clip(CircleShape).background(colors.background).clickable {
+                modifier = Modifier.size(52.dp).clip(RoundedCornerShape(14.dp)).clickable {
                     if (taps.tap(System.currentTimeMillis())) {
                         val turnOn = !DemoOverlay.isOn()
                         DemoOverlay.setEnabled(context, turnOn)
                         Toast.makeText(context, if (turnOn) R.string.overlay_toast_on else R.string.overlay_toast_off, Toast.LENGTH_SHORT).show()
                     }
                 },
-            ) { LindaLogo(size = 36.dp, description = stringResource(R.string.logo_description)) }
+            ) { LindaLogo(size = 52.dp, description = stringResource(R.string.logo_description)) }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
                 Text(stringResource(greeting()), style = MaterialTheme.typography.titleLarge, color = colors.primary)
                 Text(stringResource(R.string.home_subtitle), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)
-                if (problem == null) {
-                    Pill("●  " + stringResource(R.string.protection_active), colors.safe.tint, colors.safe.text)
-                } else {
-                    Pill("●  " + stringResource(R.string.protection_attention), colors.caution.tint, colors.caution.text)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Spacing.sm), verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+                    if (problem == null) {
+                        Pill("●  " + stringResource(R.string.protection_active), colors.safe.tint, colors.safe.text)
+                    } else {
+                        Pill("●  " + stringResource(R.string.protection_attention), colors.caution.tint, colors.caution.text)
+                    }
+                    // Demo mode for anyone trying Linda (hackathon): numbered steps that run the real detector.
+                    Text(
+                        "▶  " + stringResource(R.string.demo_chip),
+                        style = MaterialTheme.typography.labelMedium, color = colors.primary,
+                        modifier = Modifier.clip(RoundedCornerShape(50)).border(1.dp, colors.border, RoundedCornerShape(50))
+                            .clickable(role = Role.Button) { demoOpen = true }
+                            .padding(horizontal = Spacing.md, vertical = Spacing.xs),
+                    )
                 }
             }
             val settings = stringResource(R.string.nav_settings)
