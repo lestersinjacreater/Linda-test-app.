@@ -15,6 +15,7 @@ from src.core.db import IntelNumber, Report, Sender
 from src.features.confirmation.service import status_of
 from src.features.private.hashing import PREFIX_LENGTH, number_hash
 from src.features.private.labels import labels
+from src.features.stats.service import note_phone
 
 router = APIRouter()
 _PREFIX = re.compile(rf"[0-9a-f]{{{PREFIX_LENGTH}}}")
@@ -25,9 +26,11 @@ def _iso(ts: float) -> str:
 
 
 def _check_rate(request: Request) -> None:
-    key = request.headers.get("x-linda-device") or (request.client.host if request.client else "unknown")
+    device = request.headers.get("x-linda-device")
+    key = device or (request.client.host if request.client else "unknown")
     if not request.app.state.lookup_limiter.allow(key):
         raise HTTPException(429, "too many lookups from this device; try again later")
+    note_phone(request.app, device)  # "phones active" on the dashboard (5.14): the anonymous ID only
 
 
 def _entry(msisdn: str, status: str, category: Optional[str], reports: int, name_en: str = "", name_sw: str = "") -> dict:

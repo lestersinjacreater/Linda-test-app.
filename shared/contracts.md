@@ -92,3 +92,19 @@ Text shorter than 3 characters is one piece; empty text gives `0000000000000000`
   `DARAJA_*` settings are empty, 403 when the payer is not in `DARAJA_ALLOWED_PAYERS` or the recipient is confirmed (no
   prompt is sent), 502 when the sandbox refuses. The host is fixed to `sandbox.safaricom.co.ke` in code.
 - `POST /v1/payments/stk/callback`: the sandbox's result; answered `{ResultCode: 0}`, nothing stored.
+
+## Real numbers for the dashboard (5.14, implemented in backend/src/features/stats/)
+
+- `GET /v1/stats` → the counts in root CLAUDE.md 5.14. Read-only, no login (it is the public screen's source).
+- A phone is **counted** when it calls `GET /v1/sync` or `GET /v1/lookup` with `X-Linda-Device`, or sends a report
+  (`device_id`). Only the ID and two times are kept (`phones_seen`: first and last check-in). An ID that is not 8–64
+  lowercase hex characters, or that starts with `RADAR_DEMO_TRUSTED_PREFIX` (the simulator's phones), is ignored.
+- `phones.active_24h`: last check-in within 24 hours. A phone syncs about every 15 minutes while it has a network.
+- `scams_caught`: reports from real phones (`last_24h` by the gateway's clock). Only phones with reports switched on
+  send reports, so this is a floor.
+- `numbers`: of the numbers at least one real phone reported, how many are confirmed and suspected now. The fraud team's
+  seeded numbers and numbers only the simulation reported do not count.
+- `by_category`: reports from real phones per 5.1 category, biggest first.
+- `recent`: the newest 8 reports from real phones: category, `at` (unix seconds), the number masked as `0700 ••• 777`
+  (first four and last three digits of the local form; `•••` for anything else), and the number's status now.
+

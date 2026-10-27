@@ -45,6 +45,8 @@ def main() -> int:
     check("dashboard page loads", code == 200 and "Linda" in body, f"HTTP {code}")
     code, body = call(f"{base}/radar/health")
     check("radar is up (/radar/health)", code == 200, f"HTTP {code} {body[:80]}")
+    code, body = call(f"{base}/radar/v1/stats")
+    check("real numbers for the dashboard (/radar/v1/stats)", code == 200 and "phones" in body, f"HTTP {code}")
     code, body = call(f"{base}/telco/health")
     check("simulator is up (/telco/health)", code == 200, f"HTTP {code} {body[:80]}")
     code, body = call(f"{base}/telco/population")

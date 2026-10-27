@@ -1,11 +1,9 @@
 "use client";
 import { Card, Pill } from "@/components/Card";
+import { CATEGORY_NAMES } from "@/lib/categories";
 import type { DashboardState } from "@/lib/state";
 
-const NAMES: Record<string, string> = {
-  fake_mpesa: "Fake M-Pesa message", sent_by_mistake: "“Sent by mistake”", prize: "Prize scam", fuliza_upgrade: "Fuliza upgrade",
-  kra_refund: "KRA refund", job_fee: "Job fee", loan_fee: "Loan fee", pin_request: "PIN request", phishing_link: "Phishing link", other: "Scam",
-};
+const NAMES = CATEGORY_NAMES;
 
 /** The scam numbers the gateway has heard about, and the result of the poisoning test. */
 export function Campaigns({ state }: { state: DashboardState }) {

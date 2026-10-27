@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Linda radar",
-  description: "Live demo: Linda phones detect a scam, the radar confirms it, the network warns everyone.",
+  title: "Linda",
+  description: "Real numbers from real Linda phones: phones protected and scams caught.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

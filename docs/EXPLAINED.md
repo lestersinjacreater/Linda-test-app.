@@ -1227,3 +1227,24 @@ Top to bottom: the header (Linda, LIVE or REPLAY), the presenter's buttons in fo
 clock, the four headline numbers, the run note, the scam numbers and "What is happening". Only the look changed: the
 data, the replay fallback and the buttons' requests are the same (their tests still pass). On a small screen the right
 column scrolls instead of cutting off.
+
+## The dashboard's real numbers (`/v1/stats`, 27 Oct)
+
+The dashboard's main page now shows only true numbers from real Linda phones; the scripted demo moved to `/simulation`.
+
+- **Phones with Linda:** every phone that has checked in with the server. A phone checks in when it syncs (about every
+  15 minutes on a network), looks up a caller, or sends a report. The server keeps only the phone's random anonymous ID
+  and two times (first and last check-in) in the `phones_seen` table: no phone number, no message, no location.
+  "Active in the last 24 hours" counts the phones whose last check-in is that recent.
+- **Scams caught:** reports from real phones. Only phones with reports switched on send them, so the true number of scams
+  Linda warned about is higher; the page says so.
+- **Scam numbers confirmed:** numbers real phones reported that the gateway confirmed (3 or more independent phones).
+- **App downloads:** GitHub's download counter for `linda.apk`. Honest limit: each new build replaces the release, so this
+  counts downloads of the newest build only. "Phones with Linda" is the better install count.
+- **Scams by type** and **Latest scams caught** (the newest 8, with the number shown as `0700 ••• 777`).
+
+Why the simulation is left out: the simulator's phones use IDs that start with a fixed demo prefix
+(`RADAR_DEMO_TRUSTED_PREFIX`, 5111), and the gateway skips them everywhere in these counts. The mock fraud team's seeded
+numbers are skipped too (only numbers a real phone reported count). Why numbers are masked: the dashboard is public, and
+Linda never hands out a list of flagged numbers (principle 6). If the server does not answer, the page shows dashes and
+says "Can't reach the server": it never shows made-up numbers.

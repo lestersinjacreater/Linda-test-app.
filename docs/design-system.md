@@ -298,6 +298,14 @@ Inspired by a clean card layout Lester liked; Linda keeps its own green, wording
   number and the type of scam…") and two buttons: Mark as safe (outline) and Report this number (filled green). The tabs
   are hidden on this screen. Scam red stays reserved for verdicts, so the Report button is green.
 
+### 7.17 Dashboard: real numbers (27 Oct)
+The dashboard's main page (`/`) shows only real numbers, in the 7.15 card style: a header (the mark, "Linda", "Real
+numbers from real phones", "Updated N s ago" and a LIVE pill, or a red "Can't reach the server" pill and one plain
+sentence), four tiles (Phones with Linda, Scams caught in red, Scam numbers confirmed, App downloads: a big number and
+one short line under it), then two cards: Scams by type (green bars, biggest first) and Latest scams caught (type,
+masked number, a status pill only when confirmed or suspected, "4 min ago"). A dash, never a made-up number, when a
+source has not answered. The simulation keeps its own layout at `/simulation`.
+
 ---
 
 ## 8. Motion: "the scan sweep"

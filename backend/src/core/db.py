@@ -65,6 +65,16 @@ class IntelFingerprint(Base):
     fingerprint: Mapped[str] = mapped_column(String(16))
 
 
+class PhoneSeen(Base):
+    """A Linda phone that checked in (sync, lookup or report), by its anonymous device ID only.
+    Powers the "phones active" count on the dashboard (GET /v1/stats). A separate table, so an existing
+    database gains it without a migration. No phone number, no message, no location: just two times."""
+    __tablename__ = "phones_seen"
+    device_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    first_seen: Mapped[float] = mapped_column(Float)
+    last_seen: Mapped[float] = mapped_column(Float, index=True)
+
+
 class SecurityEvent(Base):
     """Things worth a human's attention, e.g. a suspected poisoning attempt."""
     __tablename__ = "security_events"
