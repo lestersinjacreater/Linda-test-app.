@@ -1,12 +1,14 @@
-/** Linda's mark: five rounded bars in the green ramp, forming a shield (the logo, docs/design-system.md 10). */
-export function ShieldMark() {
-  const tints = ["#B7E4C7", "#74C69D", "#2DBE6C", "#00A651", "#007A3D"];
+/**
+ * Linda's mark (docs/design-system.md 10, after Kelvin's design): a green rounded square with a white shield and a
+ * tick. The same drawing as the app's logo and launcher icon.
+ */
+export function ShieldMark({ size = 48 }: { size?: number }) {
   return (
-    <svg width="44" height="48" viewBox="0 0 44 48" aria-hidden="true">
-      <defs><clipPath id="shield"><path d="M22 2 L40 8 L38 28 Q34 40 22 46 Q10 40 6 28 L4 8 Z" /></clipPath></defs>
-      <g clipPath="url(#shield)">
-        {tints.map((c, i) => <rect key={c} x={4 + i * 7.2} y="0" width="7.4" height="48" fill={c} />)}
-      </g>
+    <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+      <rect width="100" height="100" rx="24" fill="#007A3D" />
+      <path d="M50 20 L74 29 L74 50 C74 66 63 76 50 81 C37 76 26 66 26 50 L26 29 Z"
+        fill="none" stroke="#fff" strokeWidth="6" strokeLinejoin="round" />
+      <path d="M39 50 L47 58 L62 42" fill="none" stroke="#fff" strokeWidth="6.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
