@@ -48,7 +48,7 @@ export default function Page() {
         <ShieldMark />
         <div>
           <div className="text-3xl font-bold tracking-tight text-deep">Linda</div>
-          <div className="text-base text-muted">Real numbers from real phones</div>
+          <div className="text-base text-muted">Safaricom&apos;s fraud protection, on the customer&apos;s phone</div>
         </div>
         <div className="ml-auto flex items-center gap-4">
           {updated !== null && <span className="text-base text-muted">Updated {updated < 2 ? "just now" : `${updated} s ago`}</span>}
@@ -111,6 +111,11 @@ export default function Page() {
             )}
         </Card>
       </div>
+
+      <p className="text-lg text-ink">
+        Real numbers from real phones. Each phone runs Linda&apos;s machine-learning model on the device, and its reports
+        feed Safaricom&apos;s fraud team.
+      </p>
 
       <p className="text-base text-muted">
         Counted only from phones that have reporting switched on, so the real number of scams Linda caught is higher.
