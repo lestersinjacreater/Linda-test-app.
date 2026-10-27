@@ -92,7 +92,7 @@ linda/
                              verified callers, fraud-intel sync, USSD, precheck
   fraudintel/                mock Safaricom fraud intelligence service (demo infrastructure)
   simulator/                 mock telco (FastAPI): population, scam blasts, delivery log, warnings
-  dashboard/                 Next.js live demo dashboard
+  dashboard/                 Next.js dashboard: real numbers at /, the simulation at /simulation
   shared/                    contracts, test vectors, verified senders, model artifacts
   docs/                      EXPLAINED.md, technical-brief.md, demo-script.md
   docker-compose.yml         gateway + fraudintel + telco + dashboard + postgres
@@ -236,6 +236,13 @@ Source of truth: `shared/verified_callers.json` (each entry records its official
 `android/app/src/main/assets/verified_callers.json` (must equal the shared file; a unit test checks) and replaces it
 with the gateway's copy after each sync. The list is public, so sending all of it is allowed (unlike flagged numbers).
 A verified number is never confirmed as a scammer, and a scam signal on a number always beats its badge.
+
+### 5.14 Dashboard → gateway: `GET /v1/stats`
+Real counts for the dashboard's main page: `{ "as_of", "phones": {"total", "active_24h"}, "scams_caught": {"total",
+"last_24h"}, "numbers": {"confirmed", "suspected"}, "by_category": {"<category>": n}, "recent": [{"category", "at",
+"number": "0700 ••• 777", "status"}] }`. Counts only, never a full number (principle 6). Phones are counted by the
+anonymous `X-Linda-Device` on 5.10 and 5.11 and the `device_id` of 5.1; simulated phones (`RADAR_DEMO_TRUSTED_PREFIX`)
+and numbers no real phone reported are left out. Details in `shared/contracts.md`.
 
 ## 6. Components (summary; details in each folder's CLAUDE.md)
 

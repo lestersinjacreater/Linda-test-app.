@@ -7,7 +7,9 @@ RUN npm ci
 COPY . .
 ARG NEXT_PUBLIC_TELCO_API=http://localhost:8000
 ARG NEXT_PUBLIC_TELCO_WS=
-ENV NEXT_PUBLIC_TELCO_API=$NEXT_PUBLIC_TELCO_API NEXT_PUBLIC_TELCO_WS=$NEXT_PUBLIC_TELCO_WS
+# Where the dashboard's own server passes /radar/* on to (the main page's real numbers; next.config.mjs).
+ARG RADAR_UPSTREAM=http://radar:8001
+ENV NEXT_PUBLIC_TELCO_API=$NEXT_PUBLIC_TELCO_API NEXT_PUBLIC_TELCO_WS=$NEXT_PUBLIC_TELCO_WS RADAR_UPSTREAM=$RADAR_UPSTREAM
 RUN npm run build
 
 FROM node:22-alpine

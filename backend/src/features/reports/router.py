@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from src.features.confirmation.service import RateLimited, submit_report
 from src.features.intel.sync import forward_item
+from src.features.stats.service import note_phone
 
 CATEGORIES = {
     "sent_by_mistake", "fake_mpesa", "prize", "fuliza_upgrade", "kra_refund",
@@ -64,6 +65,7 @@ def post_report(report: ReportIn, background: BackgroundTasks, request: Request)
     # Verified sender IDs (MPESA, KPLC...) are accepted and ignored; anything else must be a real-format number.
     if report.sender.upper() not in app.state.verified and not _MSISDN.fullmatch(report.sender):
         raise HTTPException(422, "sender must look like 2547XXXXXXXX")
+    note_phone(app, report.device_id)  # a reporting phone is an active phone (5.14)
     with app.state.sessions() as session:
         try:
             # Verified callers (0722 000 000...) are treated like verified sender IDs: never confirmed.
