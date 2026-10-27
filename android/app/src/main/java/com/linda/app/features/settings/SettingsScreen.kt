@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -33,6 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.linda.app.BuildConfig
@@ -50,6 +54,7 @@ import com.linda.app.core.ui.theme.Spacing
 import com.linda.app.core.util.Prefs
 import com.linda.app.core.util.formatDateTime
 import com.linda.app.features.alerts.VoiceWarnings
+import com.linda.app.features.calls.CallCardOverlay
 import com.linda.app.features.demo.DemoOverlay
 import com.linda.app.features.sync.BlocklistSyncWorker
 import com.linda.app.features.update.UpdateGroup
@@ -83,6 +88,14 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit, onOpenLea
     val roleManager = if (Build.VERSION.SDK_INT >= 29) context.getSystemService(RoleManager::class.java) else null
     val screeningAvailable = roleManager?.isRoleAvailable(RoleManager.ROLE_CALL_SCREENING) == true
     val screeningOn = remember(roleCheck) { screeningAvailable && roleManager?.isRoleHeld(RoleManager.ROLE_CALL_SCREENING) == true }
+    // Asked again each time the person comes back from Android's "Display over other apps" screen.
+    var overlayOn by remember { mutableStateOf(CallCardOverlay.canShow(context)) }
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) overlayOn = CallCardOverlay.canShow(context) }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(Spacing.screenPadding),
@@ -116,6 +129,21 @@ fun SettingsScreen(onOpenDemo: () -> Unit, onOpenGuardian: () -> Unit, onOpenLea
                     onClick = { roleLauncher.launch(roleManager!!.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING)) },
                     trailing = { Text(stringResource(R.string.settings_turn_on), style = MaterialTheme.typography.labelLarge, color = colors.primary) },
                 )
+            }
+            // The card over the ringing screen needs "Display over other apps"; without it the notification still works.
+            if (screeningAvailable) {
+                if (overlayOn) {
+                    ListRow(
+                        stringResource(R.string.settings_overlay_title), subtitle = stringResource(R.string.settings_overlay_row), divider = true,
+                        trailing = { ListRowOn(stringResource(R.string.settings_on)) },
+                    )
+                } else {
+                    ListRow(
+                        stringResource(R.string.settings_overlay_title), subtitle = stringResource(R.string.settings_overlay_row), divider = true,
+                        onClick = { CallCardOverlay.askPermission(context) },
+                        trailing = { Text(stringResource(R.string.settings_turn_on), style = MaterialTheme.typography.labelLarge, color = colors.primary) },
+                    )
+                }
             }
             ListSwitchRow(
                 stringResource(R.string.voice_title), checked = voiceOn, divider = true,

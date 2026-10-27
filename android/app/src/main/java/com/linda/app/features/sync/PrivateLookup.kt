@@ -9,6 +9,9 @@ import org.json.JSONObject
 /** What the gateway says about one number, found privately by its hash prefix (contract 5.10). */
 data class LookupEntry(val status: String, val category: String?, val label: String, val labelSw: String)
 
+/** [reached]: the gateway answered. [entry]: what it knows about the number (null = nothing). */
+data class LiveAnswer(val reached: Boolean, val entry: LookupEntry?)
+
 object LookupParser {
     /** Picks this number's entry out of the bucket. Every other entry in the bucket is ignored. */
     fun find(json: String, hash: String): LookupEntry? {
@@ -33,13 +36,19 @@ object LookupParser {
 object PrivateLookup {
     fun headers(context: Context): Map<String, String> = mapOf("X-Linda-Device" to Prefs.deviceId(context))
 
-    fun check(context: Context, msisdn: String, timeoutMs: Int = 1_500): LookupEntry? {
+    fun check(context: Context, msisdn: String, timeoutMs: Int = 1_500): LookupEntry? = ask(context, msisdn, timeoutMs).entry
+
+    /**
+     * The same lookup, also saying whether the gateway answered at all. Ask Linda needs that difference: "Safaricom's
+     * list has nothing on this number" is a different answer from "Linda could not reach Safaricom's list".
+     */
+    fun ask(context: Context, msisdn: String, timeoutMs: Int = 1_500): LiveAnswer {
         val server = Prefs.serverUrl(context)
-        if (server.isBlank()) return null
+        if (server.isBlank()) return LiveAnswer(false, null)
         val hash = PhoneHash.of(msisdn)
         val response = Http.get("$server/v1/lookup?prefix=${hash.take(PhoneHash.PREFIX_LENGTH)}", timeoutMs, headers(context))
-            ?: return null
-        if (response.code != 200) return null
-        return try { LookupParser.find(response.body, hash) } catch (e: Exception) { null }
+            ?: return LiveAnswer(false, null)
+        if (response.code != 200) return LiveAnswer(false, null)
+        return try { LiveAnswer(true, LookupParser.find(response.body, hash)) } catch (e: Exception) { LiveAnswer(false, null) }
     }
 }
