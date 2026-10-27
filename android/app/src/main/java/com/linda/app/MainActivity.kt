@@ -16,6 +16,7 @@ import com.linda.app.core.ui.theme.LindaTheme
 import com.linda.app.core.util.Prefs
 import com.linda.app.features.alerts.AlertNotifier
 import com.linda.app.features.onboarding.OnboardingScreen
+import com.linda.app.features.sync.BlocklistSyncWorker
 
 class MainActivity : ComponentActivity() {
     // Set from the launching intent: a tapped warning, or text shared in from another app.
@@ -49,6 +50,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * Opening Linda counts as checking in: sync now unless a sync happened in the last few minutes. Without this a
+     * phone only checked in when Android ran the background sync (every 15 minutes at best, much later with battery
+     * saver on), so a judge who had just installed Linda did not appear on the dashboard (contract 5.14).
+     */
+    override fun onResume() {
+        super.onResume()
+        if (BlocklistSyncWorker.dueOnOpen(Prefs.lastSyncAt(this), System.currentTimeMillis())) BlocklistSyncWorker.syncNow(this)
     }
 
     override fun onNewIntent(intent: Intent) {

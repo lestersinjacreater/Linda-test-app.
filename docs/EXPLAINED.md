@@ -1249,6 +1249,13 @@ numbers are skipped too (only numbers a real phone reported count). Why numbers 
 Linda never hands out a list of flagged numbers (principle 6). If the server does not answer, the page shows dashes and
 says "Can't reach the server": it never shows made-up numbers.
 
+## Opening Linda counts as checking in (27 Oct)
+
+The dashboard counts a phone when it checks in with the server. Before, that happened only when Android ran the
+background sync (every 15 minutes at best; much later on phones with battery saver). Now opening the app also syncs,
+unless the last good sync was under 5 minutes ago (`BlocklistSyncWorker.dueOnOpen`). A build with no server address
+no longer retries the sync all day: there is nothing to sync, so the job just finishes.
+
 ## The fraud-team console (`/fraud-team`, 27 Oct)
 
 The idea comes from Kelvin's prototype: the screen Safaricom's fraud team would work from. Our version shows only real
