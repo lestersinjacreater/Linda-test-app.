@@ -108,3 +108,15 @@ Text shorter than 3 characters is one piece; empty text gives `0000000000000000`
 - `recent`: the newest 8 reports from real phones: category, `at` (unix seconds), the number masked as `0700 ••• 777`
   (first four and last three digits of the local form; `•••` for anything else), and the number's status now.
 
+## Fraud-team console (5.15, implemented in backend/src/features/fraudteam/)
+
+- Off (404) unless `RADAR_FRAUD_TEAM_CONSOLE=1`. With `FRAUD_TEAM_KEY` set, a request without that exact
+  `X-Fraud-Team-Key` header gets 403. Caddy adds the header only after the presenter password, on `/radar/v1/fraud-team/*`,
+  and removes it on every other `/radar/*` path. On Render the key is random at each boot; a laptop runs without a key.
+- `queue`: every number at least one real phone reported. `status` is the number's status now (`reported` = reports, but
+  not yet suspected). Waiting numbers (`reported`, `suspected`) first, then newest activity. `new`: first report under 1 h ago.
+- `confirm`: sets `confirmed_at` (and clears an allowlist), category = the most reported one, so phones get it in
+  `/v1/sync`; then tells the network (5.4) and forwards a `confirmation` to the fraud team (5.12). 409 for a verified
+  sender or caller, or a number no phone reported. `clear`: the existing allowlist (phones drop it from `/v1/sync`).
+- Never message text: reports never had any.
+

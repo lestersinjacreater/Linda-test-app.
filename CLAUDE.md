@@ -244,6 +244,15 @@ Real counts for the dashboard's main page: `{ "as_of", "phones": {"total", "acti
 anonymous `X-Linda-Device` on 5.10 and 5.11 and the `device_id` of 5.1; simulated phones (`RADAR_DEMO_TRUSTED_PREFIX`)
 and numbers no real phone reported are left out. Details in `shared/contracts.md`.
 
+### 5.15 Fraud-team console → gateway: `/v1/fraud-team/*`
+The screen a fraud analyst works from (dashboard page `/fraud-team`). `GET /v1/fraud-team/console` → `{ "as_of", "counts":
+{"reports", "waiting", "confirmed", "phones"}, "queue": [{"msisdn", "number", "category", "reports", "phones", "first_at",
+"last_at", "status": "reported|suspected|confirmed|allowlisted", "new"}], "patterns": {"<category>": n}, "feed": [{"at",
+"kind": "report|confirmed", "number", "category"}] }`; `POST /v1/fraud-team/confirm {"msisdn"}` (a person confirms: phones
+and the network are told, as for 3 phones; verified or unreported numbers → 409) and `POST /v1/fraud-team/clear {"msisdn"}`
+(not a scam). FULL numbers, so: off unless `RADAR_FRAUD_TEAM_CONSOLE` is on; Caddy asks for the presenter password and
+then adds `X-Fraud-Team-Key` (`FRAUD_TEAM_KEY`), which the gateway checks. Real phones only, as in 5.14.
+
 ## 6. Components (summary; details in each folder's CLAUDE.md)
 
 | Folder | Owner pair | Builds into | Key acceptance |

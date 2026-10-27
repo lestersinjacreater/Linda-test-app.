@@ -60,6 +60,13 @@ def main() -> int:
     check("starting a blast without the password is refused", code == 401, f"HTTP {code}")
     code, _ = call(f"{base}/telco/reset", "POST", user, "definitely-the-wrong-password")
     check("starting with a wrong password is refused", code == 401, f"HTTP {code}")
+    for path in ("/fraud-team", "/radar/v1/fraud-team/console"):
+        code, _ = call(f"{base}{path}")
+        check(f"fraud-team console needs the password: {path}", code == 401, f"HTTP {code}")
+    code, body = call(f"{base}/radar/v1/fraud-team/console", "GET", user, password)
+    check("presenter can open the fraud-team console data", code == 200 and "queue" in body, f"HTTP {code} {body[:80]}")
+    code, body = call(f"{base}/fraud-team", "GET", user, password)
+    check("presenter can open the fraud-team console page", code == 200, f"HTTP {code}")
 
     # --- one real end-to-end run -------------------------------------------------------------------------------------
     code, body = call(f"{base}/telco/scenarios/blast?wait=true", "POST", user, password)

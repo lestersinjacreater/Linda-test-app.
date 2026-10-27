@@ -25,3 +25,22 @@ describe("real-number helpers", () => {
     expect(downloadsOf({})).toBe(0);
   });
 });
+
+import { feedLine, isWaiting } from "./fraudteam";
+
+describe("fraud-team console helpers", () => {
+  it("says what happened in plain words", () => {
+    const name = (c: string) => (c === "prize" ? "Prize scam" : c);
+    expect(feedLine({ at: 0, kind: "report", number: "0700 000 777", category: "prize" }, name))
+      .toBe("0700 000 777 reported by a customer: Prize scam.");
+    expect(feedLine({ at: 0, kind: "confirmed", number: "0700 000 777", category: "prize" }, name))
+      .toContain("Sent to every Linda phone");
+  });
+
+  it("waits only on numbers nobody has decided yet", () => {
+    const row = (status: "reported" | "suspected" | "confirmed" | "allowlisted") =>
+      ({ msisdn: "", number: "", category: "", reports: 1, phones: 1, first_at: 0, last_at: 0, status, new: false });
+    expect(["reported", "suspected", "confirmed", "allowlisted"].map((s) => isWaiting(row(s as never))))
+      .toEqual([true, true, false, false]);
+  });
+});

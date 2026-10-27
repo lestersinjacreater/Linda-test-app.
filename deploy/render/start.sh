@@ -19,6 +19,10 @@ if [ -z "${PRESENTER_PASSWORD:-}" ]; then
 fi
 PRESENTER_HASH="$(caddy hash-password --plaintext "$PRESENTER_PASSWORD")"
 export PRESENTER_HASH
+# The fraud-team console (contract 5.15): on, with a fresh random key each boot that only Caddy and the gateway know.
+export RADAR_FRAUD_TEAM_CONSOLE=1
+FRAUD_TEAM_KEY="$(python -c 'import secrets; print(secrets.token_hex(24))')"
+export FRAUD_TEAM_KEY
 
 # How the parts find each other inside the box (the VPS uses docker service names instead).
 export TELCO_URL=http://127.0.0.1:8000 FRAUDINTEL_URL=http://127.0.0.1:8002 RADAR_URL=http://127.0.0.1:8001
