@@ -1,19 +1,30 @@
 import type { Config } from "tailwindcss";
 
-// Linda's palette (root CLAUDE.md / android spec section 10): dark, vivid, readable from the back of a room.
+// Linda's dashboard palette: the Safaricom greens and neutrals of docs/design-system.md (light, calm, readable on a
+// projector). Red and amber only ever mean risk.
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        bg: "#0B0F1A",
-        card: "#151B2E",
-        cyan: "#00E5FF",
-        pink: "#FF2E88",
-        amber: "#FFC940",
-        mint: "#35F2A0",
-        muted: "#A6B0C6",
+        bg: "#F6F8F7",        // background
+        card: "#FFFFFF",      // surface
+        raised: "#EEF2F0",    // surfaceRaised
+        ink: "#0F1A14",       // textPrimary
+        muted: "#5B6B62",     // textSecondary
+        line: "#DCE4DF",      // border
+        green: "#00A651",     // green500: brand, "warned"
+        deep: "#007A3D",      // green700: buttons, headings
+        forest: "#00602F",    // green900
+        mint: "#E8F6EE",      // green50: safe tint
+        amber: "#8A5A00",     // caution text
+        amberTint: "#FFF4D6", // caution tint
+        amberDot: "#F2A900",  // a phone that got the scam
+        red: "#E4002B",       // scam
+        redTint: "#FDE8EC",   // scam tint
       },
+      boxShadow: { card: "0 4px 16px rgba(0, 96, 47, 0.08)" },
+      borderRadius: { card: "24px" },
     },
   },
   plugins: [],

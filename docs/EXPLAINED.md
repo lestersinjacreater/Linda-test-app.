@@ -1218,3 +1218,12 @@ subscription.
   under the promise of what a report sends. The full-screen stop warning, Undo, and the report sheet work as before.
 - New shared pieces: `SectionCard`, `TintBox`, `Pill`, `RiskPill`, `relativeTime` (`core/ui/components/Cards.kt`).
   Unit tested: the phone-number format and the "x ago" maths (`DisplayHelpersTest`).
+## The dashboard, in Linda's green (27 Oct)
+
+The demo screen now matches the app: light, calm, Safaricom green, white cards (`dashboard/src/components/Card.tsx`),
+and the same meaning for colours as the phone (green = protected, amber = got the scam, red = Linda caught a scam).
+Top to bottom: the header (Linda, LIVE or REPLAY), the presenter's buttons in four groups (Scam blast; Adoption 0.5%,
+1%, 2%; Calls; Tests; Reset on the right, hotkeys unchanged), then the map of Kenya on the left and, on the right, the
+clock, the four headline numbers, the run note, the scam numbers and "What is happening". Only the look changed: the
+data, the replay fallback and the buttons' requests are the same (their tests still pass). On a small screen the right
+column scrolls instead of cutting off.
