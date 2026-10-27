@@ -25,7 +25,7 @@ import com.linda.app.core.util.Prefs
 /**
  * The Linda card shown on top of the ringing screen (design idea from Kelvin's prototype; docs/design-system.md 7.19).
  * No app can replace Android's own call screen, and Linda must not: answer and decline stay the phone's own. This card
- * sits at the top, a big pill says what Linda knows ("Reported for fraud", "Verified: Safaricom Customer Care"), and
+ * sits in the middle of the screen (the phone's own caller banner is at the top, its buttons at the bottom), a big pill says what Linda knows ("Reported for fraud", "Verified: Safaricom Customer Care"), and
  * touches outside it go straight to the call screen underneath. It closes itself after [SHOW_MS], or on "Got it".
  *
  * It needs Android's "Display over other apps" permission ([canShow]). Without it nothing changes: the heads-up
@@ -86,7 +86,7 @@ object CallCardOverlay {
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED,
         PixelFormat.TRANSLUCENT,
-    ).apply { gravity = Gravity.TOP; y = 0 }
+    ).apply { gravity = Gravity.CENTER } // the middle: the phone's own caller banner sits at the top, its buttons at the bottom
 
     private fun build(c: Context, msisdn: String, label: CallLabel): View {
         val look = look(label)
@@ -125,7 +125,7 @@ object CallCardOverlay {
             setOnClickListener { hide(c) }
         })
         return LinearLayout(c).apply {
-            setPadding(dp(c, 12), dp(c, 36), dp(c, 12), 0)
+            setPadding(dp(c, 12), 0, dp(c, 12), 0)
             addView(card, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
             contentDescription = pillText
         }

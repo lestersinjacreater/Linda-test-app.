@@ -305,7 +305,7 @@ Inspired by a clean card layout Lester liked; Linda keeps its own green, wording
   answer under it: the verdict card (7.3) for a message, or a number card (the number as title, the call card's pill,
   the scam type and one line in a tint box, then where the answer came from in small grey text). A question box laid
   out like a chat, never a chatbot.
-- **Call card:** over the ringing screen, at the top, 12dp from the sides: a white Large card with a soft shadow,
+- **Call card:** over the ringing screen, in the middle (the phone's caller banner is at the top), 12dp from the sides: a white Large card with a soft shadow,
   "LINDA · INCOMING CALL" in small grey capitals, the number large, a big pill (red "Reported for fraud", amber
   "Reported: be careful", green "Verified: Safaricom Customer Care"), the scam type and one line, "Linda warns, you
   decide…" and a green **Got it**. Touches outside it reach the call screen; answer and decline are the phone's own.
