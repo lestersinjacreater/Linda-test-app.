@@ -34,7 +34,7 @@ import com.linda.app.core.util.Prefs
  */
 object CallCardOverlay {
     private const val SHOW_MS = 30_000L
-    private val main = Handler(Looper.getMainLooper())
+    private val main by lazy { Handler(Looper.getMainLooper()) } // lazy: unit tests use [look] without Android
     private var shown: View? = null
 
     fun canShow(context: Context): Boolean = Build.VERSION.SDK_INT < 23 || Settings.canDrawOverlays(context)
