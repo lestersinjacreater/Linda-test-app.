@@ -45,7 +45,12 @@ object BlocklistSync {
 
 /** Runs the sync in the background. Works from the last sync when the phone is offline. */
 class BlocklistSyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
-    override suspend fun doWork(): Result = if (BlocklistSync.run(applicationContext)) Result.success() else Result.retry()
+    override suspend fun doWork(): Result = when {
+        // No server address in this build: nothing to do, and nothing to retry (retrying would loop all day).
+        Prefs.serverUrl(applicationContext).isBlank() -> Result.success()
+        BlocklistSync.run(applicationContext) -> Result.success()
+        else -> Result.retry()
+    }
 
     companion object {
         private val online = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
@@ -59,6 +64,11 @@ class BlocklistSyncWorker(context: Context, params: WorkerParameters) : Coroutin
             )
             syncNow(context)
         }
+
+        /** Opening the app syncs again only when the last good sync is older than this (saves data and battery). */
+        const val OPEN_SYNC_GAP_MS = 5 * 60 * 1000L
+
+        fun dueOnOpen(lastSyncAt: Long, now: Long): Boolean = now - lastSyncAt >= OPEN_SYNC_GAP_MS
 
         fun syncNow(context: Context) {
             WorkManager.getInstance(context).enqueueUniqueWork(
