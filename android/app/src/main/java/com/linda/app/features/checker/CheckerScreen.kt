@@ -35,7 +35,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -81,8 +87,19 @@ fun CheckerScreen(sharedText: String?, state: CheckerViewModel = viewModel()) {
         if (!sharedText.isNullOrBlank() && sharedText.trim() != state.asked) state.check(sharedText)
     }
 
+    // After each answer, scroll so the question bubble is at the top and the answer right under it: on a small phone the
+    // answer is otherwise below the examples and the box, out of sight (found by the virtual phone tour).
+    val scroll = rememberScrollState()
+    var bubbleY by remember { mutableIntStateOf(0) }
+    LaunchedEffect(result, state.numberAnswer) {
+        if (result != null || state.numberAnswer != null) {
+            delay(150) // let the answer be laid out first
+            scroll.animateScrollTo(bubbleY)
+        }
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        modifier = Modifier.fillMaxSize().verticalScroll(scroll).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(stringResource(R.string.checker_title), style = MaterialTheme.typography.titleLarge)
@@ -109,7 +126,7 @@ fun CheckerScreen(sharedText: String?, state: CheckerViewModel = viewModel()) {
         )
 
         // The question, as the person's own bubble on the right, then Linda's answer under it.
-        asked?.let { QuestionBubble(it) }
+        asked?.let { QuestionBubble(it, Modifier.onGloballyPositioned { c -> bubbleY = c.positionInParent().y.toInt() }) }
 
         state.numberAnswer?.let { NumberAnswerCard(it, language) }
 
@@ -170,9 +187,9 @@ private fun ExampleChip(text: String, enabled: Boolean, onClick: () -> Unit) {
 
 /** What the person asked, on the right like a sent chat message. */
 @Composable
-private fun QuestionBubble(text: String) {
+private fun QuestionBubble(text: String, modifier: Modifier = Modifier) {
     val colors = LindaTheme.colors
-    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+    Box(modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
         Text(
             text,
             maxLines = 4,
