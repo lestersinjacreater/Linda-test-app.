@@ -5,7 +5,7 @@
 
     <string name="nav_home">Home</string>
     <string name="nav_check">Check</string>
-    <string name="nav_history">History</string>
+    <string name="nav_history">Alerts</string>
     <string name="nav_settings">Settings</string>
 
     <string name="logo_description">Linda shield logo</string>
@@ -57,7 +57,7 @@
     <string name="detail_not_found">This message is no longer in the history.</string>
     <string name="detail_headline_scam">Do not reply and do not send money</string>
     <string name="detail_headline_caution">Be careful with this message</string>
-    <string name="detail_why">Why LINDA flagged this</string>
+    <string name="detail_why">Why Linda warned you</string>
     <string name="detail_marked_safe">You marked this sender as safe. Linda will stop checking their messages.</string>
     <string name="action_mark_safe">Mark as safe</string>
     <string name="detail_how_decided">How Linda decided</string>
@@ -398,4 +398,82 @@
     <string name="trace_n_taps_safe">You marked messages like this as safe before</string>
     <string name="trace_n_payment_changed">Says the way to pay has changed</string>
     <string name="trace_n_story_new_link">A sender you know, but a web address it never used before</string>
+    <!-- Card redesign (26-27 Oct): Home, Alerts, Alert details -->
+    <string name="greet_morning">Good morning</string>
+    <string name="greet_afternoon">Good afternoon</string>
+    <string name="greet_evening">Good evening</string>
+    <string name="home_subtitle">Linda is watching your messages and calls</string>
+    <string name="protection_active">Protection active</string>
+    <string name="protection_attention">Needs attention</string>
+    <string name="protection_center">Protection center</string>
+    <string name="protection_overall">Overall protection</string>
+    <string name="protection_excellent">Excellent</string>
+    <string name="chip_sms">SMS protection</string>
+    <string name="chip_calls">Call protection</string>
+    <string name="chip_reports">Reports</string>
+    <string name="recent_alerts">Recent alerts</string>
+    <string name="see_all">See all</string>
+    <string name="tip_jackpot_title">You cannot win a jackpot you never bet on</string>
+    <string name="tip_jackpot_body">Scammers say you won a betting jackpot or a promotion and ask for a "fee" to claim it. Real prizes never ask you to pay. Check in the company\'s own app.</string>
+    <string name="tip_mistake_title">"Sent by mistake"? Check your M-Pesa first</string>
+    <string name="tip_mistake_body">A real mistake is reversed by Safaricom, not by you. Look at your real M-Pesa messages: if no money arrived, nobody sent you any.</string>
+    <string name="tip_pin_title">Nobody needs your M-Pesa PIN</string>
+    <string name="tip_pin_body">Not Safaricom, not your bank, not a "customer care" caller. Anyone who asks for your PIN is a scammer.</string>
+    <string name="tip_confirm_title">A real M-Pesa message comes from MPESA</string>
+    <string name="tip_confirm_body">A "Confirmed. You have received" text from an ordinary phone number is fake. Your balance only changes when the real MPESA sender says so.</string>
+    <string name="tip_newnumber_title">"This is my new number"</string>
+    <string name="tip_newnumber_body">Before you send money to a "new number", call the old one. Scammers pretend to be family and friends.</string>
+    <string name="tip_link_title">Think before you tap a link</string>
+    <string name="tip_link_body">Safaricom never asks you to update your account or claim a bonus through a link in an SMS. Use the My OneApp instead.</string>
+    <string name="alerts_title">Alerts</string>
+    <string name="alerts_subtitle">Linda is protecting you</string>
+    <string name="status_warned">Warned</string>
+    <string name="status_reported">Reported</string>
+    <string name="status_marked_safe">Marked safe</string>
+    <string name="time_now">just now</string>
+    <string name="action_close">Close</string>
+    <string name="detail_title">Alert details</string>
+    <string name="detail_overview">Overview</string>
+    <string name="detail_type">Type</string>
+    <string name="detail_from">From</string>
+    <string name="detail_source">Came in by</string>
+    <string name="detail_received">Received</string>
+    <string name="detail_message">The message</string>
+    <string name="detail_message_note">Exactly as you received it. It stays on this phone.</string>
+    <string name="detail_what_to_do">What to do</string>
+    <string name="report_promise">A report sends only the number and the type of scam to Safaricom\'s fraud team. Never your message, your contacts or your number.</string>
+    <string name="source_sms">SMS</string>
+    <string name="source_checker">Pasted into Check</string>
+    <string name="source_inbox">Inbox scan</string>
+    <string name="source_demo">Demo</string>
+    <string name="advice_fake_mpesa">Do not send anything back. Open your real M-Pesa messages or dial *334# to check your balance: no money arrived.</string>
+    <string name="advice_sent_by_mistake">Do not send money back yourself. If money really arrived by mistake, Safaricom reverses it. You can forward this message to 333.</string>
+    <string name="advice_prize">Do not pay any fee. Real prizes never cost money. Delete the message or report the number.</string>
+    <string name="advice_fuliza_upgrade">Do not tap the link or pay. Check your Fuliza limit only by dialling *234# or in the My OneApp.</string>
+    <string name="advice_kra_refund">Do not share your details or pay. Check anything about tax only on iTax (itax.kra.go.ke).</string>
+    <string name="advice_job_fee">Do not pay to get a job. Real employers never charge you to hire you.</string>
+    <string name="advice_loan_fee">Do not pay an upfront fee. Real lenders take their fees from the loan itself.</string>
+    <string name="advice_pin_request">Never share your PIN, with anyone. If you already did, change it now by dialling *334#.</string>
+    <string name="advice_phishing_link">Do not open the link or type any details. If you already did, change your PIN and passwords.</string>
+    <string name="advice_other">Do not send money or share your PIN. If you are not sure, call the person or company on a number you already know.</string>
+    <plurals name="alerts_this_week">
+        <item quantity="one">%d this week</item>
+        <item quantity="other">%d this week</item>
+    </plurals>
+    <plurals name="alerts_today">
+        <item quantity="one">%d today</item>
+        <item quantity="other">%d today</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">%d min ago</item>
+        <item quantity="other">%d min ago</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">%d hr ago</item>
+        <item quantity="other">%d hr ago</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">%d day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
 </resources>

@@ -5,7 +5,7 @@
 
     <string name="nav_home">Nyumbani</string>
     <string name="nav_check">Kagua</string>
-    <string name="nav_history">Historia</string>
+    <string name="nav_history">Arifa</string>
     <string name="nav_settings">Mipangilio</string>
 
     <string name="logo_description">Nembo ya ngao ya Linda</string>
@@ -57,7 +57,7 @@
     <string name="detail_not_found">Ujumbe huu haupo tena kwenye historia.</string>
     <string name="detail_headline_scam">Usijibu na usitume pesa</string>
     <string name="detail_headline_caution">Kuwa mwangalifu na ujumbe huu</string>
-    <string name="detail_why">Kwa nini LINDA imeonya</string>
+    <string name="detail_why">Kwa nini Linda imekuonya</string>
     <string name="detail_marked_safe">Umemweka mtumaji huyu kuwa salama. Linda itaacha kukagua jumbe zake.</string>
     <string name="action_mark_safe">Weka kuwa salama</string>
     <string name="detail_how_decided">Jinsi Linda ilivyoamua</string>
@@ -398,4 +398,82 @@
     <string name="trace_n_taps_safe">Awali ulisema ujumbe kama huu ni salama</string>
     <string name="trace_n_payment_changed">Inasema njia ya kulipa imebadilika</string>
     <string name="trace_n_story_new_link">Mtumaji unayemjua, lakini anwani ya mtandao ambayo hajawahi kutumia</string>
+    <!-- Card redesign (26-27 Oct): Home, Alerts, Alert details -->
+    <string name="greet_morning">Habari za asubuhi</string>
+    <string name="greet_afternoon">Habari za mchana</string>
+    <string name="greet_evening">Habari za jioni</string>
+    <string name="home_subtitle">Linda inalinda jumbe na simu zako</string>
+    <string name="protection_active">Ulinzi umewashwa</string>
+    <string name="protection_attention">Inahitaji kuangaliwa</string>
+    <string name="protection_center">Kituo cha ulinzi</string>
+    <string name="protection_overall">Ulinzi kwa jumla</string>
+    <string name="protection_excellent">Bora</string>
+    <string name="chip_sms">Ulinzi wa SMS</string>
+    <string name="chip_calls">Ulinzi wa simu</string>
+    <string name="chip_reports">Ripoti</string>
+    <string name="recent_alerts">Arifa za karibuni</string>
+    <string name="see_all">Ona zote</string>
+    <string name="tip_jackpot_title">Huwezi kushinda jackpot ambayo hukubetia</string>
+    <string name="tip_jackpot_body">Matapeli husema umeshinda jackpot au promosheni na kukuomba "ada" ili uidai. Zawadi halisi hazikuombi ulipe. Kagua kwenye programu ya kampuni yenyewe.</string>
+    <string name="tip_mistake_title">"Nimetuma kimakosa"? Kagua M-Pesa yako kwanza</string>
+    <string name="tip_mistake_body">Kosa halisi hurekebishwa na Safaricom, si na wewe. Angalia jumbe zako halisi za M-Pesa: kama hakuna pesa iliyoingia, hakuna aliyekutumia.</string>
+    <string name="tip_pin_title">Hakuna anayehitaji PIN yako ya M-Pesa</string>
+    <string name="tip_pin_body">Si Safaricom, si benki yako, si mpigaji wa "huduma kwa wateja". Yeyote anayekuomba PIN yako ni tapeli.</string>
+    <string name="tip_confirm_title">Ujumbe halisi wa M-Pesa hutoka kwa MPESA</string>
+    <string name="tip_confirm_body">Ujumbe wa "Confirmed. You have received" kutoka kwa nambari ya kawaida ya simu ni wa uongo. Salio lako hubadilika tu mtumaji halisi MPESA akisema hivyo.</string>
+    <string name="tip_newnumber_title">"Hii ni nambari yangu mpya"</string>
+    <string name="tip_newnumber_body">Kabla hujatuma pesa kwa "nambari mpya", piga ile ya zamani. Matapeli hujifanya kuwa familia na marafiki.</string>
+    <string name="tip_link_title">Fikiri kabla ya kubofya kiungo</string>
+    <string name="tip_link_body">Safaricom haikuombi kamwe usasishe akaunti yako au udai bonasi kupitia kiungo kwenye SMS. Tumia My OneApp badala yake.</string>
+    <string name="alerts_title">Arifa</string>
+    <string name="alerts_subtitle">Linda inakulinda</string>
+    <string name="status_warned">Imeonya</string>
+    <string name="status_reported">Imeripotiwa</string>
+    <string name="status_marked_safe">Imewekwa salama</string>
+    <string name="time_now">sasa hivi</string>
+    <string name="action_close">Funga</string>
+    <string name="detail_title">Maelezo ya arifa</string>
+    <string name="detail_overview">Muhtasari</string>
+    <string name="detail_type">Aina</string>
+    <string name="detail_from">Kutoka</string>
+    <string name="detail_source">Imekuja kupitia</string>
+    <string name="detail_received">Ilipokelewa</string>
+    <string name="detail_message">Ujumbe</string>
+    <string name="detail_message_note">Kama ulivyoupokea. Unabaki kwenye simu hii.</string>
+    <string name="detail_what_to_do">Ufanye nini</string>
+    <string name="report_promise">Ripoti hutuma nambari na aina ya ulaghai pekee kwa kitengo cha Safaricom cha kupambana na ulaghai. Kamwe si ujumbe wako, anwani zako wala nambari yako.</string>
+    <string name="source_sms">SMS</string>
+    <string name="source_checker">Ulibandikwa kwenye Kagua</string>
+    <string name="source_inbox">Ukaguzi wa jumbe</string>
+    <string name="source_demo">Onyesho</string>
+    <string name="advice_fake_mpesa">Usirudishe chochote. Fungua jumbe zako halisi za M-Pesa au piga *334# kuona salio lako: hakuna pesa iliyoingia.</string>
+    <string name="advice_sent_by_mistake">Usirudishe pesa wewe mwenyewe. Kama pesa kweli iliingia kimakosa, Safaricom huirekebisha. Unaweza kutuma ujumbe huu kwa 333.</string>
+    <string name="advice_prize">Usilipe ada yoyote. Zawadi halisi hazigharimu pesa. Futa ujumbe au ripoti nambari.</string>
+    <string name="advice_fuliza_upgrade">Usibofye kiungo wala kulipa. Kagua kiwango chako cha Fuliza kwa kupiga *234# au kwenye My OneApp pekee.</string>
+    <string name="advice_kra_refund">Usitoe taarifa zako wala kulipa. Kagua chochote kuhusu kodi kwenye iTax (itax.kra.go.ke) pekee.</string>
+    <string name="advice_job_fee">Usilipe ili upate kazi. Waajiri halisi hawakutozi ili kukuajiri.</string>
+    <string name="advice_loan_fee">Usilipe ada ya awali. Wakopeshaji halisi hukata ada zao kutoka kwenye mkopo wenyewe.</string>
+    <string name="advice_pin_request">Usimpe mtu yeyote PIN yako. Kama tayari umeitoa, ibadilishe sasa kwa kupiga *334#.</string>
+    <string name="advice_phishing_link">Usifungue kiungo wala kuandika taarifa zozote. Kama tayari umefanya hivyo, badilisha PIN na nywila zako.</string>
+    <string name="advice_other">Usitume pesa wala kutoa PIN yako. Kama huna uhakika, mpigie mtu au kampuni kwa nambari unayoijua tayari.</string>
+    <plurals name="alerts_this_week">
+        <item quantity="one">%d wiki hii</item>
+        <item quantity="other">%d wiki hii</item>
+    </plurals>
+    <plurals name="alerts_today">
+        <item quantity="one">%d leo</item>
+        <item quantity="other">%d leo</item>
+    </plurals>
+    <plurals name="time_minutes">
+        <item quantity="one">dakika %d iliyopita</item>
+        <item quantity="other">dakika %d zilizopita</item>
+    </plurals>
+    <plurals name="time_hours">
+        <item quantity="one">saa %d iliyopita</item>
+        <item quantity="other">saa %d zilizopita</item>
+    </plurals>
+    <plurals name="time_days">
+        <item quantity="one">siku %d iliyopita</item>
+        <item quantity="other">siku %d zilizopita</item>
+    </plurals>
 </resources>

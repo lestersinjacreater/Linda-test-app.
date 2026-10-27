@@ -21,3 +21,7 @@ fun categoryLabel(category: String): String = stringResource(
         else -> R.string.cat_other
     },
 )
+
+/** The same words starting with a capital, for card titles and table cells ("Sent by mistake"). */
+@Composable
+fun categoryTitle(category: String): String = categoryLabel(category).replaceFirstChar { it.uppercaseChar() }

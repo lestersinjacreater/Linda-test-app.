@@ -1197,3 +1197,24 @@ know the Render address in advance (`dashboard/src/lib/config.ts`, unit tested).
 
 **Free means sleepy.** A free service sleeps after 15 minutes without visitors; a free UptimeRobot check every 5
 minutes keeps it awake. Auto-deploy is off so a merge on hack day cannot restart the demo.
+
+## A cleaner, card-based app (27 Oct)
+
+**Why.** Lester shared screenshots of an app whose screens felt calm and easy: white cards on a pale background, a
+coloured pill for the risk, one question per card, and the two actions fixed at the bottom. We took that layout, in
+Safaricom green, with Linda's own words, and without its two weaknesses: Linda never sends message text, and it has no
+subscription.
+
+**What changed (only how things look; what Linda does is the same).**
+- **Three tabs:** Home, Alerts, Check. Settings is the gear in Home's header.
+- **Home:** "Good evening", a Protection active pill, the Protection center (overall state, what is on as chips: SMS
+  protection, Call protection, Reports; this month's count), a scam tip that changes daily (`ScamTips.kt`, six tips in
+  English and Kiswahili), the three newest alerts, and the two rows Scan my inbox and I have been scammed.
+- **Alerts** (was History): this week's and today's counts, then one card per alert with its type, risk pill, a
+  preview, who sent it ("0700 000 777", `PhoneNumbers.pretty`), how long ago ("2 hr ago", `RelativeTime`) and what
+  happened since (Warned, Reported, Marked safe).
+- **Alert details:** Overview, The message (it stays on the phone), Why Linda warned you, What to do (one piece of
+  advice for each kind of scam), How Linda decided (folded). Mark as safe and Report this number are fixed at the bottom,
+  under the promise of what a report sends. The full-screen stop warning, Undo, and the report sheet work as before.
+- New shared pieces: `SectionCard`, `TintBox`, `Pill`, `RiskPill`, `relativeTime` (`core/ui/components/Cards.kt`).
+  Unit tested: the phone-number format and the "x ago" maths (`DisplayHelpersTest`).
