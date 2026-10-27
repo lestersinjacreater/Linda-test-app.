@@ -5,7 +5,8 @@ Dark, vivid, creative layout; readable on a projector from the back of a room.
 ## Structure
 ```
 dashboard/src/
-  app/                 page.tsx (real numbers, GET /v1/stats), simulation/page.tsx (the scripted demo), layout.tsx
+  app/                 page.tsx (real numbers, GET /v1/stats), fraud-team/page.tsx (the fraud team's console, 5.15),
+                       simulation/page.tsx (the scripted demo), layout.tsx
   features/
     radar-map/         Kenya map, phones as dots (grey idle, amber received, red detected, green warned)
     blast-timeline/    scrolling event feed + time-to-protection clock

@@ -307,6 +307,13 @@ masked number, a status pill only when confirmed or suspected, "4 min ago"), the
 real phones. Each phone runs Linda's machine-learning model on the device, and its reports feed Safaricom's fraud team." A dash, never a made-up number, when a
 source has not answered. The simulation keeps its own layout at `/simulation`.
 
+### 7.18 Dashboard: fraud-team console (27 Oct)
+`/fraud-team`, after a design by Kelvin: the analyst's desk. Header ("Linda fraud-team console", one line on what
+confirming does, LIVE pill), four KPI tiles (a big number above its label; "Waiting for review" gets an amber ring when
+above zero), then the review queue as a table (number in mono with a NEW tag, scam type, reports and phones, a status
+pill, and for waiting rows a filled green **Confirm scam** and an outlined **Not a scam**), and on the right Scam patterns
+(green bars) and Live activity (time, one sentence; confirmations in red). A mint bar confirms each action in words.
+
 ---
 
 ## 8. Motion: "the scan sweep"

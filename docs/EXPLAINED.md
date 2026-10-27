@@ -1248,3 +1248,21 @@ Why the simulation is left out: the simulator's phones use IDs that start with a
 numbers are skipped too (only numbers a real phone reported count). Why numbers are masked: the dashboard is public, and
 Linda never hands out a list of flagged numbers (principle 6). If the server does not answer, the page shows dashes and
 says "Can't reach the server": it never shows made-up numbers.
+
+## The fraud-team console (`/fraud-team`, 27 Oct)
+
+The idea comes from Kelvin's prototype: the screen Safaricom's fraud team would work from. Our version shows only real
+reports from real Linda phones (the simulation is left out, as on the main page).
+
+- **Review queue:** every number a real phone reported, with its scam type, how many reports and from how many phones,
+  and its status. Numbers waiting for a decision come first, with two buttons: **Confirm scam** and **Not a scam**.
+- **Confirm scam** does exactly what three phones agreeing does: the gateway marks the number confirmed, every Linda phone
+  gets it at its next sync (so calls from it are labelled even offline), and the network warns everyone who heard from it.
+  A verified number (like Safaricom Customer Care) can never be confirmed.
+- **Not a scam** clears it, and phones drop it at their next sync.
+- **Scam patterns** and **Live activity** show what is being reported and what was decided.
+
+Why it is behind a password: unlike the public page, it shows full numbers, because reviewing them is the fraud team's
+job. Caddy asks for the presenter password, then adds a secret key that only it and the gateway know; the gateway refuses
+any request without it. In production this screen would be the fraud team's own system (contract 5.12).
+
