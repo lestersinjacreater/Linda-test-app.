@@ -53,6 +53,9 @@ services:
       # 0.85 so that 3 phones confirm (3 x 0.85 x 0.998 = 2.54 >= 2.4).
       RADAR_DEMO_TRUSTED_PREFIX: ${RADAR_DEMO_TRUSTED_PREFIX-5111}
       RADAR_DEMO_TRUSTED_TRUST: ${RADAR_DEMO_TRUSTED_TRUST:-0.85}
+      # The fraud-team console (contract 5.15). Caddy adds this key after the presenter password.
+      RADAR_FRAUD_TEAM_CONSOLE: "1"
+      FRAUD_TEAM_KEY: ${FRAUD_TEAM_KEY:?set FRAUD_TEAM_KEY in .env.production (any long random text)}
     depends_on:
       postgres: { condition: service_healthy }
       fraudintel: { condition: service_healthy }
@@ -123,6 +126,7 @@ services:
       SITE_ADDRESS: ${SITE_ADDRESS:?set SITE_ADDRESS in .env.production}
       PRESENTER_USER: ${PRESENTER_USER:?set PRESENTER_USER in .env.production}
       PRESENTER_HASH: ${PRESENTER_HASH:?set PRESENTER_HASH in .env.production}
+      FRAUD_TEAM_KEY: ${FRAUD_TEAM_KEY:?set FRAUD_TEAM_KEY in .env.production (any long random text)}
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data        # keeps the HTTPS certificate across restarts

@@ -59,6 +59,11 @@ class Settings:
     # can use the public gateway to send payment prompts to strangers. Empty = nobody.
     daraja_allowed_payers: tuple = ()
 
+    # The fraud-team console (contract 5.15): off unless switched on. When `fraud_team_key` is set, every console
+    # request must carry it in X-Fraud-Team-Key; Caddy adds it after the presenter password, so a browser never sees it.
+    fraud_team_console: bool = False
+    fraud_team_key: str = ""
+
     # Telling the network a sender is confirmed
     notify_retries: int = 3
     notify_backoff_s: float = 1.0
@@ -82,6 +87,8 @@ class Settings:
             no_token_trust_cap=float(e.get("RADAR_NO_TOKEN_TRUST_CAP", d.no_token_trust_cap)),
             demo_trusted_prefix=e.get("RADAR_DEMO_TRUSTED_PREFIX", d.demo_trusted_prefix),
             demo_trusted_trust=float(e.get("RADAR_DEMO_TRUSTED_TRUST", d.demo_trusted_trust)),
+            fraud_team_console=e.get("RADAR_FRAUD_TEAM_CONSOLE", "") in ("1", "true", "yes"),
+            fraud_team_key=e.get("FRAUD_TEAM_KEY", ""),
             daraja_consumer_key=e.get("DARAJA_CONSUMER_KEY", ""),
             daraja_consumer_secret=e.get("DARAJA_CONSUMER_SECRET", ""),
             daraja_shortcode=e.get("DARAJA_SHORTCODE", d.daraja_shortcode) or d.daraja_shortcode,

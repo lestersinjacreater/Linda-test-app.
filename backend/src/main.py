@@ -18,6 +18,7 @@ from src.features.payments.router import router as payments_router
 from src.features.private.ratelimit import RateLimiter
 from src.features.private.router import router as private_router
 from src.features.reports.router import router as reports_router
+from src.features.fraudteam.router import router as fraudteam_router
 from src.features.stats.router import router as stats_router
 from src.features.ussd.router import router as ussd_router
 from src.features.verified.router import router as verified_router
@@ -60,6 +61,7 @@ def create_app(
     app.include_router(lookups_router)
     app.include_router(verified_router)
     app.include_router(stats_router)
+    app.include_router(fraudteam_router)
     app.include_router(private_router)
     app.include_router(ussd_router)
     app.include_router(payments_router)

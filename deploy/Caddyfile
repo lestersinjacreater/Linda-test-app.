@@ -5,6 +5,8 @@
 #   /telco/...       the simulator: only the read-only feeds the dashboard needs are public
 #   /telco/scenarios/*, /telco/reset   start/stop the demo: protected by the presenter's password
 #   /fraud/*         the mock fraud team (inbox of reports, flag a number live): presenter's password
+#   /fraud-team      the fraud-team console page, and /radar/v1/fraud-team/* its data (FULL numbers): presenter's
+#                    password, then Caddy adds the internal X-Fraud-Team-Key the gateway checks (contract 5.15)
 # Everything else of the simulator (/network/confirm, /deliveries, /history) stays on the private docker network.
 # Upstreams: the docker service names by default; the all-in-one Render box sets *_UPSTREAM=127.0.0.1:port (deploy/render).
 
@@ -38,9 +40,28 @@
 		reverse_proxy {$FRAUD_UPSTREAM:fraudintel:8002}
 	}
 
+	handle /radar/v1/fraud-team/* {
+		basic_auth {
+			{$PRESENTER_USER} {$PRESENTER_HASH}
+		}
+		uri strip_prefix /radar
+		reverse_proxy {$RADAR_UPSTREAM:radar:8001} {
+			header_up X-Fraud-Team-Key {$FRAUD_TEAM_KEY}
+		}
+	}
+
 	handle /radar/* {
 		uri strip_prefix /radar
-		reverse_proxy {$RADAR_UPSTREAM:radar:8001}
+		reverse_proxy {$RADAR_UPSTREAM:radar:8001} {
+			header_up -X-Fraud-Team-Key
+		}
+	}
+
+	handle /fraud-team* {
+		basic_auth {
+			{$PRESENTER_USER} {$PRESENTER_HASH}
+		}
+		reverse_proxy {$DASHBOARD_UPSTREAM:dashboard:3000}
 	}
 
 	handle {
