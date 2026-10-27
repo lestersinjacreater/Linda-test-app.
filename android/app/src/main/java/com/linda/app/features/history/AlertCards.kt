@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.linda.app.R
@@ -41,6 +42,15 @@ import com.linda.app.core.util.PhoneNumbers
 fun senderLabel(d: DetectionEntity): String =
     d.sender?.let { PhoneNumbers.pretty(it) } ?: stringResource(R.string.sender_pasted)
 
+/**
+ * "Preview hidden for your safety" (idea from Kelvin's prototype): a list never shows the words of a SCAM, so nobody acts
+ * on a link or a "send it back" by glancing at it. Tapping the alert shows the message with Linda's reasons beside it.
+ * Not hidden: cautions, alerts the person marked safe, and text they pasted into Ask Linda themselves.
+ */
+object PreviewRule {
+    fun hidden(level: String, markedSafe: Boolean, source: String): Boolean = level == "SCAM" && !markedSafe && source != "checker"
+}
+
 /** One alert in the Alerts list (docs/design-system.md 7.16): what kind of scam, how risky, a preview, who and when. */
 @Composable
 fun AlertListCard(d: DetectionEntity, onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -54,10 +64,14 @@ fun AlertListCard(d: DetectionEntity, onClick: () -> Unit, modifier: Modifier = 
             Text(categoryTitle(d.category), style = MaterialTheme.typography.titleMedium, color = colors.textPrimary, modifier = Modifier.weight(1f))
             RiskPill(d.level)
         }
-        Text(
-            "“" + d.body + "”",
-            style = MaterialTheme.typography.bodyLarge, color = colors.textSecondary, maxLines = 2, overflow = TextOverflow.Ellipsis,
-        )
+        if (PreviewRule.hidden(d.level, d.markedSafe, d.source)) {
+            Text(stringResource(R.string.preview_hidden), style = MaterialTheme.typography.bodyLarge, color = colors.textSecondary, fontStyle = FontStyle.Italic)
+        } else {
+            Text(
+                "“" + d.body + "”",
+                style = MaterialTheme.typography.bodyLarge, color = colors.textSecondary, maxLines = 2, overflow = TextOverflow.Ellipsis,
+            )
+        }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
             Text(
                 senderLabel(d) + " · " + relativeTime(d.receivedAt),
@@ -82,7 +96,11 @@ fun RecentAlertRow(d: DetectionEntity, onClick: () -> Unit, modifier: Modifier =
                 categoryLabel(d.category).uppercase() + "  ·  " + relativeTime(d.receivedAt),
                 style = MaterialTheme.typography.labelMedium, color = risk.text,
             )
-            Text(d.body, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            if (PreviewRule.hidden(d.level, d.markedSafe, d.source)) {
+                Text(stringResource(R.string.preview_hidden), style = MaterialTheme.typography.bodyLarge, color = colors.textSecondary, fontStyle = FontStyle.Italic)
+            } else {
+                Text(d.body, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
         }
     }
 }

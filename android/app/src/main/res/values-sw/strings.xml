@@ -4,7 +4,7 @@
     <string name="app_name">Linda</string>
 
     <string name="nav_home">Nyumbani</string>
-    <string name="nav_check">Kagua</string>
+    <string name="nav_check">Uliza Linda</string>
     <string name="nav_history">Arifa</string>
     <string name="nav_settings">Mipangilio</string>
 
@@ -12,8 +12,7 @@
 
     <string name="home_status_title">LINDA inakulinda.</string>
     <string name="home_caught_this_month">ulaghai uliozuiwa mwezi huu</string>
-
-    <string name="checker_title">Je, huu ni ulaghai?</string>
+    <string name="checker_title">Uliza Linda</string>
     <string name="checker_coming_soon">Bandika ujumbe hapa na Linda atauchunguza. Inakuja hivi karibuni.</string>
 
     <string name="history_title">Ujumbe wenye shaka</string>
@@ -68,10 +67,9 @@
     <string name="disclosure_shown">Inaonyeshwa</string>
     <string name="disclosure_hidden">Imefichwa</string>
     <string name="action_back">Rudi</string>
-
-    <string name="checker_help">Bandika ujumbe, au tuma ujumbe kutoka WhatsApp au programu yoyote kwenda Linda. Haiondoki kwenye simu yako.</string>
-    <string name="checker_hint">Bandika ujumbe hapa</string>
-    <string name="checker_button">Kagua ujumbe huu</string>
+    <string name="checker_help">Bandika ujumbe, ushiriki kutoka WhatsApp au programu yoyote, au andika namba ya simu. Linda inaukagua kwenye simu yako, kwa modeli yake na orodha ya ulaghai ya Safaricom.</string>
+    <string name="checker_hint">Bandika ujumbe au andika namba</string>
+    <string name="checker_button">Kagua</string>
     <string name="checker_safe">Hakuna kinachotia shaka</string>
     <string name="checker_safe_note">Linda haiwezi kuwa na uhakika kamili. Ukiombwa pesa au PIN yako, usiamini.</string>
 
@@ -476,4 +474,35 @@
         <item quantity="one">siku %d iliyopita</item>
         <item quantity="other">siku %d zilizopita</item>
     </plurals>
+    <string name="ask_checking">Inakagua…</string>
+    <string name="ask_try">Jaribu mojawapo</string>
+    <string name="ask_example_reversal">Samahani, nimetuma KSh 2,500 kwa namba yako kimakosa. Tafadhali nirudishie.</string>
+    <string name="ask_example_prize">Hongera! Umeshinda KSh 100,000. Tuma ada ya usajili KSh 500 upate zawadi yako.</string>
+    <string name="ask_example_care">0722 000 000</string>
+    <string name="ask_number_unknown_pill">Hakuna ripoti bado</string>
+    <string name="ask_number_unknown">Hakuna aliyeripoti namba hii kwa Linda wala kwenye orodha ya ulaghai ya Safaricom. Linda haiwezi kuthibitisha ni nani: usitume pesa wala kutoa PIN yako kwa mtu usiyemjua.</string>
+    <string name="ask_source_live">Imekaguliwa kwenye orodha ya ulaghai ya Safaricom, kwa siri: simu yako ilituma sehemu tu ya msimbo uliofichwa, si namba yenyewe.</string>
+    <string name="ask_source_phone">Imepatikana kwenye orodha ya simu hii.</string>
+    <string name="ask_source_offline">Haikuweza kufikia orodha ya ulaghai ya Safaricom sasa hivi, kwa hiyo Linda imekagua simu hii tu.</string>
+    <string name="call_card_from_linda">LINDA · SIMU INAYOINGIA</string>
+    <string name="call_card_reported">Imeripotiwa kwa ulaghai</string>
+    <string name="call_card_recent">Alikutumia ujumbe wa ulaghai</string>
+    <string name="call_card_suspected">Imeripotiwa: kuwa mwangalifu</string>
+    <string name="call_card_verified">Imethibitishwa: %1$s</string>
+    <string name="call_card_you_decide">Linda inakuonya, wewe ndiye unaamua. Usitume pesa wala kutoa PIN yako kwa anayepiga.</string>
+    <string name="call_card_close">Sawa</string>
+    <string name="settings_overlay_title">Maonyo juu ya simu</string>
+    <string name="settings_overlay_row">Onyesha kadi ya Linda juu ya skrini ya simu inayoita</string>
+    <string name="demo_chip">Onyesho</string>
+    <string name="demo_step_sms">SMS ya ulaghai inaingia (M-Pesa bandia)</string>
+    <string name="demo_step_call_scammer">Simu kutoka namba iliyotuma ujumbe huo</string>
+    <string name="demo_step_call_care">Simu kutoka Huduma kwa Wateja ya Safaricom</string>
+    <string name="demo_step_call_unknown">Simu kutoka namba isiyojulikana</string>
+    <string name="demo_step_help">Nimetapeliwa: pata msaada</string>
+    <string name="demo_sheet_help">Gusa hatua uone Linda inachofanya kwenye simu halisi. Kila hatua inatumia kigunduzi halisi cha Linda, kwenye simu hii.</string>
+    <string name="demo_sheet_note">Ujumbe wa onyesho unaonekana kwenye Maonyo kama ujumbe halisi, na hauripotiwi kamwe kwa Safaricom.</string>
+    <string name="demo_quiet">%1$s: Linda imenyamaza, kama inavyopaswa.</string>
+    <string name="demo_call_quiet">Hakuna aliyeripoti namba hii, kwa hiyo Linda inanyamaza. Wewe ndiye unaamua kama kawaida.</string>
+    <string name="demo_call_card_note">Washa "Maonyo juu ya simu" kwenye Mipangilio uone kadi hii juu ya simu halisi zinazoingia.</string>
+    <string name="preview_hidden">Maudhui yamefichwa kwa usalama wako. Gusa uusome pamoja na sababu za Linda.</string>
 </resources>

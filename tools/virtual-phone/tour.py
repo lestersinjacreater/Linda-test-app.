@@ -234,8 +234,8 @@ class Tour(Phone):
         # Newest first, so after the other test texts the fake M-Pesa one may be further down the list.
         hist = self.find_any(("0700000777", "0700 000 777", "254700000777")) is not None
         self.check("History lists the warned message", hist)
-        self.tap_text("Check", scrolls=0)
-        field = self.find("Paste the message here", scrolls=0)
+        self.tap_exact("Ask Linda", scrolls=0)
+        field = self.find("Paste a message or type a number", scrolls=0)
         if field:
             self.shell(f"input tap {field['x']} {field['y']}")
             time.sleep(0.8)
@@ -243,9 +243,18 @@ class Tour(Phone):
             self.shell(f"input text '{words}'")
             self.shell("input keyevent KEYCODE_BACK")  # hide the keyboard
             time.sleep(0.8)
-        clicked = self.tap_text("Check this message")
+        clicked = self.tap_exact("Check")
         verdict = self.wait_for(lambda: "Likely scam" in self.screen_text(), 8)  # the SCAM verdict label
-        self.check("Check tab: a pasted prize scam gets a verdict", bool(field) and clicked and verdict)
+        shot = self.screenshot("ask-linda-message")
+        self.check("Ask Linda: a pasted prize scam gets a verdict", bool(field) and clicked and verdict, "", shot)
+        # A number: Safaricom Customer Care's real number gets the verified answer (from the list bundled in the app).
+        self.shell(f"am force-stop {PKG}")
+        self.open_app()
+        self.tap_exact("Ask Linda", scrolls=0)
+        example = self.tap_exact("0722 000 000")
+        verified = self.wait_for(lambda: "Verified: Safaricom Customer Care" in self.screen_text(), 10)
+        shot = self.screenshot("ask-linda-number")
+        self.check("Ask Linda: a phone number is looked up (Safaricom Customer Care is verified)", example and verified, "", shot)
         # Settings is the gear on Home (three tabs: Home, Alerts, Check).
         self.tap_exact("Home", scrolls=0)
         time.sleep(1)

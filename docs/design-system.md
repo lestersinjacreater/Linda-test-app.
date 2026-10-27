@@ -284,7 +284,7 @@ shadow (none in dark mode), 16dp between cards. Each card answers **one** questi
 Inspired by a clean card layout Lester liked; Linda keeps its own green, wording and privacy promise.
 
 ### 7.16 Alerts and alert details
-- **Bottom bar:** three tabs, Home · Alerts · Check (a bell for Alerts). Settings is the gear on Home's header.
+- **Bottom bar:** three tabs, Home · Alerts · Ask Linda (a bell for Alerts). Settings is the gear on Home's header.
 - **Home:** a white header with rounded bottom corners (logo, "Good evening", the "Protection active" pill, the gear); the
   Protection center card (overall state in a tint box, then chips for SMS protection, Call protection and Reports, then
   this month's count); today's scam tip; Recent alerts (rows with a 5dp coloured left edge and "CATEGORY · 2 hr ago");
@@ -314,6 +314,24 @@ above zero), then the review queue as a table (number in mono with a NEW tag, sc
 pill, and for waiting rows a filled green **Confirm scam** and an outlined **Not a scam**), and on the right Scam patterns
 (green bars) and Live activity (time, one sentence; confirmations in red). A mint bar confirms each action in words.
 
+
+### 7.19 Ideas from Kelvin's prototype (27 Oct)
+- **Ask Linda** (the third tab, was Check): title, one line of help, "Try one" with example chips (rounded outline, one
+  line each: two scam messages and 0722 000 000), the box ("Paste a message or type a number") and **Check**. The
+  question then sits on the right as the person's own bubble (`safe` tint, a small bottom-right corner), and Linda's
+  answer under it: the verdict card (7.3) for a message, or a number card (the number as title, the call card's pill,
+  the scam type and one line in a tint box, then where the answer came from in small grey text). A question box laid
+  out like a chat, never a chatbot.
+- **Call card:** over the ringing screen, in the middle (the phone's caller banner is at the top), 12dp from the sides: a white Large card with a soft shadow,
+  "LINDA · INCOMING CALL" in small grey capitals, the number large, a big pill (red "Reported for fraud", amber
+  "Reported: be careful", green "Verified: Safaricom Customer Care"), the scam type and one line, "Linda warns, you
+  decide…" and a green **Got it**. Touches outside it reach the call screen; answer and decline are the phone's own.
+  Needs "Display over other apps" (Settings: Warnings over calls); without it the heads-up notification stays.
+- **Demo:** a "▶ Demo" outline chip next to the protection pill on Home opens a sheet of numbered rows (a grouped list,
+  7.13). Phones without "Display over other apps" see the call card in a dialog.
+- **Preview hidden for your safety:** in Alerts and on Home, a SCAM never shows its words in the list (italic grey
+  "Preview hidden for your safety. Tap to read it with Linda's reasons."). Cautions, alerts marked safe and pasted text
+  still show a preview.
 ---
 
 ## 8. Motion: "the scan sweep"
@@ -353,7 +371,7 @@ Never: blame ("You should have known"), jargon ("classifier confidence"), or ALL
 
 - **Icons:** Material Symbols Rounded, 24dp, weight 400, one style everywhere.
 - **Illustrations:** flat, rounded shapes in the green ramp, with one warm accent (amber). Show real Kenyan everyday moments: a mama mboga with her phone, a boda rider at a stage, a grandmother on a basic phone. No stock-photo realism, no hooded-hacker clichés.
-- **Logo:** five rounded segments arranged as a shield, coloured with the layer tint ramp, with the wordmark **LINDA** in Poppins Bold beside it.
+- **Logo (27 Oct, after Kelvin's design):** a `green700` rounded square (corner 24% of its side) with a white shield outline and a white tick: "you are protected". The same drawing is the launcher icon (white mark on the green adaptive background, and on its own as the notification icon), the app mark (`LindaLogo`) and the dashboard mark. The five layer tints stay for the Layer Trace.
 - **Brand note:** use Safaricom colours freely. Confirm with organisers before using the official Safaricom or M-PESA logos in the app or deck.
 
 ---

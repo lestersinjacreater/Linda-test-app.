@@ -8,7 +8,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />   <!-- show warnings (Android 13+) -->
     <uses-permission android:name="android.permission.SEND_SMS" />             <!-- Family Guardian only: the short alert to the guardian, after the person opts in -->
     <uses-permission android:name="android.permission.INTERNET" />             <!-- ONLY for reports (no text), the blocklist and the update check; the app works without it -->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- "Update Linda" in Settings: open Android's installer for the newer build (hackathon only) -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />      <!-- optional: Linda's card on top of the ringing screen; asked in Settings, never needed --> <!-- "Update Linda" in Settings: open Android's installer for the newer build (hackathon only) -->
 
     <!-- usesCleartextTraffic: the laptop backup radar on demo day is plain http. The cloud radar should be https. -->
     <application

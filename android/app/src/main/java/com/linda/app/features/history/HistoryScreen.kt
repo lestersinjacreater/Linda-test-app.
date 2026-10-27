@@ -62,7 +62,7 @@ fun HistoryScreen(onOpen: (Long) -> Unit, viewModel: HistoryViewModel = viewMode
                 verticalArrangement = Arrangement.spacedBy(Spacing.lg),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                    Box(Modifier.clip(MediumShape).background(colors.surfaceRaised).padding(Spacing.sm)) { LindaLogo(size = 36.dp) }
+                    LindaLogo(size = 44.dp)
                     Column(Modifier.weight(1f)) {
                         Text(stringResource(R.string.alerts_title), style = MaterialTheme.typography.titleLarge, color = colors.textPrimary)
                         Text(stringResource(R.string.alerts_subtitle), style = MaterialTheme.typography.bodyMedium, color = colors.textSecondary)

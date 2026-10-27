@@ -4,7 +4,7 @@
     <string name="app_name">Linda</string>
 
     <string name="nav_home">Home</string>
-    <string name="nav_check">Check</string>
+    <string name="nav_check">Ask Linda</string>
     <string name="nav_history">Alerts</string>
     <string name="nav_settings">Settings</string>
 
@@ -12,8 +12,7 @@
 
     <string name="home_status_title">LINDA is protecting you.</string>
     <string name="home_caught_this_month">scams stopped this month</string>
-
-    <string name="checker_title">Is this a scam?</string>
+    <string name="checker_title">Ask Linda</string>
     <string name="checker_coming_soon">Paste a message here and Linda will check it. Coming soon.</string>
 
     <string name="history_title">Flagged messages</string>
@@ -68,10 +67,9 @@
     <string name="disclosure_shown">Shown</string>
     <string name="disclosure_hidden">Hidden</string>
     <string name="action_back">Back</string>
-
-    <string name="checker_help">Paste a message, or share one from WhatsApp or any app to Linda. It never leaves your phone.</string>
-    <string name="checker_hint">Paste the message here</string>
-    <string name="checker_button">Check this message</string>
+    <string name="checker_help">Paste a message, share one from WhatsApp or any app, or type a phone number. Linda checks it on your phone, with its own model and Safaricom\'s fraud list.</string>
+    <string name="checker_hint">Paste a message or type a number</string>
+    <string name="checker_button">Check</string>
     <string name="checker_safe">Nothing suspicious found</string>
     <string name="checker_safe_note">Linda cannot be sure. If it asks for money or your PIN, do not trust it.</string>
 
@@ -476,4 +474,35 @@
         <item quantity="one">%d day ago</item>
         <item quantity="other">%d days ago</item>
     </plurals>
+    <string name="ask_checking">Checking…</string>
+    <string name="ask_try">Try one</string>
+    <string name="ask_example_reversal">Sorry, I sent KSh 2,500 to your number by mistake. Please send it back.</string>
+    <string name="ask_example_prize">Congratulations! You have won KSh 100,000. Send KSh 500 registration fee to receive it.</string>
+    <string name="ask_example_care">0722 000 000</string>
+    <string name="ask_number_unknown_pill">No reports yet</string>
+    <string name="ask_number_unknown">Nobody has reported this number to Linda or to Safaricom\'s fraud list. Linda cannot confirm who it is: never send money or share your PIN with someone you do not know.</string>
+    <string name="ask_source_live">Checked against Safaricom\'s fraud list, privately: your phone sent only part of a scrambled code, never the number.</string>
+    <string name="ask_source_phone">Found on this phone\'s own list.</string>
+    <string name="ask_source_offline">Could not reach Safaricom\'s fraud list right now, so Linda checked this phone only.</string>
+    <string name="call_card_from_linda">LINDA · INCOMING CALL</string>
+    <string name="call_card_reported">Reported for fraud</string>
+    <string name="call_card_recent">Sent you a scam message</string>
+    <string name="call_card_suspected">Reported: be careful</string>
+    <string name="call_card_verified">Verified: %1$s</string>
+    <string name="call_card_you_decide">Linda warns, you decide. Never send money or share your PIN with a caller.</string>
+    <string name="call_card_close">Got it</string>
+    <string name="settings_overlay_title">Warnings over calls</string>
+    <string name="settings_overlay_row">Show Linda\'s card on top of the ringing screen</string>
+    <string name="demo_chip">Demo</string>
+    <string name="demo_step_sms">Scam SMS arrives (fake M-Pesa)</string>
+    <string name="demo_step_call_scammer">Call from the number that just sent it</string>
+    <string name="demo_step_call_care">Call from Safaricom Customer Care</string>
+    <string name="demo_step_call_unknown">Call from an unknown number</string>
+    <string name="demo_step_help">I\'ve been scammed: get help</string>
+    <string name="demo_sheet_help">Tap a step to see what Linda does on a real phone. Every step uses Linda\'s real detector, on this phone.</string>
+    <string name="demo_sheet_note">Demo messages appear in Alerts like real ones, and are never reported to Safaricom.</string>
+    <string name="demo_quiet">%1$s: Linda stayed quiet, as it should.</string>
+    <string name="demo_call_quiet">Nobody has reported this number, so Linda stays quiet. You decide as usual.</string>
+    <string name="demo_call_card_note">Turn on "Warnings over calls" in Settings to see this card on top of real incoming calls.</string>
+    <string name="preview_hidden">Preview hidden for your safety. Tap to read it with Linda\'s reasons.</string>
 </resources>

@@ -1273,3 +1273,27 @@ Why it is behind a password: unlike the public page, it shows full numbers, beca
 job. Caddy asks for the presenter password, then adds a secret key that only it and the gateway know; the gateway refuses
 any request without it. In production this screen would be the fraud team's own system (contract 5.12).
 
+## Ideas from Kelvin's prototype, built for real (27 Oct)
+
+Kelvin, a teammate, built a clickable prototype of Linda. We took its best ideas and built them on the real app, so
+they work on a judge's own phone, not only in a scripted demo.
+
+- **Ask Linda** (the third tab). Paste a message, or type a phone number. A message is checked exactly like a real
+  SMS. A number is checked like an incoming call: first this phone's own lists (numbers confirmed in the last 30 days,
+  scam messages it received, the verified-callers list), then Safaricom's fraud list privately (only the first 5
+  characters of a scrambled code of the number leave the phone, contract 5.10). The answer says where it came from,
+  so people know how sure it is. Example chips let anyone try it in one tap.
+- **Linda's card over a ringing call.** Android does not let any app replace its call screen (and Linda must not:
+  the person decides). With "Display over other apps" switched on (Settings, Warnings over calls), Linda puts a card
+  at the top of the ringing screen: "Reported for fraud" in red, or "Verified: Safaricom Customer Care" in green.
+  Without that permission the heads-up notification still appears, as before.
+- **Demo sheet.** A "Demo" chip on Home opens numbered steps: a scam SMS, a call from the number that sent it, a call
+  from Safaricom Customer Care, a call from an unknown number, four more scam messages, two real messages that must
+  stay quiet, and "I've been scammed". Every step runs the real detector; demo messages are never reported.
+- **Preview hidden for your safety.** Lists never show the words of a scam, so nobody acts on a link by glancing at it.
+- **New logo:** a green rounded square with a white shield and tick, in the app, the launcher icon and the dashboard.
+- **The fraud-team console** on the dashboard (its own section above).
+
+What we did not take: the made-up numbers on his home screen ("15 scams flagged", "synced with Safaricom at 9:23"),
+the word "blocked" (Linda warns, it never blocks), and his small model trained on 86 messages we wrote ourselves.
+
