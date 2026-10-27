@@ -298,6 +298,23 @@ Inspired by a clean card layout Lester liked; Linda keeps its own green, wording
   number and the type of scam…") and two buttons: Mark as safe (outline) and Report this number (filled green). The tabs
   are hidden on this screen. Scam red stays reserved for verdicts, so the Report button is green.
 
+### 7.17 Dashboard: real numbers (27 Oct)
+The dashboard's main page (`/`) shows only real numbers, in the 7.15 card style: a header (the mark, "Linda", "Real
+numbers from real phones", "Updated N s ago" and a LIVE pill, or a red "Can't reach the server" pill and one plain
+sentence; the subtitle is "Safaricom's fraud protection, on the customer's phone"), four tiles (Phones with Linda, Scams caught in red, Scam numbers confirmed, App downloads: a big number and
+one short line under it), then two cards: Scams by type (green bars, biggest first) and Latest scams caught (type,
+masked number, a status pill only when confirmed or suspected, "4 min ago"), then one line in ink: "Real numbers from
+real phones. Each phone runs Linda's machine-learning model on the device, and its reports feed Safaricom's fraud team." A dash, never a made-up number, when a
+source has not answered. The simulation keeps its own layout at `/simulation`.
+
+### 7.18 Dashboard: fraud-team console (27 Oct)
+`/fraud-team`, after a design by Kelvin: the analyst's desk. Header ("Linda fraud-team console", one line on what
+confirming does, LIVE pill), four KPI tiles (a big number above its label; "Waiting for review" gets an amber ring when
+above zero), then the review queue as a table (number in mono with a NEW tag, scam type, reports and phones, a status
+pill, and for waiting rows a filled green **Confirm scam** and an outlined **Not a scam**), and on the right Scam patterns
+(green bars) and Live activity (time, one sentence; confirmations in red). A mint bar confirms each action in words.
+
+
 ### 7.19 Ideas from Kelvin's prototype (27 Oct)
 - **Ask Linda** (the third tab, was Check): title, one line of help, "Try one" with example chips (rounded outline, one
   line each: two scam messages and 0722 000 000), the box ("Paste a message or type a number") and **Check**. The
@@ -315,23 +332,6 @@ Inspired by a clean card layout Lester liked; Linda keeps its own green, wording
 - **Preview hidden for your safety:** in Alerts and on Home, a SCAM never shows its words in the list (italic grey
   "Preview hidden for your safety. Tap to read it with Linda's reasons."). Cautions, alerts marked safe and pasted text
   still show a preview.
-
-### 7.17 Dashboard: real numbers (27 Oct)
-The dashboard's main page (`/`) shows only real numbers, in the 7.15 card style: a header (the mark, "Linda", "Real
-numbers from real phones", "Updated N s ago" and a LIVE pill, or a red "Can't reach the server" pill and one plain
-sentence; the subtitle is "Safaricom's fraud protection, on the customer's phone"), four tiles (Phones with Linda, Scams caught in red, Scam numbers confirmed, App downloads: a big number and
-one short line under it), then two cards: Scams by type (green bars, biggest first) and Latest scams caught (type,
-masked number, a status pill only when confirmed or suspected, "4 min ago"), then one line in ink: "Real numbers from
-real phones. Each phone runs Linda's machine-learning model on the device, and its reports feed Safaricom's fraud team." A dash, never a made-up number, when a
-source has not answered. The simulation keeps its own layout at `/simulation`.
-
-### 7.18 Dashboard: fraud-team console (27 Oct)
-`/fraud-team`, after a design by Kelvin: the analyst's desk. Header ("Linda fraud-team console", one line on what
-confirming does, LIVE pill), four KPI tiles (a big number above its label; "Waiting for review" gets an amber ring when
-above zero), then the review queue as a table (number in mono with a NEW tag, scam type, reports and phones, a status
-pill, and for waiting rows a filled green **Confirm scam** and an outlined **Not a scam**), and on the right Scam patterns
-(green bars) and Live activity (time, one sentence; confirmations in red). A mint bar confirms each action in words.
-
 ---
 
 ## 8. Motion: "the scan sweep"
