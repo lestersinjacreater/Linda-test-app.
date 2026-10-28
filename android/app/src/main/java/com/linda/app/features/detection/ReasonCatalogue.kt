@@ -125,6 +125,16 @@ object ReasonCatalogue {
         "Mtu anasema hii ni nambari yake mpya na anaomba pesa. Piga nambari yake ya zamani, au mkutane, kabla hujatuma chochote.",
     )
 
+    /**
+     * The text says it is from [name], a saved contact, but came from a number that is not saved (ContactClaims). The
+     * saved number is not repeated here: the person already has it, and the reason is kept in history and read aloud.
+     */
+    fun claimsContact(name: String) = Reason(
+        "claims_contact",
+        "It says it is from $name, but $name is saved in your contacts with a different number. Call $name on the saved number before you send anything.",
+        "Ujumbe huu unasema ni $name, lakini $name amehifadhiwa kwenye anwani zako kwa nambari tofauti. Mpigie $name kwa nambari iliyohifadhiwa kabla hujatuma chochote.",
+    )
+
     // ---- The inbox story (features/learning) ----
 
     val PAYMENT_CHANGED = Reason(

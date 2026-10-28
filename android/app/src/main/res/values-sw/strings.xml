@@ -384,6 +384,7 @@
         <item quantity="other">Malipo halisi %1$d yamehifadhiwa</item>
     </plurals>
     <string name="trace_n_new_number">Inasema ni nambari mpya, na inaomba pesa</string>
+    <string name="trace_n_claims_contact">Inasema ni mtu aliye kwenye anwani zako, kutoka nambari isiyo yake</string>
     <string name="trace_n_first_money">Ujumbe wa kwanza kutoka kwa nambari hii, na unaomba pesa</string>
     <string name="trace_n_known_sender">Umekuwa ukiwasiliana na nambari hii kwa muda</string>
     <string name="learning_senders_body">Pia inajua unaowasiliana nao kweli, ili isiwe na wasiwasi mwingi nao na iwe macho zaidi na watu usiowajua wanaoomba pesa au wanaosema njia ya kulipa imebadilika.</string>

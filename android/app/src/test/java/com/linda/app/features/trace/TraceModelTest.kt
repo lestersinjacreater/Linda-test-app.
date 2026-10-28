@@ -64,6 +64,13 @@ class TraceModelTest {
     }
 
     @Test
+    fun networkLayer_aClaimedContactIsCalledOut() {
+        val n = byLayer(input(level = "CAUTION", category = "other", codes = setOf("claims_contact", "personal_number"))).getValue(Layer.NETWORK)
+        assertTrue(n.flagged)
+        assertTrue(n.lines.any { it.code == "n_claims_contact" })
+    }
+
+    @Test
     fun networkLayer_fakeMpesaIsCalledOut() {
         val n = byLayer(input(category = "fake_mpesa", codes = setOf("fake_mpesa", "personal_number"))).getValue(Layer.NETWORK)
         assertEquals("n_fake_mpesa", n.lines.first().code)

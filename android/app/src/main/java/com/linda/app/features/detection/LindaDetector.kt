@@ -138,6 +138,14 @@ class LindaDetector(private val scorer: ModelScorer, private val config: FusionC
                     level = if (level == RiskLevel.SCAM) RiskLevel.CAUTION else RiskLevel.SAFE
                     if (level == RiskLevel.CAUTION) senderReason = ReasonCatalogue.KNOWN_SENDER
                 }
+                // "Hi, it's Mum" from a number that is not Mum's saved one: someone pretending to be a contact. At least a
+                // caution, whatever the wording (a context sign: it does not make a SCAM on its own). Not for a number the
+                // person is already in touch with: that is more likely the same person on a second line.
+                !established && input.senderInContacts == false && input.claimedContact != null -> {
+                    level = higher(level, RiskLevel.CAUTION)
+                    score = maxOf(score, scorer.warnThreshold)
+                    senderReason = ReasonCatalogue.claimsContact(input.claimedContact)
+                }
                 // "Hi, it's me, this is my new number, send me...": the impersonation trick.
                 stranger && SenderSignals.claimsNewNumber(input.body) && SenderSignals.asksForMoney(input.body) -> {
                     level = higher(level, RiskLevel.CAUTION)

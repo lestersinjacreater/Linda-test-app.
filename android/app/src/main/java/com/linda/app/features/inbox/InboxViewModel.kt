@@ -71,6 +71,7 @@ class InboxViewModel(application: Application) : AndroidViewModel(application) {
         val story = if (LearningStore.enabled(app)) StoryBook(LearningStore.knownCodes(app)) else null
         val scanner = InboxScanner(
             app.detector, { ContactsLookup.isInContacts(app, it) }, { it in allowed }, memory, LearningStore.personalModel(app), story,
+            { ContactsLookup.claimedContact(app, it) },
         )
 
         var scanned = 0

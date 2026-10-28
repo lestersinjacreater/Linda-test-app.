@@ -58,8 +58,10 @@ class MessageProcessor(private val context: Context) {
             val history = LearningStore.senderHistory(context, sender)
             // The inbox story: what this business usually sends, and whether a quoted M-Pesa code is real (null otherwise).
             val story = LearningStore.storyFacts(context, sender, body, receivedAt)
+            // "Hi, it's Mum" from a number that is not saved: only then are the contacts asked about the claimed name.
+            val claimed = if (inContacts == false) ContactsLookup.claimedContact(context, body) else null
             val verdict = app.detector.analyse(
-                MessageInput(body, sender, receivedAt, inContacts, first, memory, history, LearningStore.personalModel(context), story),
+                MessageInput(body, sender, receivedAt, inContacts, first, memory, history, LearningStore.personalModel(context), story, claimed),
             )
             if (sender != null) LearningStore.countMessage(context, sender, receivedAt, warned = verdict.level != RiskLevel.SAFE)
             if (source == "sms" || source == "demo") LearningStore.rememberStory(context, sender, body, receivedAt)

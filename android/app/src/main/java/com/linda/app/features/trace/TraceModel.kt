@@ -71,6 +71,7 @@ object LayerTraceBuilder {
         if ("memory_same_as_real" in input.reasonCodes) lines += TraceLine("n_memory_same")
         // Know your senders: what the person's own messages say about this number.
         if ("new_number_trick" in input.reasonCodes) lines += TraceLine("n_new_number")
+        if ("claims_contact" in input.reasonCodes) lines += TraceLine("n_claims_contact")
         if ("first_asks_money" in input.reasonCodes) lines += TraceLine("n_first_money")
         if ("known_sender" in input.reasonCodes) lines += TraceLine("n_known_sender")
         // The inbox story.
