@@ -25,6 +25,7 @@ import com.linda.app.R
 import com.linda.app.features.calls.CallWarning
 import com.linda.app.features.calls.CallLabel
 import com.linda.app.features.calls.CallWarnings
+import com.linda.app.features.calls.SavedContact
 import com.linda.app.features.calls.VerifiedCall
 import com.linda.app.core.util.Prefs
 import com.linda.app.features.detection.RiskLevel
@@ -85,5 +86,6 @@ private fun describeCall(context: android.content.Context, label: CallLabel?): S
     is CallWarning.ReportedNumber -> context.getString(R.string.demo_call_reported)
     is CallWarning.SuspectedNumber -> context.getString(R.string.demo_call_suspected)
     is VerifiedCall -> context.getString(R.string.demo_call_verified, label.caller.name(Prefs.effectiveLanguage(context)))
-    null -> context.getString(R.string.demo_call_none)
+    SavedContact -> context.getString(R.string.call_card_contact)
+    null ->context.getString(R.string.demo_call_none)
 }

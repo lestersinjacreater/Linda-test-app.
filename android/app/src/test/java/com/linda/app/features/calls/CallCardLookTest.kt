@@ -27,4 +27,11 @@ class CallCardLookTest {
         assertEquals(R.string.call_card_verified, look.pill)
         assertEquals(CallCardOverlay.Tone.SAFE, look.tone)
     }
+
+    @Test fun aSavedContactIsNeutralNeverVerifiedGreen() {
+        val look = CallCardOverlay.look(SavedContact)
+        assertEquals(R.string.call_card_contact, look.pill)
+        assertEquals(R.string.call_contact_text, look.line)
+        assertEquals(CallCardOverlay.Tone.NEUTRAL, look.tone)
+    }
 }

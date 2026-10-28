@@ -491,6 +491,8 @@
     <string name="call_card_verified">Imethibitishwa: %1$s</string>
     <string name="call_card_you_decide">Linda inakuonya, wewe ndiye unaamua. Usitume pesa wala kutoa PIN yako kwa anayepiga.</string>
     <string name="call_card_close">Sawa</string>
+    <string name="call_card_contact">Kwenye anwani zako</string>
+    <string name="call_contact_text">Hakuna ripoti za ulaghai kuhusu nambari hii. Usitoe PIN yako kamwe, hata kwa mtu unayemjua.</string>
     <string name="settings_overlay_title">Maonyo juu ya simu</string>
     <string name="settings_overlay_row">Onyesha kadi ya Linda juu ya skrini ya simu inayoita</string>
     <string name="demo_chip">Onyesho</string>

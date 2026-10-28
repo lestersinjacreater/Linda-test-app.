@@ -47,13 +47,15 @@ object CallCardOverlay {
 
     /** What the card says, kept free of Android views so it can be unit tested. */
     data class Look(val pill: Int, val tone: Tone, val line: Int, val lineArg: Any?)
-    enum class Tone { SCAM, CAUTION, SAFE }
+    /** NEUTRAL: a fact from this phone (a saved contact), so no risk colour and never the verified green. */
+    enum class Tone { SCAM, CAUTION, SAFE, NEUTRAL }
 
     fun look(label: CallLabel): Look = when (label) {
         is CallWarning.ReportedNumber -> Look(R.string.call_card_reported, Tone.SCAM, R.string.call_warning_reported, null)
         is CallWarning.RecentScamMessage -> Look(R.string.call_card_recent, Tone.SCAM, R.string.call_warning_recent, label.minutesAgo)
         is CallWarning.SuspectedNumber -> Look(R.string.call_card_suspected, Tone.CAUTION, R.string.call_warning_suspected, null)
         is VerifiedCall -> Look(R.string.call_card_verified, Tone.SAFE, R.string.call_verified_text, null)
+        SavedContact -> Look(R.string.call_card_contact, Tone.NEUTRAL, R.string.call_contact_text, null)
     }
 
     fun show(context: Context, msisdn: String, label: CallLabel) {
@@ -94,6 +96,7 @@ object CallCardOverlay {
             Tone.SCAM -> Palette.SCAM_RED_TEXT_LIGHT to Palette.SCAM_TINT_LIGHT
             Tone.CAUTION -> Palette.CAUTION_LIGHT to Palette.CAUTION_TINT_LIGHT
             Tone.SAFE -> Palette.GREEN_700 to Palette.GREEN_50
+            Tone.NEUTRAL -> Palette.TEXT_PRIMARY_LIGHT to Palette.SURFACE_RAISED_LIGHT
         }
         val name = (label as? VerifiedCall)?.caller?.name(Prefs.effectiveLanguage(c))
         val card = LinearLayout(c).apply {

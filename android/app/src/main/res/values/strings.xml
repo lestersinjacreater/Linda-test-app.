@@ -491,6 +491,8 @@
     <string name="call_card_verified">Verified: %1$s</string>
     <string name="call_card_you_decide">Linda warns, you decide. Never send money or share your PIN with a caller.</string>
     <string name="call_card_close">Got it</string>
+    <string name="call_card_contact">In your contacts</string>
+    <string name="call_contact_text">No fraud reports on this number. Never share your PIN, even with someone you know.</string>
     <string name="settings_overlay_title">Warnings over calls</string>
     <string name="settings_overlay_row">Show Linda\'s card on top of the ringing screen</string>
     <string name="demo_chip">Demo</string>

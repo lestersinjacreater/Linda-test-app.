@@ -57,6 +57,18 @@ class CallRiskTest {
         assertEquals(CallWarning.ReportedNumber("fake_mpesa"), CallRisk.decide("fake_mpesa", null, now, liveStatus = "suspected"))
     }
 
+    @Test fun aSavedContactWithNothingElseKnownSaysInYourContacts() {
+        assertEquals(SavedContact, CallRisk.decide(null, null, now, inContacts = true))
+        assertNull(CallRisk.decide(null, null, now, inContacts = false))
+    }
+
+    @Test fun everyWarningAndTheBadgeBeatASavedContact() {
+        assertEquals(CallWarning.RecentScamMessage(5), CallRisk.decide(null, now - 5 * minute, now, inContacts = true))
+        assertEquals(CallWarning.ReportedNumber("fake_mpesa"), CallRisk.decide("fake_mpesa", null, now, inContacts = true))
+        assertEquals(CallWarning.SuspectedNumber(null), CallRisk.decide(null, null, now, liveStatus = "reported", inContacts = true))
+        assertEquals(VerifiedCall(care), CallRisk.decide(null, null, now, care, inContacts = true))
+    }
+
     @Test fun aLiveVerifiedOrUnknownAnswerDoesNotWarn() {
         assertNull(CallRisk.decide(null, null, now, liveStatus = "verified"))
         assertNull(CallRisk.decide(null, null, now, liveStatus = null))
