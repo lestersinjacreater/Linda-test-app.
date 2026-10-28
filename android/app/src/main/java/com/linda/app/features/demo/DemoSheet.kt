@@ -28,6 +28,7 @@ import com.linda.app.core.ui.components.ListGroup
 import com.linda.app.core.ui.components.ListRow
 import com.linda.app.core.ui.components.Pill
 import com.linda.app.core.ui.theme.LindaTheme
+import com.linda.app.core.ui.theme.RiskStyle
 import com.linda.app.core.ui.theme.Spacing
 import com.linda.app.core.util.PhoneNumbers
 import com.linda.app.core.util.Prefs
@@ -142,6 +143,7 @@ fun DemoCallCard(msisdn: String, label: CallLabel, onClose: () -> Unit) {
         CallCardOverlay.Tone.SCAM -> colors.risk("SCAM")
         CallCardOverlay.Tone.CAUTION -> colors.risk("CAUTION")
         CallCardOverlay.Tone.SAFE -> colors.risk("SAFE")
+        CallCardOverlay.Tone.NEUTRAL -> RiskStyle(colors.textPrimary, colors.textPrimary, colors.surfaceRaised, colors.surface)
     }
     val name = (label as? VerifiedCall)?.caller?.name(Prefs.effectiveLanguage(context))
     Dialog(onDismissRequest = onClose) {

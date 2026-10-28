@@ -38,6 +38,11 @@ data class MessageInput(
     val personalModel: PersonalModel? = null,
     /** The inbox story of a registered sender, and whether the text quotes a real M-Pesa code (features/learning). */
     val story: StoryFacts? = null,
+    /**
+     * The first name of a saved contact this text says it is from ("Hi, it's Mum"), found on the phone only when the
+     * sender's own number is NOT saved (ContactClaims). Null otherwise. Never leaves the phone.
+     */
+    val claimedContact: String? = null,
 )
 
 enum class RiskLevel { SAFE, CAUTION, SCAM }

@@ -26,6 +26,9 @@ If it ever conflicts with CLAUDE.md, CLAUDE.md wins and this file is updated.
 >   Home keeps the ring and one status line, with two rows under it; the Network card (7.10) is retired; Settings becomes a
 >   grouped list (7.13), and "What Linda learns" gets its own screen. Recovery shows the steps before any form (7.6), and the
 >   first run becomes three short pages (7.14).
+> - Contact awareness (2026-10-28): a call from a saved contact gets a neutral "In your contacts" pill (`surfaceRaised`
+>   with `textPrimary`), never green: green is for verified numbers only, and a saved contact is not verified by anyone.
+>   It shows on the call card and in Ask Linda only, never as a notification (7.19).
 > - Card redesign (2026-10-27, Lester's reference screenshots): section cards (7.15), three tabs with Settings on Home's
 >   gear, and new Home, Alerts and Alert details layouts (7.16). The verdict card (7.3) stays for the Check tab.
 
@@ -327,6 +330,10 @@ pill, and for waiting rows a filled green **Confirm scam** and an outlined **Not
   "Reported: be careful", green "Verified: Safaricom Customer Care"), the scam type and one line, "Linda warns, you
   decide…" and a green **Got it**. Touches outside it reach the call screen; answer and decline are the phone's own.
   Needs "Display over other apps" (Settings: Warnings over calls); without it the heads-up notification stays.
+  A saved contact with no scam signal gets a fourth, neutral pill: "In your contacts" in `textPrimary` on `surfaceRaised`,
+  and the line "No fraud reports on this number. Never share your PIN, even with someone you know." No heads-up
+  notification for it (a call from Mum must not buzz twice), and no colour that could read as "verified". Any warning,
+  and the verified badge, win over it. Ask Linda's number card uses the same pill.
 - **Demo:** a "▶ Demo" outline chip next to the protection pill on Home opens a sheet of numbered rows (a grouped list,
   7.13). Phones without "Display over other apps" see the call card in a dialog.
 - **Preview hidden for your safety:** in Alerts and on Home, a SCAM never shows its words in the list (italic grey

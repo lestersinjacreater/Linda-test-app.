@@ -36,6 +36,7 @@ class InboxScanner(
     private val memory: MpesaMemory? = null,         // the person's real M-Pesa payments, to check "sent you money" claims
     private val personal: PersonalModel? = null,     // what the person's own taps taught Linda
     private val story: StoryBook? = null,            // the inbox story, or null when learning is off
+    private val claimedContact: (String) -> String? = { null }, // "it's Mum" -> the saved name, asked only for unsaved senders
 ) {
     private val contactsCache = HashMap<String, Boolean?>()
 
@@ -61,6 +62,7 @@ class InboxScanner(
                     MessageInput(
                         row.body, sender, row.date, senderInContacts = contact, firstMessageFromSender = null, mpesaMemory = memory,
                         personalModel = personal, story = story?.facts(sender, row.body),
+                        claimedContact = if (contact == false) claimedContact(row.body) else null,
                     ),
                 )
                 if (verdict.level != RiskLevel.SAFE) found += Flagged(sender, row.body, row.date, verdict)

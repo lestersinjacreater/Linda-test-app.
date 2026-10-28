@@ -1297,3 +1297,40 @@ they work on a judge's own phone, not only in a scripted demo.
 What we did not take: the made-up numbers on his home screen ("15 scams flagged", "synced with Safaricom at 9:23"),
 the word "blocked" (Linda warns, it never blocks), and his small model trained on 86 messages we wrote ourselves.
 
+## Contact awareness: "In your contacts" and "it's Mum" from a new number (28 Oct)
+
+Two more ideas from Kelvin's demo app (`Linda-final`, `www/index.html`), written again in Kotlin for the real app.
+
+**1. "In your contacts" on a call (`features/calls/CallRisk.kt`).** When a saved contact calls and nothing about the
+number looks like a scam, the card over the ringing screen (and Ask Linda's answer for a typed number) says
+**"In your contacts"** with "No fraud reports on this number. Never share your PIN, even with someone you know."
+- It is the **last** thing checked: a scam message from that number in the last 2 hours, the confirmed list, a report
+  from Safaricom's list and the verified badge all win over it. A friend's phone can be stolen.
+- It is grey, not green. Green means "verified by Safaricom", and nobody verified your contacts (non-negotiable 7).
+- No notification for it: the phone already shows the contact's name, and a call from Mum should not buzz twice.
+- How: Android's own "is this number in the contacts?" lookup, on the phone. The answer is never stored or sent.
+
+**2. A text that pretends to be a saved contact (`features/detection/ContactClaims.kt`, `LindaDetector`).**
+"Hi, it's Mum. My phone is off, send me 2000 on this line" from a number that is **not** saved, when the person has a
+contact called Mum, is warned on as at least a **caution**, with this reason first:
+"It says it is from Mum, but Mum is saved in your contacts with a different number. Call Mum on the saved number before
+you send anything." (in Kiswahili too).
+- How it finds the claim: it looks for "this is / it's / I'm / ni / mimi ni / ni mimi" followed by a word of 3 or more
+  letters, skipping everyday words ("ni sawa", "ni namba"). At most 3 names per text.
+- How it checks the contacts: Linda asks Android only "is there a contact whose name matches *Mum*?", for the names the
+  text itself claims. It never reads the whole address book, never reads contact numbers, and only when the sender's
+  own number is not saved.
+- When it does not fire: the sender is saved, it is a business or verified sender, Linda cannot read contacts, or the
+  person has been in touch with that number for a while (Know your senders: probably the same person on a second line).
+- Why only a caution: the claim is a context sign, not proof. The model and the other rules can still make it a scam.
+- The demo app also showed the saved number in the warning. We do not: the person already has it.
+
+**Privacy.** Everything happens on the phone. The contact's first name appears only in the warning on this phone (and in
+its history and voice warning). Reports to Safaricom keep exactly the fields of contract 5.1 (no names, no reasons, no
+text), and the Family Guardian SMS never includes reasons. No new data, no new permission (Linda already asked for
+contacts), and no made-up contacts in the demo.
+
+**Tested by** `CallRiskTest` and `CallCardLookTest` (the order of labels, the grey pill), `ContactClaimsTest` (finding
+names in English and Kiswahili, ordinary words left alone), `ContactClaimDetectorTest` (caution with both languages, and
+every case where it must stay quiet) and `TraceModelTest` (the N layer says why).
+
